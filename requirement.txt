@@ -1,0 +1,4 @@
+akshare
+pandas
+ray
+pandas_ta
