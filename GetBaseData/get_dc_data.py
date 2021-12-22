@@ -12,7 +12,7 @@ import time
 import ray
 import pandas as pd
 import akshare as ak
-from get_base_data.ch_eng_mapping import ch_eng_mapping_dict
+from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
 import shutil
 
 pd.set_option("expand_frame_repr", False)

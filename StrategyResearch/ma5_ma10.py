@@ -3,7 +3,7 @@
 # @Project : stock_quant
 # @Date    : 2021/12/19 16:27
 # @Author  : Adolf
-# @File    : MA5_MA10.py
+# @File    : ma5_ma10.py
 # @Function:
 import pandas as pd
 import pandas_ta as ta
@@ -21,6 +21,7 @@ df = pd.read_csv("data/real_data/hfq/600570.csv")
 df["sma5"] = ta.sma(df['close'], length=5)
 df["sma10"] = ta.sma(df['close'], length=10)
 
+df["ema10"] = ta.ema(df['close'], length=10)
 # print(help(ta.macd))
 macd_df = ta.macd(close=df['close'])
 
