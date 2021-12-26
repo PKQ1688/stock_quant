@@ -37,11 +37,17 @@ class TradeStructure:
     def init_one_pos_record(asset_name="empty"):
         pass
 
-    def load_dataset(self, data_path, start_stamp="", end_stamp=""):
+    def load_dataset(self, data_path, start_stamp=None, end_stamp=None):
         df = pd.read_csv(data_path)
         df["market_cap"] = (df["amount"] * 100 / df["turn"]) / pow(10, 8)
 
         self.logger.debug(df)
+
+        if start_stamp is not None:
+            pass
+
+        if end_stamp is not None:
+            pass
 
         return df
 
@@ -67,7 +73,7 @@ class TradeStructure:
     def eval_turn_strategy(self, print_log=False):
         pass
 
-    def run_one_stock(self, code_name):
+    def run_one_stock(self, code_name, start_stamp, end_stamp):
         data_path = os.path.join("data/real_data/hfq/", code_name + ".csv")
 
         self.data = self.load_dataset(data_path=data_path)
