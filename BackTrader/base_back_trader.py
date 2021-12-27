@@ -5,12 +5,10 @@
 # @Author  : Adolf
 # @File    : base_back_trader.py
 # @Function:
-import logging
 from functools import reduce
 import random
 
 import pandas as pd
-import mplfinance as mpf
 import json
 import os
 from tqdm import tqdm
