@@ -53,7 +53,7 @@ class TradeStructure:
                              kdj_parm=(9, 3)):
         pass
 
-    def cal_technical_index(self):
+    def cal_technical_index(self, data):
         pass
 
     def strategy_exec(self):
@@ -76,7 +76,8 @@ class TradeStructure:
         data_path = os.path.join("data/real_data/hfq/", code_name + ".csv")
 
         data = self.load_dataset(data_path=data_path, start_stamp=start_stamp, end_stamp=end_stamp)
-        
+
+        self.cal_technical_index(data)
 
     def run_all_market(self, data_dir="", save_result_path="", limit_list=None, **kwargs):
         pass
