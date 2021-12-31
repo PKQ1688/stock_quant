@@ -29,8 +29,6 @@ class TradeStructure:
         self.trade_rate = 1.5 / 1000
         self.pos_tracking = []
 
-        self.data = None
-
     @staticmethod
     def init_one_pos_record(asset_name="empty"):
         pass
@@ -39,20 +37,23 @@ class TradeStructure:
         df = pd.read_csv(data_path)
         df["market_cap"] = (df["amount"] * 100 / df["turn"]) / pow(10, 8)
 
-        self.logger.debug(df)
-
         if start_stamp is not None:
-            pass
+            df = df[df["date"] > start_stamp]
 
         if end_stamp is not None:
-            pass
+            df = df[df["date"] < end_stamp]
+
+        df.reset_index(drop=True, inplace=True)
+
+        self.logger.debug(df)
 
         return df
 
-    def base_technical_index(self, ma_parm=(5, 10, 20), macd_parm=(12, 26, 9), kdj_parm=(9, 3)):
+    def base_technical_index(self, ma_list=(5, 10, 20, 30, 60), ma_parm=(5, 10, 20), macd_parm=(12, 26, 9),
+                             kdj_parm=(9, 3)):
         pass
 
-    def cal_technical_index(self):
+    def cal_technical_index(self, data):
         pass
 
     def strategy_exec(self):
@@ -74,7 +75,8 @@ class TradeStructure:
     def run_one_stock(self, code_name, start_stamp=None, end_stamp=None):
         data_path = os.path.join("data/real_data/hfq/", code_name + ".csv")
 
-        self.data = self.load_dataset(data_path=data_path, start_stamp=start_stamp, end_stamp=end_stamp)
+        data = self.load_dataset(data_path=data_path, start_stamp=start_stamp, end_stamp=end_stamp)
+        self.cal_technical_index(data)
 
     def run_all_market(self, data_dir="", save_result_path="", limit_list=None, **kwargs):
         pass
@@ -85,4 +87,4 @@ class TradeStructure:
 
 if __name__ == '__main__':
     trade_structure = TradeStructure(logger_level="DEBUG")
-    trade_structure.run_one_stock(code_name="600570")
+    trade_structure.run_one_stock(code_name="600570", start_stamp="2021-01-01", end_stamp="2021-12-31")
