@@ -29,6 +29,8 @@ class TradeStructure:
         self.trade_rate = 1.5 / 1000
         self.pos_tracking = []
 
+        self.data = None
+
     @staticmethod
     def init_one_pos_record(asset_name="empty"):
         pass
@@ -45,15 +47,21 @@ class TradeStructure:
 
         df.reset_index(drop=True, inplace=True)
 
-        self.logger.debug(df)
+        # self.logger.debug(df)
+        self.data = df
 
-        return df
+    def cal_base_technical_indicators(self, sma_list=(5, 10, 20), macd_parm=(12, 26, 9)):
+        if sma_list is not None:
+            for sma_parm in sma_list:
+                self.data["sma" + str(sma_parm)] = ta.sma(self.data["close"], length=sma_parm)
+        if macd_parm is not None:
+            macd_df = ta.macd(close=self.data['close'], fast=macd_parm[0], slow=macd_parm[1], signal=macd_parm[2])
 
-    def base_technical_index(self, ma_list=(5, 10, 20, 30, 60), ma_parm=(5, 10, 20), macd_parm=(12, 26, 9),
-                             kdj_parm=(9, 3)):
-        pass
+            self.data['macd'], self.data['histogram'], self.data['signal'] = \
+                [macd_df['MACD_12_26_9'], macd_df['MACDh_12_26_9'], macd_df['MACDs_12_26_9']]
 
-    def cal_technical_index(self, data):
+    def cal_technical_index(self):
+        self.logger.info(self.data.tail())
         pass
 
     def strategy_exec(self):
@@ -75,8 +83,10 @@ class TradeStructure:
     def run_one_stock(self, code_name, start_stamp=None, end_stamp=None):
         data_path = os.path.join("data/real_data/hfq/", code_name + ".csv")
 
-        data = self.load_dataset(data_path=data_path, start_stamp=start_stamp, end_stamp=end_stamp)
-        self.cal_technical_index(data)
+        self.load_dataset(data_path=data_path, start_stamp=start_stamp, end_stamp=end_stamp)
+        self.cal_base_technical_indicators(sma_list=(5, 10, 20, 30, 60))
+
+        self.cal_technical_index()
 
     def run_all_market(self, data_dir="", save_result_path="", limit_list=None, **kwargs):
         pass
