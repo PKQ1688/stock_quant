@@ -74,7 +74,7 @@ class TradeStructure:
     def run_one_stock(self, code_name, start_stamp=None, end_stamp=None):
         data_path = os.path.join("data/real_data/hfq/", code_name + ".csv")
 
-        self.data = self.load_dataset(data_path=data_path, start_stamp=None, end_stamp=None)
+        self.data = self.load_dataset(data_path=data_path, start_stamp=start_stamp, end_stamp=end_stamp)
 
     def run_all_market(self, data_dir="", save_result_path="", limit_list=None, **kwargs):
         pass
