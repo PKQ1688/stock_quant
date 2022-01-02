@@ -67,7 +67,7 @@ class TradeStructure:
             self.data['macd'], self.data['histogram'], self.data['signal'] = \
                 [macd_df['MACD_12_26_9'], macd_df['MACDh_12_26_9'], macd_df['MACDs_12_26_9']]
 
-    def cal_technical_index(self):
+    def cal_technical_indicators(self):
         self.logger.info(self.data.tail())
         pass
 
@@ -95,7 +95,10 @@ class TradeStructure:
                           end_stamp=end_stamp)
         self.cal_base_technical_indicators(sma_list=(5, 10, 20, 30, 60))
 
-        self.cal_technical_index()
+        self.cal_technical_indicators()
+
+        self.trading_algorithm()
+
 
     def run_all_market(self,
                        data_dir="",
