@@ -5,13 +5,13 @@
 # @Author  : Adolf
 # @File    : base_back_trader.py
 # @Function:
-from functools import reduce
-import random
+# from functools import reduce
+# import random
 
 import pandas as pd
-import json
+# import json
 import os
-from tqdm import tqdm
+# from tqdm import tqdm
 
 import pandas_ta as ta
 
@@ -23,7 +23,8 @@ pd.set_option("expand_frame_repr", False)
 class TradeStructure:
 
     def __init__(self, logger_level="INFO"):
-        self.logger = get_module_logger(module_name="Trade", level=logger_level)
+        self.logger = get_module_logger(module_name="Trade",
+                                        level=logger_level)
         self.logger.info("Trade is begging ......")
 
         self.trade_rate = 1.5 / 1000
@@ -50,12 +51,18 @@ class TradeStructure:
         # self.logger.debug(df)
         self.data = df
 
-    def cal_base_technical_indicators(self, sma_list=(5, 10, 20), macd_parm=(12, 26, 9)):
+    def cal_base_technical_indicators(self,
+                                      sma_list=(5, 10, 20),
+                                      macd_parm=(12, 26, 9)):
         if sma_list is not None:
             for sma_parm in sma_list:
-                self.data["sma" + str(sma_parm)] = ta.sma(self.data["close"], length=sma_parm)
+                self.data["sma" + str(sma_parm)] = ta.sma(self.data["close"],
+                                                          length=sma_parm)
         if macd_parm is not None:
-            macd_df = ta.macd(close=self.data['close'], fast=macd_parm[0], slow=macd_parm[1], signal=macd_parm[2])
+            macd_df = ta.macd(close=self.data['close'],
+                              fast=macd_parm[0],
+                              slow=macd_parm[1],
+                              signal=macd_parm[2])
 
             self.data['macd'], self.data['histogram'], self.data['signal'] = \
                 [macd_df['MACD_12_26_9'], macd_df['MACDh_12_26_9'], macd_df['MACDs_12_26_9']]
@@ -83,18 +90,30 @@ class TradeStructure:
     def run_one_stock(self, code_name, start_stamp=None, end_stamp=None):
         data_path = os.path.join("data/real_data/hfq/", code_name + ".csv")
 
-        self.load_dataset(data_path=data_path, start_stamp=start_stamp, end_stamp=end_stamp)
+        self.load_dataset(data_path=data_path,
+                          start_stamp=start_stamp,
+                          end_stamp=end_stamp)
         self.cal_base_technical_indicators(sma_list=(5, 10, 20, 30, 60))
 
         self.cal_technical_index()
 
-    def run_all_market(self, data_dir="", save_result_path="", limit_list=None, **kwargs):
+    def run_all_market(self,
+                       data_dir="",
+                       save_result_path="",
+                       limit_list=None,
+                       **kwargs):
         pass
 
-    def turn_asset_market(self, data_dir="", save_result_path="", limit_list=None, **kwargs):
+    def turn_asset_market(self,
+                          data_dir="",
+                          save_result_path="",
+                          limit_list=None,
+                          **kwargs):
         pass
 
 
 if __name__ == '__main__':
     trade_structure = TradeStructure(logger_level="DEBUG")
-    trade_structure.run_one_stock(code_name="600570", start_stamp="2021-01-01", end_stamp="2021-12-31")
+    trade_structure.run_one_stock(code_name="600570",
+                                  start_stamp="2021-01-01",
+                                  end_stamp="2021-12-31")
