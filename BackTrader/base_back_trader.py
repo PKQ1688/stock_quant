@@ -16,6 +16,7 @@ from tqdm import tqdm
 import pandas_ta as ta
 
 from Utils.base_utils import get_module_logger
+from BackTrader.position_analysis import BaseTransactionAnalysis
 
 pd.set_option("expand_frame_repr", False)
 
@@ -28,9 +29,8 @@ class TradeStructure:
         self.logger.info("Trade is begging ......")
 
         self.trade_rate = 1.5 / 1000
-        self.pos_tracking = []
-
         self.data = None
+        self.transaction_analysis = BaseTransactionAnalysis(logger=self.logger)
 
     @staticmethod
     def init_one_transaction_record(asset_name):
@@ -103,7 +103,10 @@ class TradeStructure:
 
         # self.logger.info(transaction_record_list)
         transaction_record_df = pd.DataFrame(transaction_record_list)
-        self.logger.info(transaction_record_df)
+
+        transaction_record_df["pct"] = (transaction_record_df["sell_price"] / transaction_record_df["buy_price"]) * (
+                    1 - self.trade_rate) - 1
+        self.logger.debug(transaction_record_df)
 
         return transaction_record_df
 
@@ -115,10 +118,10 @@ class TradeStructure:
                           end_stamp=end_stamp)
 
         self.cal_technical_indicators()
-
         self.trading_algorithm()
-
         transaction_record_df = self.strategy_execute()
+
+        self.transaction_analysis.cal_trader_analysis(transaction_record_df)
 
 
 if __name__ == '__main__':

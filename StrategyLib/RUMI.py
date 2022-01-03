@@ -11,7 +11,7 @@ from BackTrader.base_back_trader import TradeStructure
 
 class RUMIStrategy(TradeStructure):
     def __init__(self):
-        logger_level = "DEBUG"
+        logger_level = "INFO"
         super(RUMIStrategy, self).__init__(logger_level=logger_level)
 
     def cal_technical_indicators(self):
