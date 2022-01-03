@@ -5,13 +5,13 @@
 # @Author  : Adolf
 # @File    : base_back_trader.py
 # @Function:
-# from functools import reduce
-# import random
+from functools import reduce
+import random
 
 import pandas as pd
-# import json
+import json
 import os
-# from tqdm import tqdm
+from tqdm import tqdm
 
 import pandas_ta as ta
 
@@ -33,8 +33,15 @@ class TradeStructure:
         self.data = None
 
     @staticmethod
-    def init_one_pos_record(asset_name="empty"):
-        pass
+    def init_one_transaction_record(asset_name):
+        return {
+            "pos_asset": asset_name,
+            "buy_date": "",
+            "buy_price": 1,
+            "sell_date": "",
+            "sell_price": 1,
+            "holding_time": 0
+        }
 
     def load_dataset(self, data_path, start_stamp=None, end_stamp=None):
         df = pd.read_csv(data_path)
@@ -51,9 +58,7 @@ class TradeStructure:
         # self.logger.debug(df)
         self.data = df
 
-    def cal_base_technical_indicators(self,
-                                      sma_list=(5, 10, 20),
-                                      macd_parm=(12, 26, 9)):
+    def cal_base_technical_indicators(self, sma_list=(5, 10, 20), macd_parm=(12, 26, 9)):
         if sma_list is not None:
             for sma_parm in sma_list:
                 self.data["sma" + str(sma_parm)] = ta.sma(self.data["close"],
@@ -68,24 +73,39 @@ class TradeStructure:
                 [macd_df['MACD_12_26_9'], macd_df['MACDh_12_26_9'], macd_df['MACDs_12_26_9']]
 
     def cal_technical_indicators(self):
-        self.logger.info(self.data.tail())
-        pass
+        raise NotImplementedError
 
-    def strategy_exec(self):
-        pass
+    def trading_algorithm(self):
+        raise NotImplementedError
 
-    def turn_strategy_exec(self, data):
-        pass
+    def strategy_execute(self):
+        asset_name = self.data.name[0]
+        one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
 
-    @staticmethod
-    def handle_bs_point(df):
-        return df
+        transaction_record_list = []
+        self.logger.debug(one_transaction_record)
 
-    def eval_index(self, print_log=False):
-        pass
+        for index, trading_step in self.data.iterrows():
+            # self.logger.debug(trading_step)
 
-    def eval_turn_strategy(self, print_log=False):
-        pass
+            if trading_step["trade"] == "BUY" and one_transaction_record["buy_date"] == "":
+                one_transaction_record["buy_date"] = trading_step["date"]
+                one_transaction_record["buy_price"] = trading_step["close"]
+                one_transaction_record["holding_time"] = -index
+
+            if trading_step["trade"] == "SELL" and one_transaction_record["buy_date"] != "":
+                one_transaction_record["sell_date"] = trading_step["date"]
+                one_transaction_record["sell_price"] = trading_step["close"]
+                one_transaction_record["holding_time"] += index
+
+                transaction_record_list.append(one_transaction_record.copy())
+                one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
+
+        # self.logger.info(transaction_record_list)
+        transaction_record_df = pd.DataFrame(transaction_record_list)
+        self.logger.info(transaction_record_df)
+
+        return transaction_record_df
 
     def run_one_stock(self, code_name, start_stamp=None, end_stamp=None):
         data_path = os.path.join("data/real_data/hfq/", code_name + ".csv")
@@ -93,30 +113,14 @@ class TradeStructure:
         self.load_dataset(data_path=data_path,
                           start_stamp=start_stamp,
                           end_stamp=end_stamp)
-        self.cal_base_technical_indicators(sma_list=(5, 10, 20, 30, 60))
 
         self.cal_technical_indicators()
 
         self.trading_algorithm()
 
-
-    def run_all_market(self,
-                       data_dir="",
-                       save_result_path="",
-                       limit_list=None,
-                       **kwargs):
-        pass
-
-    def turn_asset_market(self,
-                          data_dir="",
-                          save_result_path="",
-                          limit_list=None,
-                          **kwargs):
-        pass
+        transaction_record_df = self.strategy_execute()
 
 
 if __name__ == '__main__':
     trade_structure = TradeStructure(logger_level="DEBUG")
-    trade_structure.run_one_stock(code_name="600570",
-                                  start_stamp="2021-01-01",
-                                  end_stamp="2021-12-31")
+    trade_structure.run_one_stock(code_name="600570", start_stamp="2021-01-01", end_stamp="2021-12-31")
