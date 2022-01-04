@@ -23,9 +23,11 @@ pd.set_option("expand_frame_repr", False)
 
 class TradeStructure:
 
-    def __init__(self, logger_level="INFO"):
+    def __init__(self, config):
+        self.config = config
+
         self.logger = get_module_logger(module_name="Trade",
-                                        level=logger_level)
+                                        level=config["log_level"], )
         self.logger.info("Trade is begging ......")
 
         self.trade_rate = 1.5 / 1000
@@ -105,25 +107,25 @@ class TradeStructure:
         transaction_record_df = pd.DataFrame(transaction_record_list)
 
         transaction_record_df["pct"] = (transaction_record_df["sell_price"] / transaction_record_df["buy_price"]) * (
-                    1 - self.trade_rate) - 1
+                1 - self.trade_rate) - 1
         self.logger.debug(transaction_record_df)
 
         return transaction_record_df
 
-    def run_one_stock(self, code_name, start_stamp=None, end_stamp=None):
-        data_path = os.path.join("data/real_data/hfq/", code_name + ".csv")
+    def run_one_stock(self):
+        data_path = os.path.join("data/real_data/hfq/", self.config["code_name"] + ".csv")
 
         self.load_dataset(data_path=data_path,
-                          start_stamp=start_stamp,
-                          end_stamp=end_stamp)
+                          start_stamp=self.config["start_stamp"],
+                          end_stamp=self.config["end_stamp"])
 
         self.cal_technical_indicators()
         self.trading_algorithm()
         transaction_record_df = self.strategy_execute()
 
-        self.transaction_analysis.cal_trader_analysis(transaction_record_df)
+        strategy_analysis = self.transaction_analysis.cal_trader_analysis(transaction_record_df)
+        asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
 
-
-if __name__ == '__main__':
-    trade_structure = TradeStructure(logger_level="DEBUG")
-    trade_structure.run_one_stock(code_name="600570", start_stamp="2021-01-01", end_stamp="2021-12-31")
+# if __name__ == '__main__':
+#     trade_structure = TradeStructure(config="")
+#     trade_structure.run_one_stock(code_name="600570", start_stamp="2021-01-01", end_stamp="2021-12-31")

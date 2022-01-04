@@ -3,24 +3,24 @@
 # @Project : stock_quant
 # @Date    : 2022/1/2 17:34
 # @Author  : Adolf
-# @File    : RUMI.py
+# @File    : RUMI_config.py
 # @Function:
 import pandas_ta as ta
 from BackTrader.base_back_trader import TradeStructure
+from StrategyLib.StrategyLibConfig.RUMI_config import rumi_config
 
 
 class RUMIStrategy(TradeStructure):
-    def __init__(self):
-        logger_level = "INFO"
-        super(RUMIStrategy, self).__init__(logger_level=logger_level)
+    def __init__(self, config):
+        super(RUMIStrategy, self).__init__(config)
 
     def cal_technical_indicators(self):
-        self.data["sma13"] = ta.sma(self.data["close"], length=13)
-        self.data["ema21"] = ta.ema(self.data["close"], length=21)
+        self.data["sma"] = ta.sma(self.data["close"], length=self.config["sma_length"])
+        self.data["ema"] = ta.ema(self.data["close"], length=self.config["ema_length"])
 
-        self.data["os"] = self.data["sma13"] - self.data["ema21"]
+        self.data["os"] = self.data["sma"] - self.data["ema"]
 
-        self.data["aos"] = ta.sma(self.data["os"], length=5)
+        self.data["aos"] = ta.sma(self.data["os"], length=self.config["aos_length"])
 
         # self.logger.info(self.data.tail(30))
 
@@ -32,5 +32,5 @@ class RUMIStrategy(TradeStructure):
 
 
 if __name__ == '__main__':
-    RUMI_strategy = RUMIStrategy()
-    RUMI_strategy.run_one_stock(code_name="600570")
+    RUMI_strategy = RUMIStrategy(config=rumi_config)
+    RUMI_strategy.run_one_stock()

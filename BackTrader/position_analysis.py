@@ -44,14 +44,13 @@ class BaseTransactionAnalysis:
         # 计算策略的平均持股天数
         mean_holding_day = data["holding_time"].mean()
 
+        # 计算总持有时间
+        sum_holding_day = data["holding_time"].sum()
+
         # 统计策略的交易次数
         trade_nums = len(data)
 
         # strategy_annual_return = strategy_pct ** (250 / len(self.data)) - 1
-        # asset_pct_annual_return = asset_pct ** (250 / len(self.data)) - 1
-
-        # asset_max_draw_down, asset_start_date, asset_end_date = self.cal_max_down(df=self.data, pct_name="close",
-        #                                                                           time_stamp="date")
 
         # 统计策略的最大回撤
         strategy_max_draw_down, strategy_start_date, strategy_end_date = self.cal_max_down(df=data,
@@ -61,6 +60,7 @@ class BaseTransactionAnalysis:
         result_dict = dict()
         result_dict["平均持有时间"] = mean_holding_day
         result_dict["交易次数"] = trade_nums
+        result_dict["计算总持有时间"] = sum_holding_day
 
         result_dict["策略收益率"] = strategy_pct
 
@@ -74,8 +74,37 @@ class BaseTransactionAnalysis:
 
         # self.logger.info(result_dict)
 
-        result_df = pd.DataFrame.from_dict(result_dict,orient='index')
+        result_df = pd.DataFrame.from_dict(result_dict, orient='index', columns=["result"])
         self.logger.info(result_df)
+
+        return result_df
+
+    def cal_asset_analysis(self, data):
+        # 计算标的收益率
+        asset_pct = data.close[len(data) - 1] / data.close[0]
+
+        # 计算标的年化
+        asset_pct_annual_return = asset_pct ** (250 / len(data)) - 1
+
+        # 统计策略的最大回撤
+        asset_max_draw_down, asset_start_date, asset_end_date = self.cal_max_down(df=data,
+                                                                                  pct_name="close",
+                                                                                  time_stamp="date")
+
+        result_dict = dict()
+        result_dict["标的收益率"] = asset_pct
+        result_dict["标的年化"] = asset_pct_annual_return
+
+        result_dict["标的最大回撤"] = asset_max_draw_down
+        result_dict["标的最大回撤开始时间"] = asset_start_date
+        result_dict["标的最大回撤结束时间"] = asset_end_date
+
+        result_dict["标的交易时间"] = len(data)
+
+        result_df = pd.DataFrame.from_dict(result_dict, orient='index', columns=["result"])
+        self.logger.info(result_df)
+
+        return result_df
 
     def show_analysis_result(self):
         pass
