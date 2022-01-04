@@ -72,10 +72,10 @@ class BaseTransactionAnalysis:
         result_dict["策略最大回撤开始时间"] = strategy_start_date
         result_dict["策略最大回撤结束时间"] = strategy_end_date
 
-        self.logger.info(result_dict)
+        # self.logger.info(result_dict)
 
-        # result_df = pd.DataFrame(result_dict)
-
+        result_df = pd.DataFrame.from_dict(result_dict,orient='index')
+        self.logger.info(result_df)
 
     def show_analysis_result(self):
         pass
