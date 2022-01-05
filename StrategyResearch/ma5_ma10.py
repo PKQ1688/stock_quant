@@ -29,4 +29,12 @@ df['macd'], df['histogram'], df['signal'] = [macd_df['MACD_12_26_9'], macd_df['M
                                              macd_df['MACDs_12_26_9']]
 # pd.concat([df, ta.macd(close=df['close'])])
 
-print(df.tail())
+df = df[df["date"] > "2020-01-01"]
+
+df.loc[(df["sma5"] > df["sma10"]) & (df["sma5"].shift(1) < df["sma10"].shift(1)), "trade"] = "BUY"
+# df.loc[(df["sma5"] < df["sma10"]) & (df["sma5"].shift(1) > df["sma10"].shift(1)), "trade"] = "SELL"
+
+df = df.loc[df["trade"].notnull() & (df['macd'] > 0) & (df["histogram"] > 0)]
+# df.dropna(subset=['trade'], inplace=True)
+
+print(df)

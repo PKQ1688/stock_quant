@@ -112,6 +112,9 @@ class TradeStructure:
 
         return transaction_record_df
 
+    def show_one_stock(self):
+        pass
+
     def run_one_stock(self, indicators_config=None) -> None:
 
         if indicators_config is None:
