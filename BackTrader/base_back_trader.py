@@ -5,13 +5,12 @@
 # @Author  : Adolf
 # @File    : base_back_trader.py
 # @Function:
-from functools import reduce
-import random
+import itertools
+# from functools import reduce
 
 import pandas as pd
-import json
 import os
-from tqdm import tqdm
+# from tqdm import tqdm
 
 import pandas_ta as ta
 
@@ -28,7 +27,7 @@ class TradeStructure:
 
         self.logger = get_module_logger(module_name="Trade",
                                         level=config["log_level"], )
-        self.logger.info("Trade is begging ......")
+        self.logger.debug("Trade is begging ......")
 
         self.trade_rate = 1.5 / 1000
         self.data = None
@@ -74,7 +73,7 @@ class TradeStructure:
             self.data['macd'], self.data['histogram'], self.data['signal'] = \
                 [macd_df['MACD_12_26_9'], macd_df['MACDh_12_26_9'], macd_df['MACDs_12_26_9']]
 
-    def cal_technical_indicators(self):
+    def cal_technical_indicators(self, indicators_config):
         raise NotImplementedError
 
     def trading_algorithm(self):
@@ -108,23 +107,56 @@ class TradeStructure:
 
         transaction_record_df["pct"] = (transaction_record_df["sell_price"] / transaction_record_df["buy_price"]) * (
                 1 - self.trade_rate) - 1
+
         self.logger.debug(transaction_record_df)
 
         return transaction_record_df
 
-    def run_one_stock(self):
+    def run_one_stock(self, indicators_config=None) -> None:
+
+        if indicators_config is None:
+            asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
+            self.logger.info(asset_analysis)
+            indicators_config = self.config["strategy_params"]
+
         data_path = os.path.join("data/real_data/hfq/", self.config["code_name"] + ".csv")
 
         self.load_dataset(data_path=data_path,
                           start_stamp=self.config["start_stamp"],
                           end_stamp=self.config["end_stamp"])
 
-        self.cal_technical_indicators()
+        if not self.cal_technical_indicators(indicators_config):
+            return False
+
         self.trading_algorithm()
         transaction_record_df = self.strategy_execute()
 
         strategy_analysis = self.transaction_analysis.cal_trader_analysis(transaction_record_df)
-        asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
+
+        self.logger.info(indicators_config)
+        self.logger.info(strategy_analysis)
+
+        return True
+
+    def run_diff_params(self) -> None:
+        indicators_config = self.config["strategy_params"]
+        # self.logger.info(indicators_config)
+
+        if not self.config["one_param"]:
+            self.logger.debug(indicators_config)
+            # p = {k: list(itertools.permutations(v)) for k, v in indicators_config.items()}
+            # for blah in itertools.product()
+            # self.logger.info(p)
+            for item in itertools.product(*[value for key, value in indicators_config.items()]):
+                self.logger.debug(item)
+                one_indicator_config = {list(indicators_config.keys())[index]: item[index]
+                                        for index in range(len(list(indicators_config.keys())))}
+
+                self.run_one_stock(one_indicator_config)
+
+                # break
+        else:
+            self.run_one_stock()
 
 # if __name__ == '__main__':
 #     trade_structure = TradeStructure(config="")

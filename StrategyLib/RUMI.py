@@ -14,14 +14,20 @@ class RUMIStrategy(TradeStructure):
     def __init__(self, config):
         super(RUMIStrategy, self).__init__(config)
 
-    def cal_technical_indicators(self):
-        self.data["sma"] = ta.sma(self.data["close"], length=self.config["sma_length"])
-        self.data["ema"] = ta.ema(self.data["close"], length=self.config["ema_length"])
+    def cal_technical_indicators(self, indicators_config):
+        if indicators_config["sma_length"] >= indicators_config["ema_length"]:
+            return False
+
+        self.logger.debug(indicators_config)
+
+        self.data["sma"] = ta.sma(self.data["close"], length=indicators_config["sma_length"])
+        self.data["ema"] = ta.ema(self.data["close"], length=indicators_config["ema_length"])
 
         self.data["os"] = self.data["sma"] - self.data["ema"]
 
-        self.data["aos"] = ta.sma(self.data["os"], length=self.config["aos_length"])
+        self.data["aos"] = ta.sma(self.data["os"], length=indicators_config["aos_length"])
 
+        return True
         # self.logger.info(self.data.tail(30))
 
     def trading_algorithm(self):
@@ -33,4 +39,5 @@ class RUMIStrategy(TradeStructure):
 
 if __name__ == '__main__':
     RUMI_strategy = RUMIStrategy(config=rumi_config)
-    RUMI_strategy.run_one_stock()
+    # RUMI_strategy.run_one_stock()
+    RUMI_strategy.run_diff_params()

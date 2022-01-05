@@ -10,7 +10,10 @@ rumi_config = {
     "code_name": "600570",
     "start_stamp": "2005-01-01",
     "end_stamp": "2020-12-31",
-    "sma_length": 5,
-    "ema_length": 20,
-    "aos_length": 10,
+    "one_param": False,
+    "strategy_params": {
+        "sma_length": [5, 10, 20, 30],
+        "ema_length": [10, 20, 30, 60],
+        "aos_length": [5, 10, 20, 30, 60],
+    }
 }

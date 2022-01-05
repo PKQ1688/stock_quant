@@ -27,7 +27,7 @@ class BaseTransactionAnalysis:
         return max_draw_down, start_date, end_date
 
     def cal_trader_analysis(self, data):
-        self.logger.info(data)
+        self.logger.debug(data)
 
         # 计算策略的收益率
         data['strategy_net'] = (1 + data['pct']).cumprod()
@@ -75,7 +75,7 @@ class BaseTransactionAnalysis:
         # self.logger.info(result_dict)
 
         result_df = pd.DataFrame.from_dict(result_dict, orient='index', columns=["result"])
-        self.logger.info(result_df)
+        self.logger.debug(result_df)
 
         return result_df
 
@@ -102,7 +102,7 @@ class BaseTransactionAnalysis:
         result_dict["标的交易时间"] = len(data)
 
         result_df = pd.DataFrame.from_dict(result_dict, orient='index', columns=["result"])
-        self.logger.info(result_df)
+        self.logger.debug(result_df)
 
         return result_df
 
