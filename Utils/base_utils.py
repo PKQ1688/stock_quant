@@ -36,3 +36,14 @@ def get_module_logger(module_name, level="INFO"):
     module_logger.handlers.append(console_handler)
 
     return module_logger
+
+
+# 指定函数只运行一次
+def run_once(f):
+    def wrapper(*args, **kwargs):
+        if not wrapper.has_run:
+            wrapper.has_run = True
+            return f(*args, **kwargs)
+
+    wrapper.has_run = False
+    return wrapper

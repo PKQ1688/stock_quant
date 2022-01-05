@@ -6,6 +6,7 @@
 # @File    : position_analysis.py
 # @Function:
 import pandas as pd
+from Utils.base_utils import run_once
 
 
 class BaseTransactionAnalysis:
@@ -79,6 +80,7 @@ class BaseTransactionAnalysis:
 
         return result_df
 
+    @run_once
     def cal_asset_analysis(self, data):
         # 计算标的收益率
         asset_pct = data.close[len(data) - 1] / data.close[0]

@@ -115,8 +115,6 @@ class TradeStructure:
     def run_one_stock(self, indicators_config=None) -> None:
 
         if indicators_config is None:
-            asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
-            self.logger.info(asset_analysis)
             indicators_config = self.config["strategy_params"]
 
         data_path = os.path.join("data/real_data/hfq/", self.config["code_name"] + ".csv")
@@ -131,6 +129,10 @@ class TradeStructure:
         self.trading_algorithm()
         transaction_record_df = self.strategy_execute()
 
+        asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
+        if asset_analysis is not None:
+            self.logger.info(asset_analysis)
+
         strategy_analysis = self.transaction_analysis.cal_trader_analysis(transaction_record_df)
 
         self.logger.info(indicators_config)
@@ -138,15 +140,19 @@ class TradeStructure:
 
         return True
 
-    def run_diff_params(self) -> None:
+    def run(self) -> None:
+        code_name = self.config["code_name"]
+        self.logger.info(code_name)
+
         indicators_config = self.config["strategy_params"]
         # self.logger.info(indicators_config)
 
-        if not self.config["one_param"]:
-            self.logger.debug(indicators_config)
-            # p = {k: list(itertools.permutations(v)) for k, v in indicators_config.items()}
-            # for blah in itertools.product()
-            # self.logger.info(p)
+        # if not self.config["one_param"]:
+        #     self.logger.debug(indicators_config)
+        # p = {k: list(itertools.permutations(v)) for k, v in indicators_config.items()}
+        # for blah in itertools.product()
+        # self.logger.info(p)
+        try:
             for item in itertools.product(*[value for key, value in indicators_config.items()]):
                 self.logger.debug(item)
                 one_indicator_config = {list(indicators_config.keys())[index]: item[index]
@@ -155,7 +161,8 @@ class TradeStructure:
                 self.run_one_stock(one_indicator_config)
 
                 # break
-        else:
+        except Exception as e:
+            self.logger.debug(e)
             self.run_one_stock()
 
 # if __name__ == '__main__':

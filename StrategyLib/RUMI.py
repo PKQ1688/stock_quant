@@ -8,6 +8,7 @@
 import pandas_ta as ta
 from BackTrader.base_back_trader import TradeStructure
 from StrategyLib.StrategyLibConfig.RUMI_config import rumi_config
+# from StrategyLib.StrategyLibConfig.RUMI_params_config import rumi_config
 
 
 class RUMIStrategy(TradeStructure):
@@ -40,4 +41,4 @@ class RUMIStrategy(TradeStructure):
 if __name__ == '__main__':
     RUMI_strategy = RUMIStrategy(config=rumi_config)
     # RUMI_strategy.run_one_stock()
-    RUMI_strategy.run_diff_params()
+    RUMI_strategy.run()
