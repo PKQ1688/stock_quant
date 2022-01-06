@@ -120,7 +120,7 @@ class TradeStructure:
         if indicators_config is None:
             indicators_config = self.config["strategy_params"]
 
-        data_path = os.path.join("Data/real_data/hfq/", self.config["code_name"] + ".csv")
+        data_path = os.path.join("Data/RealData/hfq/", self.config["code_name"] + ".csv")
 
         self.load_dataset(data_path=data_path,
                           start_stamp=self.config["start_stamp"],

@@ -8,13 +8,13 @@
 import pandas as pd
 import pandas_ta as ta
 
-from pyecharts.charts import Bar
-from pyecharts import options as opts
+# from pyecharts import
+# from pyecharts import options as opts
 
 pd.set_option("expand_frame_repr", False)
 pd.set_option("display.max_rows", None)
 
-df = pd.read_csv("Data/real_data/hfq/600570.csv")
+df = pd.read_csv("Data/RealData/hfq/600570.csv")
 
 # print(df)
 # df.set_index(pd.DatetimeIndex(df["date"]), inplace=True)
@@ -42,10 +42,10 @@ df = df.loc[df["trade"].notnull() & (df['macd'] > 0) & (df["histogram"] > 0)]
 
 print(df)
 
-bar = Bar()
-bar.add_xaxis(["衬衫", "毛衣", "领带", "裤子", "风衣", "高跟鞋", "袜子"])
-bar.add_yaxis("商家A", [114, 55, 27, 101, 125, 27, 105])
-bar.add_yaxis("商家B", [57, 134, 137, 129, 145, 60, 49])
-bar.set_global_opts(title_opts=opts.TitleOpts(title="某商场销售情况"))
-
-bar.render()
+# bar = Bar()
+# bar.add_xaxis(["衬衫", "毛衣", "领带", "裤子", "风衣", "高跟鞋", "袜子"])
+# bar.add_yaxis("商家A", [114, 55, 27, 101, 125, 27, 105])
+# bar.add_yaxis("商家B", [57, 134, 137, 129, 145, 60, 49])
+# bar.set_global_opts(title_opts=opts.TitleOpts(title="某商场销售情况"))
+#
+# bar.render()

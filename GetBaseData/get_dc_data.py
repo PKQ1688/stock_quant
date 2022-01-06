@@ -27,9 +27,9 @@ ray.init()
 
 error_code_list = []
 
-qfq_path = "Data/real_data/qfq/"
-hfq_path = "Data/real_data/hfq/"
-origin_path = "Data/real_data/origin/"
+qfq_path = "Data/RealData/qfq/"
+hfq_path = "Data/RealData/hfq/"
+origin_path = "Data/RealData/origin/"
 
 
 if os.path.exists(qfq_path):
