@@ -15,16 +15,15 @@ from GetBaseData.hanle_data_show import get_show_data
 
 def draw_chart(input_data):
     kline = Kline()
-    kline.add_xaxis(xaxis_data=input_data["date"])
+    kline.add_xaxis(xaxis_data=input_data["times"])
     kline.add_yaxis(
         series_name="",
-        y_axis=data["dates"],
-
+        y_axis=data["datas"],
     )
 
     kline.render(path="ShowHtml/CandleChart.html")
 
 
 if __name__ == '__main__':
-    data = get_show_data("Data/RealData/origin/600570.csv")
+    data = get_show_data("Data/RealData/hfq/600570.csv")
     draw_chart(data)

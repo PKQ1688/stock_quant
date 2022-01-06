@@ -7,29 +7,39 @@
 import pandas as pd
 import pandas_ta as ta
 
-def get_show_data(df):
-    if not isinstance(df, pd.DataFrame):
-        df = pd.read_csv(df)
 
-    macd_df = ta.macd(close=df['close'])
-    # help(ta.macd)
-    # df['macd'], df['histogram'], df['signal'] = [macd_df['MACD_12_26_9'], macd_df['MACDh_12_26_9'],
-    #                                              macd_df['MACDs_12_26_9']]
+def get_show_data(_df):
+    if not isinstance(_df, pd.DataFrame):
+        _df = pd.read_csv(_df)
+
+    macd_df = ta.macd(close=_df['close'])
+
+    # print(_df)
 
     # oclh
-    datas = []
-    times = df["date"].tolist()
-    vols = df["volume"].tolist()
+    datas = [list(oclh) for oclh in
+             zip(_df["open"].tolist(), _df["close"].tolist(), _df["high"].tolist(), _df["low"].tolist())]
+
+    times = _df["date"].tolist()
+    vols = _df["volume"].tolist()
     macds = macd_df["MACDh_12_26_9"].tolist()
     difs = macd_df["MACD_12_26_9"].tolist()
     deas = macd_df['MACDs_12_26_9'].tolist()
 
-    print(times)
+    # print(times)
 
-    return df.to_dict(orient="list")
+    # return df.to_dict(orient="list")
+    return {
+        "datas": datas,
+        "times": times,
+        "vols": vols,
+        "macds": macds,
+        "difs": difs,
+        "deas": deas,
+    }
 
 
 if __name__ == '__main__':
     csv_path = "Data/RealData/origin/600570.csv"
     df = pd.read_csv(csv_path)
-    get_show_data(df=df)
+    print(get_show_data(_df=df))
