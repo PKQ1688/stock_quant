@@ -29,13 +29,13 @@ class RUMIStrategy(TradeStructure):
         self.data["aos"] = ta.sma(self.data["os"], length=indicators_config["aos_length"])
 
         return True
-        # self.logger.info(self.data.tail(30))
+        # self.logger.info(self.Data.tail(30))
 
     def trading_algorithm(self):
         self.data.loc[(self.data["aos"] > 0) & (self.data["aos"].shift(1) < 0), "trade"] = "BUY"
         self.data.loc[(self.data["aos"] < 0) & (self.data["aos"].shift(1) > 0), "trade"] = "SELL"
 
-        # self.logger.info(self.data.tail(30))
+        # self.logger.info(self.Data.tail(30))
 
 
 if __name__ == '__main__':

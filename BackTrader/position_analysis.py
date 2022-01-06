@@ -51,7 +51,7 @@ class BaseTransactionAnalysis:
         # 统计策略的交易次数
         trade_nums = len(data)
 
-        # strategy_annual_return = strategy_pct ** (250 / len(self.data)) - 1
+        # strategy_annual_return = strategy_pct ** (250 / len(self.Data)) - 1
 
         # 统计策略的最大回撤
         strategy_max_draw_down, strategy_start_date, strategy_end_date = self.cal_max_down(df=data,
