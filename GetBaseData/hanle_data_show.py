@@ -12,13 +12,16 @@ def get_show_data(_df):
     if not isinstance(_df, pd.DataFrame):
         _df = pd.read_csv(_df)
 
-    macd_df = ta.macd(close=_df['close'])
+    _df = _df[-200:]
 
+    macd_df = ta.macd(close=_df['close'])
     # print(_df)
 
     # oclh
     datas = [list(oclh) for oclh in
-             zip(_df["open"].tolist(), _df["close"].tolist(), _df["high"].tolist(), _df["low"].tolist())]
+             zip(_df["open"].tolist(), _df["close"].tolist(), _df["high"].tolist(), _df["low"].tolist(),
+                 _df["volume"].tolist(), macd_df["MACDh_12_26_9"].tolist(), macd_df["MACD_12_26_9"].tolist(),
+                 macd_df['MACDs_12_26_9'].tolist())]
 
     times = _df["date"].tolist()
     vols = _df["volume"].tolist()
