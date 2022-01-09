@@ -101,7 +101,7 @@ def draw_chart(input_data):
         markarea_opts=opts.MarkAreaOpts(is_silent=True, data=split_data_part(input_data))
     )
     kline.set_global_opts(
-        title_opts=opts.TitleOpts(title="K线周期图表", pos_left="0"),
+        title_opts=opts.TitleOpts(title="K线展示图", pos_left="0"),
         xaxis_opts=opts.AxisOpts(
             type_="category",
             is_scale=True,
@@ -132,5 +132,5 @@ def draw_chart(input_data):
 
 if __name__ == '__main__':
     show_data = get_show_data("Data/RealData/hfq/600570.csv")
-    # draw_chart(show_data)
-    print(split_data_part(show_data))
+    draw_chart(show_data)
+    # print(split_data_part(show_data))
