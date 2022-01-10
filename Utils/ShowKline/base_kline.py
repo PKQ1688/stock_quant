@@ -13,62 +13,18 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 from GetBaseData.hanle_data_show import get_show_data
 
 
-def split_data_part(input_data) -> Sequence:
-    mark_line_data = []
-    idx = 0
-    tag = 0
-    vols = 0
+def calculate_ma(input_data, day_count: int):
+    result: List[Union[float, str]] = []
+
     for i in range(len(input_data["times"])):
-        if input_data["datas"][i][5] != 0 and tag == 0:
-            idx = i
-            vols = input_data["datas"][i][4]
-            tag = 1
-        if tag == 1:
-            vols += input_data["datas"][i][4]
-        if input_data["datas"][i][5] != 0 or tag == 1:
-            mark_line_data.append(
-                [
-                    {
-                        "xAxis": idx,
-                        "yAxis": float("%.2f" % input_data["datas"][idx][3])
-                        if input_data["datas"][idx][1] > input_data["datas"][idx][0]
-                        else float("%.2f" % input_data["datas"][idx][2]),
-                        "value": vols,
-                    },
-                    {
-                        "xAxis": i,
-                        "yAxis": float("%.2f" % input_data["datas"][i][3])
-                        if input_data["datas"][i][1] > input_data["datas"][i][0]
-                        else float("%.2f" % input_data["datas"][i][2]),
-                    },
-                ]
-            )
-            idx = i
-            vols = input_data["datas"][i][4]
-            tag = 2
-        if tag == 2:
-            vols += input_data["datas"][i][4]
-        if input_data["datas"][i][5] != 0 and tag == 2:
-            mark_line_data.append(
-                [
-                    {
-                        "xAxis": idx,
-                        "yAxis": float("%.2f" % input_data["datas"][idx][3])
-                        if input_data["datas"][i][1] > input_data["datas"][i][0]
-                        else float("%.2f" % input_data["datas"][i][2]),
-                        "value": str(float("%.2f" % (vols / (i - idx + 1)))) + " M",
-                    },
-                    {
-                        "xAxis": i,
-                        "yAxis": float("%.2f" % input_data["datas"][i][3])
-                        if input_data["datas"][i][1] > input_data["datas"][i][0]
-                        else float("%.2f" % input_data["datas"][i][2]),
-                    },
-                ]
-            )
-            idx = i
-            vols = input_data["datas"][i][4]
-    return mark_line_data
+        if i < day_count:
+            result.append("-")
+            continue
+        sum_total = 0.0
+        for j in range(day_count):
+            sum_total += float(input_data["datas"][i - j][1])
+        result.append(abs(float("%.2f" % (sum_total / day_count))))
+    return result
 
 
 def draw_chart(input_data):
@@ -89,17 +45,17 @@ def draw_chart(input_data):
                 opts.MarkPointItem(type_="min", name="最小值"),
             ]
         ),
-        markline_opts=opts.MarkLineOpts(
-            label_opts=opts.LabelOpts(
-                position="middle", color="blue", font_size=15
-            ),
-            data=split_data_part(input_data),
-            symbol=["circle", "none"],
-        ),
+        # markline_opts=opts.MarkLineOpts(
+        #     label_opts=opts.LabelOpts(
+        #         position="middle", color="blue", font_size=15
+        #     ),
+        #     data=split_data_part(input_data),
+        #     symbol=["circle", "none"],
+        # ),
     )
-    kline.set_series_opts(
-        markarea_opts=opts.MarkAreaOpts(is_silent=True, data=split_data_part(input_data))
-    )
+    # kline.set_series_opts(
+    #         markarea_opts=opts.MarkAreaOpts(is_silent=True, data=split_data_part())
+    #     )
     kline.set_global_opts(
         title_opts=opts.TitleOpts(title="K线展示图", pos_left="0"),
         xaxis_opts=opts.AxisOpts(
@@ -118,7 +74,7 @@ def draw_chart(input_data):
         tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="line"),
         datazoom_opts=[
             opts.DataZoomOpts(
-                is_show=False, type_="inside", xaxis_index=[0, 0], range_end=100
+                is_show=True, type_="inside", xaxis_index=[0, 0], range_end=100
             ),
             opts.DataZoomOpts(
                 is_show=True, xaxis_index=[0, 1], pos_top="97%", range_end=100
@@ -127,10 +83,175 @@ def draw_chart(input_data):
         ],
     )
 
-    kline.render(path="ShowHtml/CandleChart.html")
+    kline_line_ma = Line()
+    kline_line_ma.add_xaxis(xaxis_data=input_data["times"])
+    kline_line_ma.add_yaxis(
+        series_name="MA5",
+        y_axis=calculate_ma(input_data=input_data, day_count=5),
+        is_smooth=True,
+        linestyle_opts=opts.LineStyleOpts(opacity=0.5),
+        label_opts=opts.LabelOpts(is_show=False),
+    )
+    kline_line_ma.add_yaxis(
+        series_name="MA10",
+        y_axis=calculate_ma(input_data=input_data, day_count=10),
+        is_smooth=True,
+        linestyle_opts=opts.LineStyleOpts(opacity=0.5),
+        label_opts=opts.LabelOpts(is_show=False),
+    )
+    kline_line_ma.set_global_opts(
+        xaxis_opts=opts.AxisOpts(
+            type_="category",
+            grid_index=1,
+            axislabel_opts=opts.LabelOpts(is_show=False),
+        ),
+        yaxis_opts=opts.AxisOpts(
+            grid_index=1,
+            split_number=3,
+            axisline_opts=opts.AxisLineOpts(is_on_zero=False),
+            axistick_opts=opts.AxisTickOpts(is_show=False),
+            splitline_opts=opts.SplitLineOpts(is_show=False),
+            axislabel_opts=opts.LabelOpts(is_show=True),
+        ),
+    )
+    overlap_kline_line = kline.overlap(kline_line_ma)
+
+    bar_vol = Bar()
+    bar_vol.add_xaxis(xaxis_data=input_data["times"])
+    bar_vol.add_yaxis(
+        series_name="Volumn",
+        y_axis=input_data["vols"],
+        xaxis_index=1,
+        yaxis_index=1,
+        label_opts=opts.LabelOpts(is_show=False),
+        # 根据 echarts demo 的原版是这么写的
+        # itemstyle_opts=opts.ItemStyleOpts(
+        #     color=JsCode(
+        #         """
+        #     function(params) {
+        #         var colorList;
+        #         if (input_data.datas[params.dataIndex][1]>input_data.datas[params.dataIndex][0]) {
+        #           colorList = '#ef232a';
+        #         } else {
+        #           colorList = '#14b143';
+        #         }
+        #         return colorList;
+        #     }
+        #     """)
+        # )
+        # 改进后在 grid 中 add_js_funcs 后变成如下
+        itemstyle_opts=opts.ItemStyleOpts(
+            color=JsCode(
+                """
+                function(params) {
+                    var colorList;
+                    if (barData[params.dataIndex][1] > barData[params.dataIndex][0]) {
+                        colorList = '#ef232a';
+                    } else {
+                        colorList = '#14b143';
+                    }
+                    return colorList;
+                }
+                """
+            )
+        ),
+    )
+    bar_vol.set_global_opts(
+        xaxis_opts=opts.AxisOpts(
+            type_="category",
+            grid_index=1,
+            axislabel_opts=opts.LabelOpts(is_show=False),
+        ),
+        legend_opts=opts.LegendOpts(is_show=False),
+    )
+
+    bar_macd = Bar()
+    bar_macd.add_xaxis(xaxis_data=input_data["times"])
+    bar_macd.add_yaxis(
+        series_name="MACD",
+        y_axis=input_data["macds"],
+        xaxis_index=2,
+        yaxis_index=2,
+        label_opts=opts.LabelOpts(is_show=False),
+        itemstyle_opts=opts.ItemStyleOpts(
+            color=JsCode(
+                """
+                    function(params) {
+                        var colorList;
+                        if (params.data >= 0) {
+                          colorList = '#ef232a';
+                        } else {
+                          colorList = '#14b143';
+                        }
+                        return colorList;
+                    }
+                """
+            )
+        ),
+    )
+    bar_macd.set_global_opts(
+        xaxis_opts=opts.AxisOpts(
+            type_="category",
+            grid_index=2,
+            axislabel_opts=opts.LabelOpts(is_show=False),
+        ),
+        yaxis_opts=opts.AxisOpts(
+            grid_index=2,
+            split_number=4,
+            axisline_opts=opts.AxisLineOpts(is_on_zero=False),
+            axistick_opts=opts.AxisTickOpts(is_show=False),
+            splitline_opts=opts.SplitLineOpts(is_show=False),
+            axislabel_opts=opts.LabelOpts(is_show=True),
+        ),
+        legend_opts=opts.LegendOpts(is_show=False),
+    )
+
+    line_macd = Line()
+    line_macd.add_xaxis(xaxis_data=input_data["times"])
+    line_macd.add_yaxis(
+        series_name="DIF",
+        y_axis=input_data["difs"],
+        xaxis_index=2,
+        yaxis_index=2,
+        label_opts=opts.LabelOpts(is_show=False),
+    )
+    line_macd.add_yaxis(
+        series_name="DEA",
+        y_axis=input_data["deas"],
+        xaxis_index=2,
+        yaxis_index=2,
+        label_opts=opts.LabelOpts(is_show=False),
+    )
+    line_macd.set_global_opts(legend_opts=opts.LegendOpts(is_show=False))
+    overlap_macd_line = bar_macd.overlap(line_macd)
+
+    grid_chart = Grid()
+    grid_chart.add_js_funcs("var barData = {}".format(input_data["datas"]))
+
+    grid_chart.add(
+        overlap_kline_line,
+        grid_opts=opts.GridOpts(pos_left="3%", pos_right="1%", height="60%"),
+    )
+
+    # Volumn 柱状图
+    grid_chart.add(
+        bar_vol,
+        grid_opts=opts.GridOpts(
+            pos_left="3%", pos_right="1%", pos_top="71%", height="10%"
+        ),
+    )
+
+    # MACD DIFS DEAS
+    grid_chart.add(
+        overlap_macd_line,
+        grid_opts=opts.GridOpts(
+            pos_left="3%", pos_right="1%", pos_top="82%", height="14%"
+        ),
+    )
+
+    grid_chart.render(path="ShowHtml/CandleChart.html")
 
 
 if __name__ == '__main__':
     show_data = get_show_data("Data/RealData/hfq/600570.csv")
     draw_chart(show_data)
-    # print(split_data_part(show_data))

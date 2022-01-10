@@ -434,17 +434,17 @@ def draw_chart():
                     opts.MarkPointItem(type_="min", name="最小值"),
                 ]
             ),
-            markline_opts=opts.MarkLineOpts(
-                label_opts=opts.LabelOpts(
-                    position="middle", color="blue", font_size=15
-                ),
-                data=split_data_part(),
-                symbol=["circle", "none"],
-            ),
+            # markline_opts=opts.MarkLineOpts(
+            #     label_opts=opts.LabelOpts(
+            #         position="middle", color="blue", font_size=15
+            #     ),
+            #     data=split_data_part(),
+            #     symbol=["circle", "none"],
+            # ),
         )
-        .set_series_opts(
-            markarea_opts=opts.MarkAreaOpts(is_silent=True, data=split_data_part())
-        )
+        # .set_series_opts(
+        #     markarea_opts=opts.MarkAreaOpts(is_silent=True, data=split_data_part())
+        # )
         .set_global_opts(
             title_opts=opts.TitleOpts(title="K线周期图表", pos_left="0"),
             xaxis_opts=opts.AxisOpts(
@@ -651,11 +651,10 @@ def draw_chart():
             pos_left="3%", pos_right="1%", pos_top="82%", height="14%"
         ),
     )
-    grid_chart.render("professional_kline_chart.html")
+
+    grid_chart.render("ShowHtml/professional_kline_chart.html")
 
 
 if __name__ == "__main__":
     data = split_data(origin_data=echarts_data)
-    # draw_chart()
-    res = split_data_part()
-    print(res)
+    draw_chart()

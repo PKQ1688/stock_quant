@@ -12,9 +12,11 @@ def get_show_data(_df):
     if not isinstance(_df, pd.DataFrame):
         _df = pd.read_csv(_df)
 
-    _df = _df[-200:]
+    _df = _df[-300:]
 
     macd_df = ta.macd(close=_df['close'])
+    macd_df.fillna(0, inplace=True)
+    # print(macd_df)
     # print(_df)
 
     # oclh
