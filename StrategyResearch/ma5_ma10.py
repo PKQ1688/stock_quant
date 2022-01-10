@@ -7,9 +7,8 @@
 # @Function:
 import pandas as pd
 import pandas_ta as ta
-
-# from pyecharts import
-# from pyecharts import options as opts
+from GetBaseData.hanle_data_show import get_show_data
+from Utils.ShowKline.base_kline import draw_chart
 
 pd.set_option("expand_frame_repr", False)
 pd.set_option("display.max_rows", None)
@@ -33,19 +32,21 @@ df['macd'], df['histogram'], df['signal'] = [macd_df['MACD_12_26_9'], macd_df['M
 # pd.concat([df, ta.macd(close=df['close'])])
 
 df = df[df["date"] > "2020-01-01"]
+df.reset_index(inplace=True, drop=True)
 
 df.loc[(df["sma5"] > df["sma10"]) & (df["sma5"].shift(1) < df["sma10"].shift(1)), "trade"] = "BUY"
 # df.loc[(df["sma5"] < df["sma10"]) & (df["sma5"].shift(1) > df["sma10"].shift(1)), "trade"] = "SELL"
 
-df = df.loc[df["trade"].notnull() & (df['macd'] > 0) & (df["histogram"] > 0)]
+# df = df.loc[df["trade"].notnull() & (df['macd'] > 0) & (df["histogram"] > 0)]
+df_chose = df.loc[df["trade"].notnull()]
+# print(df_chose)
+for show_index in df_chose.index:
+    # print(show_index)
+    show_df = df[max(0, show_index - 60):min(len(df), show_index + 10)]
+
+    show_data = get_show_data(_df=show_df)
+    draw_chart(show_data, show_html_path="ShowHtml/Ma5Ma10.html")
+    break
 # df.dropna(subset=['trade'], inplace=True)
 
-print(df)
-
-# bar = Bar()
-# bar.add_xaxis(["衬衫", "毛衣", "领带", "裤子", "风衣", "高跟鞋", "袜子"])
-# bar.add_yaxis("商家A", [114, 55, 27, 101, 125, 27, 105])
-# bar.add_yaxis("商家B", [57, 134, 137, 129, 145, 60, 49])
-# bar.set_global_opts(title_opts=opts.TitleOpts(title="某商场销售情况"))
-#
-# bar.render()
+# print(df.tail(10))

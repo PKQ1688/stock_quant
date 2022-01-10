@@ -27,7 +27,7 @@ def calculate_ma(input_data, day_count: int):
     return result
 
 
-def draw_chart(input_data):
+def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     kline = Kline()
     kline.add_xaxis(xaxis_data=input_data["times"])
     kline.add_yaxis(
@@ -249,7 +249,8 @@ def draw_chart(input_data):
         ),
     )
 
-    grid_chart.render(path="ShowHtml/CandleChart.html")
+    # grid_chart.render(path="ShowHtml/CandleChart.html")
+    grid_chart.render(path=show_html_path)
 
 
 if __name__ == '__main__':

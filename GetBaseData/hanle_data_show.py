@@ -9,15 +9,25 @@ import pandas_ta as ta
 
 
 def get_show_data(_df):
-    if not isinstance(_df, pd.DataFrame):
+
+    if isinstance(_df, pd.DataFrame):
+        macd_df = _df[["macd", "histogram", "signal"]]
+        macd_df = macd_df.rename(
+            columns={"macd": "MACD_12_26_9", "histogram": "MACDh_12_26_9", "signal": "MACDs_12_26_9", })
+        # print(macd_df)
+
+    elif isinstance(_df, str):
         _df = pd.read_csv(_df)
 
-    _df = _df[-300:]
+        _df = _df[-300:]
 
-    macd_df = ta.macd(close=_df['close'])
-    macd_df.fillna(0, inplace=True)
-    # print(macd_df)
-    # print(_df)
+        macd_df = ta.macd(close=_df['close'])
+        macd_df.fillna(0, inplace=True)
+        # print(macd_df)
+        # print(_df)
+
+    else:
+        macd_df = None
 
     # oclh
     datas = [list(oclh) for oclh in
@@ -46,5 +56,5 @@ def get_show_data(_df):
 
 if __name__ == '__main__':
     csv_path = "Data/RealData/origin/600570.csv"
-    df = pd.read_csv(csv_path)
-    print(get_show_data(_df=df))
+    # df = pd.read_csv(csv_path)
+    print(get_show_data(_df=csv_path))
