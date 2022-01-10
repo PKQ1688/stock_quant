@@ -18,6 +18,7 @@ from Utils.base_utils import get_module_logger
 from BackTrader.position_analysis import BaseTransactionAnalysis
 
 pd.set_option("expand_frame_repr", False)
+pd.set_option('display.max_rows', None)
 
 
 class TradeStructure:
@@ -27,6 +28,7 @@ class TradeStructure:
 
         self.logger = get_module_logger(module_name="Trade",
                                         level=config["log_level"], )
+
         self.logger.debug("Trade is begging ......")
 
         self.trade_rate = 1.5 / 1000
@@ -134,12 +136,12 @@ class TradeStructure:
 
         asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
         if asset_analysis is not None:
-            self.logger.info(asset_analysis)
+            self.logger.info("对标的进行分析:\n{}".format(asset_analysis))
 
         strategy_analysis = self.transaction_analysis.cal_trader_analysis(transaction_record_df)
 
-        self.logger.info(indicators_config)
-        self.logger.info(strategy_analysis)
+        self.logger.info("策略使用的参数:\n{}".format(indicators_config))
+        self.logger.info("对策略结果进行分析:\n{}".format(strategy_analysis))
 
         return True
 
