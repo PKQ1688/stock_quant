@@ -12,6 +12,8 @@ import pandas as pd
 import os
 # from tqdm import tqdm
 
+import json
+
 import pandas_ta as ta
 
 from Utils.base_utils import get_module_logger
@@ -117,12 +119,12 @@ class TradeStructure:
     def show_one_stock(self):
         pass
 
-    def run_one_stock(self, indicators_config=None) -> None:
+    def run_one_stock_once(self, code_name, indicators_config=None) -> None:
 
         if indicators_config is None:
             indicators_config = self.config["strategy_params"]
 
-        data_path = os.path.join("Data/RealData/hfq/", self.config["code_name"] + ".csv")
+        data_path = os.path.join("Data/RealData/hfq/", code_name + ".csv")
 
         self.load_dataset(data_path=data_path,
                           start_stamp=self.config["start_stamp"],
@@ -145,12 +147,12 @@ class TradeStructure:
 
         return True
 
-    def run(self) -> None:
-        code_name = self.config["code_name"]
-        self.logger.info(code_name)
-
+    def run_one_stock(self, code_name=None):
         indicators_config = self.config["strategy_params"]
         # self.logger.info(indicators_config)
+
+        if code_name is None:
+            code_name = self.config["code_name"]
 
         # if not self.config["one_param"]:
         #     self.logger.debug(indicators_config)
@@ -163,13 +165,34 @@ class TradeStructure:
                 one_indicator_config = {list(indicators_config.keys())[index]: item[index]
                                         for index in range(len(list(indicators_config.keys())))}
 
-                self.run_one_stock(one_indicator_config)
+                self.run_one_stock_once(code_name=code_name, indicators_config=one_indicator_config)
 
                 # break
         except Exception as e:
             self.logger.debug(e)
+            self.run_one_stock_once(code_name=code_name)
+
+    def run(self) -> None:
+        code_name = self.config["code_name"]
+        self.logger.info(code_name)
+
+        if isinstance(code_name, list):
+            for code in code_name:
+                self.run_one_stock(code_name=code)
+
+        elif code_name.upper() == "ALL_MARKET":
+            with open("Data/RealData/ALL_MARKET_CODE.pkl", "r") as all_market_code:
+                market_code_dict = json.load(all_market_code)
+
+            self.logger.debug(market_code_dict)
+
+            # for code in market_code_list:
+            #     self.run_one_stock(code_name=code)
+
+        else:
             self.run_one_stock()
 
+        # self.run_one_stock()
 # if __name__ == '__main__':
 #     trade_structure = TradeStructure(config="")
 #     trade_structure.run_one_stock(code_name="600570", start_stamp="2021-01-01", end_stamp="2021-12-31")

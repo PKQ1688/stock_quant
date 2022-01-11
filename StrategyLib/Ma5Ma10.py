@@ -38,7 +38,7 @@ class Ma5Ma10Strategy(TradeStructure):
                                                                                          sar_df["PSARs_0.02_0.2"],
                                                                                          sar_df["PSARaf_0.02_0.2"],
                                                                                          sar_df["PSARr_0.02_0.2"]]
-        self.logger.info(self.data.tail(30))
+        # self.logger.info(self.data.tail(30))
 
         return True
 
@@ -53,5 +53,4 @@ class Ma5Ma10Strategy(TradeStructure):
 
 if __name__ == "__main__":
     ma5ma10_strategy = Ma5Ma10Strategy(config=ma5ma10_config)
-    # RUMI_strategy.run_one_stock()
     ma5ma10_strategy.run()

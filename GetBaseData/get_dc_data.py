@@ -15,6 +15,8 @@ import akshare as ak
 from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
 import shutil
 
+import json
+
 pd.set_option("expand_frame_repr", False)
 # 获取实时行情数据
 stock_zh_a_spot_em_df = ak.stock_zh_a_spot_em()
@@ -22,6 +24,8 @@ stock_zh_a_spot_em_df.rename(columns=ch_eng_mapping_dict, inplace=True)
 code_list = stock_zh_a_spot_em_df.code.to_list()
 
 code_name_mapping = stock_zh_a_spot_em_df.set_index(['code'])['name'].to_dict()
+with open("Data/RealData/ALL_MARKET_CODE.pkl", "wb") as all_market_code:
+    json.dump(code_name_mapping, all_market_code)
 
 ray.init()
 
@@ -30,7 +34,6 @@ error_code_list = []
 qfq_path = "Data/RealData/qfq/"
 hfq_path = "Data/RealData/hfq/"
 origin_path = "Data/RealData/origin/"
-
 
 if os.path.exists(qfq_path):
     shutil.rmtree(qfq_path)
