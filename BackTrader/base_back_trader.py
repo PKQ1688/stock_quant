@@ -184,10 +184,15 @@ class TradeStructure:
             with open("Data/RealData/ALL_MARKET_CODE.json", "r") as all_market_code:
                 market_code_dict = json.load(all_market_code)
 
-            self.logger.debug(market_code_dict)
+            self.logger.info(market_code_dict)
+            market_code_list = market_code_dict.keys()
 
-            # for code in market_code_list:
-            #     self.run_one_stock(code_name=code)
+            for code in market_code_list:
+                try:
+                    self.run_one_stock(code_name=code)
+                except Exception as e:
+                    self.logger.warn(e)
+                    self.logger.warn(code)
 
         else:
             self.run_one_stock()
