@@ -181,7 +181,7 @@ class TradeStructure:
                 self.run_one_stock(code_name=code)
 
         elif code_name.upper() == "ALL_MARKET":
-            with open("Data/RealData/ALL_MARKET_CODE.pkl", "r") as all_market_code:
+            with open("Data/RealData/ALL_MARKET_CODE.json", "r") as all_market_code:
                 market_code_dict = json.load(all_market_code)
 
             self.logger.debug(market_code_dict)
