@@ -174,7 +174,8 @@ class TradeStructure:
                     one_indicator_config = {list(indicators_config.keys())[index]: item[index]
                                             for index in range(len(list(indicators_config.keys())))}
 
-                    pl_ration_list.append(self.run_one_stock_once(code_name=code_name, indicators_config=one_indicator_config))
+                    pl_ration_list.append(
+                        self.run_one_stock_once(code_name=code_name, indicators_config=one_indicator_config))
                 pl_ration = statistics.mean(pl_ration_list)
 
             else:
@@ -183,7 +184,7 @@ class TradeStructure:
         else:
             pl_ration = self.run_one_stock_once(code_name=code_name)
 
-        self.logger.info(pl_ration)
+        self.logger.debug("{}的盈亏比是{}".format(code_name, pl_ration))
 
         return pl_ration
 
@@ -192,25 +193,33 @@ class TradeStructure:
         self.logger.debug(code_name)
 
         if isinstance(code_name, list):
+            pl_ration_list = []
             for code in code_name:
-                self.run_one_stock(code_name=code)
+                one_pl_ration = self.run_one_stock(code_name=code)
+                pl_ration_list.append(one_pl_ration)
+            pl_ration = statistics.mean(pl_ration_list)
 
         elif code_name.upper() == "ALL_MARKET":
             with open("Data/RealData/ALL_MARKET_CODE.json", "r") as all_market_code:
                 market_code_dict = json.load(all_market_code)
 
-            self.logger.info(market_code_dict)
+            self.logger.debug(market_code_dict)
             market_code_list = market_code_dict.keys()
 
+            pl_ration_list = []
             for code in market_code_list:
                 try:
-                    self.run_one_stock(code_name=code)
+                    one_pl_ration = self.run_one_stock(code_name=code)
+                    pl_ration_list.append(one_pl_ration)
                 except Exception as e:
                     self.logger.warn(e)
                     self.logger.warn(code)
+            pl_ration = statistics.mean(pl_ration_list)
 
         else:
-            self.run_one_stock()
+            pl_ration = self.run_one_stock()
+
+        self.logger.info("策略交易一次的收益的数学期望为：{:.2f}%".format(pl_ration * 100))
 
         # self.run_one_stock()
 # if __name__ == '__main__':
