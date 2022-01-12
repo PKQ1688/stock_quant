@@ -6,6 +6,7 @@
 # @File    : base_back_trader.py
 # @Function:
 import itertools
+import statistics
 # from functools import reduce
 
 import pandas as pd
@@ -119,10 +120,9 @@ class TradeStructure:
     def show_one_stock(self):
         pass
 
-    def run_one_stock_once(self, code_name, indicators_config=None) -> None:
-
+    def run_one_stock_once(self, code_name, indicators_config=None):
         if indicators_config is None:
-            indicators_config = self.config["strategy_params"]
+            indicators_config = self.config.get("strategy_params", {})
 
         data_path = os.path.join("Data/RealData/hfq/", code_name + ".csv")
 
@@ -138,17 +138,21 @@ class TradeStructure:
 
         asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
         if asset_analysis is not None:
-            self.logger.info("对标的进行分析:\n{}".format(asset_analysis))
+            self.logger.debug("对标的进行分析:\n{}".format(asset_analysis))
 
         strategy_analysis = self.transaction_analysis.cal_trader_analysis(transaction_record_df)
 
-        self.logger.info("策略使用的参数:\n{}".format(indicators_config))
-        self.logger.info("对策略结果进行分析:\n{}".format(strategy_analysis))
+        self.logger.debug("策略使用的参数:\n{}".format(indicators_config))
+        self.logger.debug("对策略结果进行分析:\n{}".format(strategy_analysis))
 
-        return True
+        pl_ration = strategy_analysis.loc["策略的盈亏比", "result"]
+        # self.logger.info(pl_ration)
+
+        return pl_ration
 
     def run_one_stock(self, code_name=None):
-        indicators_config = self.config["strategy_params"]
+        pl_ration = 0
+        indicators_config = self.config.get("strategy_params", {})
         # self.logger.info(indicators_config)
 
         if code_name is None:
@@ -159,22 +163,33 @@ class TradeStructure:
         # p = {k: list(itertools.permutations(v)) for k, v in indicators_config.items()}
         # for blah in itertools.product()
         # self.logger.info(p)
-        try:
-            for item in itertools.product(*[value for key, value in indicators_config.items()]):
-                self.logger.debug(item)
-                one_indicator_config = {list(indicators_config.keys())[index]: item[index]
-                                        for index in range(len(list(indicators_config.keys())))}
+        if indicators_config:
+            # a = [isinstance(value, list) for key, value in indicators_config.items()]
+            # self.logger.info(any(a))
+            # exit()
+            if any([isinstance(value, list) for key, value in indicators_config.items()]):
+                pl_ration_list = []
+                for item in itertools.product(*[value for key, value in indicators_config.items()]):
+                    self.logger.debug(item)
+                    one_indicator_config = {list(indicators_config.keys())[index]: item[index]
+                                            for index in range(len(list(indicators_config.keys())))}
 
-                self.run_one_stock_once(code_name=code_name, indicators_config=one_indicator_config)
+                    pl_ration_list.append(self.run_one_stock_once(code_name=code_name, indicators_config=one_indicator_config))
+                pl_ration = statistics.mean(pl_ration_list)
 
+            else:
+                pl_ration = self.run_one_stock_once(code_name=code_name)
                 # break
-        except Exception as e:
-            self.logger.debug(e)
-            self.run_one_stock_once(code_name=code_name)
+        else:
+            pl_ration = self.run_one_stock_once(code_name=code_name)
+
+        self.logger.info(pl_ration)
+
+        return pl_ration
 
     def run(self) -> None:
         code_name = self.config["code_name"]
-        self.logger.info(code_name)
+        self.logger.debug(code_name)
 
         if isinstance(code_name, list):
             for code in code_name:

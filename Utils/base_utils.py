@@ -38,7 +38,7 @@ def get_module_logger(module_name, level="INFO"):
     return module_logger
 
 
-# 指定函数只运行一次
+# 指定只运行一次
 def run_once(f):
     def wrapper(*args, **kwargs):
         if not wrapper.has_run:
@@ -47,3 +47,17 @@ def run_once(f):
 
     wrapper.has_run = False
     return wrapper
+
+
+# 指定函数只运行一次
+# def run_one_stock_once(once_stock=False):
+#     def run_once(f):
+#         def wrapper(*args, **kwargs):
+#             if not wrapper.has_run:
+#                 wrapper.has_run = True
+#                 return f(*args, **kwargs)
+#
+#         wrapper.has_run = once_stock
+#         return wrapper
+#
+#     return run_once

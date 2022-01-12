@@ -42,6 +42,11 @@ class BaseTransactionAnalysis:
         # 计算策略的赔率
         odds = data["pct"].mean()
 
+        # 计算盈亏比
+        profit = data[data["pct"] > 0]["pct"].mean()
+        loss = data[data["pct"] < 0]["pct"].mean()
+        pl_ratio = profit * success_rate + loss * (1 - success_rate)
+
         # 计算策略的平均持股天数
         mean_holding_day = data["holding_time"].mean()
 
@@ -73,6 +78,7 @@ class BaseTransactionAnalysis:
         result_dict["策略最大回撤开始时间"] = strategy_start_date
         result_dict["策略最大回撤结束时间"] = strategy_end_date
 
+        result_dict["策略的盈亏比"] = pl_ratio
         # self.logger.info(result_dict)
 
         result_df = pd.DataFrame.from_dict(result_dict, orient='index', columns=["result"])

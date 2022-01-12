@@ -7,7 +7,8 @@
 # @Function:
 import pandas_ta as ta
 from BackTrader.base_back_trader import TradeStructure
-from StrategyLib.StrategyLibConfig.RUMI_config import rumi_config
+# from StrategyLib.StrategyLibConfig.RUMI_config import rumi_config
+from StrategyLib.StrategyLibConfig.RUMI_params_config import rumi_config
 
 
 class RUMIStrategy(TradeStructure):
