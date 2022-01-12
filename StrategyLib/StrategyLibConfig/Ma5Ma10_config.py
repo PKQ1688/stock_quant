@@ -6,9 +6,10 @@
 # @File    : RUMI_config.py
 # @Function:
 ma5ma10_config = {
+    "random_seed": 42,
     "log_level": "INFO",
     # "code_name": "600570",
-    "code_name": "ALL_MARKET",
+    "code_name": "ALL_MARKET_100",
     # "code_name": ["600570", "002610", "300663"],
     "start_stamp": "2005-01-01",
     "end_stamp": "2020-12-31",

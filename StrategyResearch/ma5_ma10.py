@@ -9,6 +9,7 @@ import pandas as pd
 import pandas_ta as ta
 from GetBaseData.hanle_data_show import get_show_data
 from Utils.ShowKline.base_kline import draw_chart
+from tqdm.auto import tqdm
 
 pd.set_option("expand_frame_repr", False)
 pd.set_option("display.max_rows", None)
@@ -39,14 +40,17 @@ df.loc[(df["sma5"] > df["sma10"]) & (df["sma5"].shift(1) < df["sma10"].shift(1))
 
 # df = df.loc[df["trade"].notnull() & (df['macd'] > 0) & (df["histogram"] > 0)]
 df_chose = df.loc[df["trade"].notnull()]
-# print(df_chose)
+print(df_chose)
+progress = tqdm(range(len(df_chose)), desc="test", disable=False)
+
 for show_index in df_chose.index:
     # print(show_index)
     show_df = df[max(0, show_index - 60):min(len(df), show_index + 10)]
-
     show_data = get_show_data(_df=show_df)
-    draw_chart(show_data, show_html_path="ShowHtml/Ma5Ma10.html")
-    break
+    progress.update(1)
+
+    # draw_chart(show_data, show_html_path="ShowHtml/Ma5Ma10.html")
+    # break
 # df.dropna(subset=['trade'], inplace=True)
 
 # print(df.tail(10))

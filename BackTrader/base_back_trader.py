@@ -138,8 +138,8 @@ class TradeStructure:
         data_path = os.path.join("Data/RealData/hfq/", code_name + ".csv")
 
         self.load_dataset(data_path=data_path,
-                          start_stamp=self.config["start_stamp"],
-                          end_stamp=self.config["end_stamp"])
+                          start_stamp=self.config.get("start_stamp", None),
+                          end_stamp=self.config.get("end_stamp", None))
 
         if not self.cal_technical_indicators(indicators_config):
             return False
@@ -218,7 +218,7 @@ class TradeStructure:
 
             if code_name.upper() != "ALL_MARKET":
                 sample_num = int(code_name.split("_")[-1])
-                market_code_list = market_code_dict.sample(market_code_list, sample_num)
+                market_code_list = random.sample(market_code_list, sample_num)
 
             self.logger.debug(market_code_list)
 
@@ -226,7 +226,12 @@ class TradeStructure:
             for code in market_code_list:
                 try:
                     one_pl_ration = self.run_one_stock(code_name=code)
-                    pl_ration_list.append(one_pl_ration)
+                    # self.logger.info(one_pl_ration)
+
+                    # 判断变量是否为nan,如果是nan则不添加进List
+                    if not one_pl_ration != one_pl_ration:
+                        pl_ration_list.append(one_pl_ration)
+                    # self.logger.info(pl_ration_list)
                 except Exception as e:
                     self.logger.debug(e)
                     self.logger.debug(code)
