@@ -6,6 +6,7 @@
 # @File    : base_back_trader.py
 # @Function:
 import itertools
+import random
 import statistics
 # from functools import reduce
 
@@ -19,6 +20,9 @@ import pandas_ta as ta
 
 from Utils.base_utils import get_module_logger
 from BackTrader.position_analysis import BaseTransactionAnalysis
+
+from GetBaseData.hanle_data_show import get_show_data
+from Utils.ShowKline.base_kline import draw_chart
 
 pd.set_option("expand_frame_repr", False)
 pd.set_option('display.max_rows', None)
@@ -37,6 +41,9 @@ class TradeStructure:
         self.trade_rate = 1.5 / 1000
         self.data = None
         self.transaction_analysis = BaseTransactionAnalysis(logger=self.logger)
+
+        if "random_seed" in self.config:
+            random.seed(self.config["random_seed"])
 
     @staticmethod
     def init_one_transaction_record(asset_name):
@@ -117,8 +124,12 @@ class TradeStructure:
 
         return transaction_record_df
 
-    def show_one_stock(self):
-        pass
+    # 需要保证show_data里面的核心数据没有空值，不然会造成数据无法显示
+    # @staticmethod
+    def show_one_stock(self, show_data):
+        show_data_path = self.config.get("show_data_path", "ShowHtml/StrategyShowData.html")
+        show_data = get_show_data(_df=show_data)
+        draw_chart(input_data=show_data, show_html_path=show_data_path)
 
     def run_one_stock_once(self, code_name, indicators_config=None):
         if indicators_config is None:
@@ -163,10 +174,8 @@ class TradeStructure:
         # p = {k: list(itertools.permutations(v)) for k, v in indicators_config.items()}
         # for blah in itertools.product()
         # self.logger.info(p)
+
         if indicators_config:
-            # a = [isinstance(value, list) for key, value in indicators_config.items()]
-            # self.logger.info(any(a))
-            # exit()
             if any([isinstance(value, list) for key, value in indicators_config.items()]):
                 pl_ration_list = []
                 for item in itertools.product(*[value for key, value in indicators_config.items()]):
@@ -180,7 +189,7 @@ class TradeStructure:
 
             else:
                 pl_ration = self.run_one_stock_once(code_name=code_name)
-                # break
+
         else:
             pl_ration = self.run_one_stock_once(code_name=code_name)
 
@@ -199,12 +208,19 @@ class TradeStructure:
                 pl_ration_list.append(one_pl_ration)
             pl_ration = statistics.mean(pl_ration_list)
 
-        elif code_name.upper() == "ALL_MARKET":
+        # elif code_name.upper() == "ALL_MARKET":
+        elif "ALL_MARKET" in code_name.upper():
             with open("Data/RealData/ALL_MARKET_CODE.json", "r") as all_market_code:
                 market_code_dict = json.load(all_market_code)
-
             self.logger.debug(market_code_dict)
+
             market_code_list = market_code_dict.keys()
+
+            if code_name.upper() != "ALL_MARKET":
+                sample_num = int(code_name.split("_")[-1])
+                market_code_list = market_code_dict.sample(market_code_list, sample_num)
+
+            self.logger.debug(market_code_list)
 
             pl_ration_list = []
             for code in market_code_list:
@@ -212,8 +228,8 @@ class TradeStructure:
                     one_pl_ration = self.run_one_stock(code_name=code)
                     pl_ration_list.append(one_pl_ration)
                 except Exception as e:
-                    self.logger.warn(e)
-                    self.logger.warn(code)
+                    self.logger.debug(e)
+                    self.logger.debug(code)
             pl_ration = statistics.mean(pl_ration_list)
 
         else:

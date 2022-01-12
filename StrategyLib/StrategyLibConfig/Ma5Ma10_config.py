@@ -12,5 +12,6 @@ ma5ma10_config = {
     # "code_name": ["600570", "002610", "300663"],
     "start_stamp": "2005-01-01",
     "end_stamp": "2020-12-31",
+    # "show_data_path": "",
     # "strategy_params": {}
 }
