@@ -7,8 +7,24 @@
 # @Function:
 import akshare as ak
 import json
+import datetime
+
 from Utils.info_push import post_msg_to_dingtalk
 from PrivacyConfig.dingtalk import dingtalk_config, code_name_list
+
+
+# 判断是否是交易时间
+def pd_ztjytime():
+    now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    now_datetime = datetime.datetime.strptime(now_time, '%Y-%m-%d %H:%M:%S')
+    d1 = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d') + ' 11:30:01', '%Y-%m-%d %H:%M:%S')
+    d2 = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d') + ' 13:00:00', '%Y-%m-%d %H:%M:%S')
+    delta1 = (now_datetime - d1).total_seconds()
+    delta2 = (d2 - now_datetime).total_seconds()
+    if delta1 > 0 and delta2 > 0:  # 在暂停交易的时间内
+        return False  # 不在暂停的交易时间范围内，返回 False
+    else:
+        return True  # 在暂停的交易时间范围内，返回 True
 
 
 def get_stock_name_mapping():

@@ -8,3 +8,4 @@ pyecharts
 flake8
 yapf
 lightgbm
+schedule
