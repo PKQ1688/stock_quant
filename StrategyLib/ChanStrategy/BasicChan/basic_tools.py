@@ -8,6 +8,7 @@
 
 from StrategyLib.ChanStrategy.BasicChan.basic_structure import RawBar, NewBar, FX, BI
 from StrategyLib.ChanStrategy.BasicChan.basic_enum import Direction, Mark
+from Utils.ShowKline.chan_plot import kline_pro
 from typing import List
 
 
@@ -190,19 +191,37 @@ class CZSC:
         for bar in bars:
             self.update(bar)
 
-        def update(self, _bar: RawBar):
-            """
-            更新分析结果
-            :param self:
-            :param _bar: 单根K线对象
-            :return:
-            """
-            # 如果是第一根K线或则最后一根k线
-            if not self.bars_raw or _bar.dt != self.bars_raw[-1].dt:
-                self.bars_raw.append(_bar)
-                last_bars = [_bar]
-            else:
-                self.bars_raw[-1] = _bar
-                last_bars = self.bars_ubi[-1].elements
-                last_bars[-1] = _bar
-                self.bars_ubi.pop(-1)
+    def __repr__(self):
+        return "<CZSC~{}~{}>".format(self.symbol, self.freq.value)
+
+    def update(self, _bar: RawBar):
+        """
+        更新分析结果
+        :param self:
+        :param _bar: 单根K线对象
+        :return:
+        """
+        # 如果是第一根K线或则最后一根k线
+        if not self.bars_raw or _bar.dt != self.bars_raw[-1].dt:
+            self.bars_raw.append(_bar)
+            last_bars = [_bar]
+        else:
+            self.bars_raw[-1] = _bar
+            last_bars = self.bars_ubi[-1].elements
+            last_bars[-1] = _bar
+            self.bars_ubi.pop(-1)
+
+    def to_echarts(self, width: str = "1400px", height: str = '580px'):
+        kline = [x.__dict__ for x in self.bars_raw]
+        if len(self.bi_list) > 0:
+            bi = [{'dt': x.fx_a.dt, "bi": x.fx_a.fx} for x in self.bi_list] + \
+                 [{'dt': self.bi_list[-1].fx_b.dt, "bi": self.bi_list[-1].fx_b.fx}]
+            fx = []
+            for bi_ in self.bi_list:
+                fx.extend([{'dt': x.dt, "fx": x.fx} for x in bi_.fxs[1:]])
+        else:
+            bi = None
+            fx = None
+        chart = kline_pro(kline, bi=bi, fx=fx, width=width, height=height,
+                          title="{}-{}".format(self.symbol, self.freq.value))
+        return chart
