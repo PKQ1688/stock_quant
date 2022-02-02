@@ -5,10 +5,9 @@
 # @Author  : Adolf
 # @File    : basic_tools.py
 # @Function:
-import traceback
 
-from StrategyLib.ChanStrategy.basic_structure import RawBar, NewBar, FX, BI
-from StrategyLib.ChanStrategy.basic_enum import Direction, Mark
+from StrategyLib.ChanStrategy.BasicChan.basic_structure import RawBar, NewBar, FX, BI
+from StrategyLib.ChanStrategy.BasicChan.basic_enum import Direction, Mark
 from typing import List
 
 
@@ -156,3 +155,54 @@ def check_bi(bars: List[NewBar], bi_min_len: int = 7):
         return bi, bars_b
     else:
         return None, bars
+
+
+class CZSC:
+    def __init(self,
+               bars: List[RawBar],
+               # max_bi_count: int = 50,
+               bi_min_len: int = 7,
+               # get_signals: Callable = None,
+               # signals_n: int = 0,
+               verbose=False):
+        """
+        :param bars: K线数据
+        # :param get_signals: 自定义的信号计算函数
+        :param bi_min_len: 笔的最小长度，包括左右分型，默认值为 7，是缠论原文老笔定义的长度
+        # :param signals_n: 缓存n个历史时刻的信号，0 表示不缓存；缓存的数据，主要用于计算信号连续次数
+        # :param max_bi_count: 最大保存的笔数量
+        #     默认值为 50，仅使用内置的信号和因子，不需要调整这个参数。
+        #     如果进行新的信号计算需要用到更多的笔，可以适当调大这个参数。
+        """
+        self.verbose = verbose
+        # self.max_bi_count = max_bi_count
+        self.bi_min_len = bi_min_len
+        # self.signals_n = signals_n
+        self.bars_raw = []  # 原始K线序列
+        self.bars_ubi = []  # 未完成笔的无包含K线序列
+        self.bi_list: List[BI] = []
+        self.symbol = bars[0].symbol
+        self.freq = bars[0].freq
+        # self.get_signals = get_signals
+        # self.signals = None
+        # self.signals_list = []
+
+        for bar in bars:
+            self.update(bar)
+
+        def update(self, _bar: RawBar):
+            """
+            更新分析结果
+            :param self:
+            :param _bar: 单根K线对象
+            :return:
+            """
+            # 如果是第一根K线或则最后一根k线
+            if not self.bars_raw or _bar.dt != self.bars_raw[-1].dt:
+                self.bars_raw.append(_bar)
+                last_bars = [_bar]
+            else:
+                self.bars_raw[-1] = _bar
+                last_bars = self.bars_ubi[-1].elements
+                last_bars[-1] = _bar
+                self.bars_ubi.pop(-1)

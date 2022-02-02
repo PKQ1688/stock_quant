@@ -7,7 +7,7 @@
 # @Function:
 from dataclasses import dataclass
 from datetime import datetime
-from StrategyLib.ChanStrategy.basic_enum import Freq, Mark, Direction
+from StrategyLib.ChanStrategy.BasicChan.basic_enum import Freq, Mark, Direction
 
 from typing import List
 
