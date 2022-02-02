@@ -5,8 +5,11 @@
 # @Author  : Adolf
 # @File    : basic_tools.py
 # @Function:
-from StrategyLib.ChanStrategy.basic_structure import RawBar, NewBar, FX
+import traceback
+
+from StrategyLib.ChanStrategy.basic_structure import RawBar, NewBar, FX, BI
 from StrategyLib.ChanStrategy.basic_enum import Direction, Mark
+from typing import List
 
 
 def remove_include(k1: NewBar, k2: NewBar, k3: RawBar):
@@ -75,3 +78,81 @@ def check_fx(k1: NewBar, k2: NewBar, k3: NewBar):
     return fx
 
 
+def check_fxs(bars: List[NewBar]) -> List[FX]:
+    """输入一串无包含关系K线，查找其中所有分型"""
+    fxs = []
+    for i in range(1, len(bars) - 1):
+        fx: FX = check_fx(bars[i - 1], bars[i], bars[i + 1])
+        if isinstance(fx, FX):
+            # TODO 按照缠论定义重新编写顶底分型的代码
+            # 按照缠论本身定义如果出现新的顶底需要和原来的顶底进行比较
+            # if len(fxs) >= 2 and fx.mark == fxs[-1].mark:
+            #     if fx.mark == "顶分型" and fx.high > fxs[-1].high:
+            #         fxs.pop()
+            #         fxs.append(fx)
+            #
+            # fxs.append(fx)
+            # 这里可能隐含Bug，默认情况下，fxs本身是顶底交替的，但是对于一些特殊情况下不是这样，这是不对的。
+            # 临时处理方案，强制要求fxs序列顶底交替,这会有问题
+            if len(fxs) >= 2 and fx.mark == fxs[-1].mark:
+                fxs.pop()
+            fxs.append(fx)
+
+    return fxs
+
+
+def check_bi(bars: List[NewBar], bi_min_len: int = 7):
+    """输入一串无包含关系K线，查找其中的一笔
+    :param bars: 无包含关系K线列表
+    :param bi_min_len: 一笔的最少无包含关系K线数量，7是老笔的要求,5是新笔的要求
+    :return:
+    """
+    fxs = check_fxs(bars)
+    if len(fxs) < 2:
+        return None, bars
+
+    fx_a = fxs[0]
+    try:
+        if fxs[0].mark == Mark.D:
+            direction = Direction.Up
+            fxs_b = [x for x in fxs if x.mark == Mark.G and x.dt > fx_a.dt and x.fx > fx_a.fx]
+            if not fxs_b:
+                return None, bars
+
+            fx_b = fxs_b[0]
+            for fx in fxs_b:
+                if fx.high >= fx_b.high:
+                    fx_b = fx
+
+        elif fxs[0].mark == Mark.G:
+            direction = Direction.Down
+            fxs_b = [x for x in fxs if x.mark == Mark.D and x.dt > fx_a.dt and x.fx < fx_a.fx]
+            if not fxs_b:
+                return None, bars
+
+            fx_b = fxs_b[0]
+            for fx in fxs_b[1:]:
+                if fx.low <= fx_b.low:
+                    fx_b = fx
+
+        else:
+            raise ValueError
+
+    except Exception as e:
+        # traceback.print_exc()
+        print(e)
+        return None, bars
+
+    # TODO 关于笔的逻辑部分存在问题
+    bars_a = [x for x in bars if fx_a.elements[0].dt <= x.dt <= fx_b.elements[2].dt]
+    bars_b = [x for x in bars if x.dt >= fx_b.elements[0].dt]
+
+    # 判断fx_a和fx_b价格区间是否存在包含关系
+    ab_include = (fx_a.high > fx_b.high and fx_a.low < fx_b.low) or (fx_a.high < fx_b.high and fx_a.low > fx_b.low)
+
+    if len(bars_a) >= bi_min_len and not ab_include:
+        fxs_ = [x for x in fxs if fx_a.elements[0].dt <= x.dt <= fx_b.elements[2].dt]
+        bi = BI(symbol=fx_a.symbol, fx_a=fx_a, fx_b=fx_b, fxs=fxs_, direction=direction, bars=bars_a)
+        return bi, bars_b
+    else:
+        return None, bars

@@ -7,7 +7,7 @@
 # @Function:
 from dataclasses import dataclass
 from datetime import datetime
-from StrategyLib.ChanStrategy.basic_enum import Freq, Mark
+from StrategyLib.ChanStrategy.basic_enum import Freq, Mark, Direction
 
 from typing import List
 
@@ -70,3 +70,32 @@ class FX:
         for e in self.elements:
             res.extend(e.raw_bars)
         return res
+
+
+@dataclass
+class BI:
+    symbol: str
+    fx_a: FX = None  # 笔开始的分型
+    fx_b: FX = None  # 笔开始的分型
+    fxs: List = None  # 笔内部的分型列表
+    direction: Direction = None
+    bars: List[NewBar] = None
+
+    def __post_init__(self):
+        self.sdt = self.fx_a.dt
+        self.edt = self.fx_b.dt
+
+    def __repr__(self):
+        return f"BI(symbol={self.symbol}, sdt={self.sdt}, edt={self.edt}," \
+               f"direction={self.direction}, high={self.high}, low={self.low})"
+
+    # 定义一些附加属性，用的时候才会计算，提高效率
+    # ======================================================================
+    @property
+    def high(self):
+        return max(self.fx_a.high, self.fx_b.high)
+
+    @property
+    def low(self):
+        return min(self.fx_a.low, self.fx_b.low)
+
