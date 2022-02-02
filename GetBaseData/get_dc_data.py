@@ -14,6 +14,7 @@ import pandas as pd
 import akshare as ak
 from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
 import shutil
+from tqdm.auto import tqdm
 
 import json
 
