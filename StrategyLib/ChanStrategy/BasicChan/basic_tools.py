@@ -5,6 +5,8 @@
 # @Author  : Adolf
 # @File    : basic_tools.py
 # @Function:
+import os
+import webbrowser
 
 from StrategyLib.ChanStrategy.BasicChan.basic_structure import RawBar, NewBar, FX, BI
 from StrategyLib.ChanStrategy.BasicChan.basic_enum import Direction, Mark
@@ -159,24 +161,24 @@ def check_bi(bars: List[NewBar], bi_min_len: int = 7):
 
 
 class CZSC:
-    def __init(self,
-               bars: List[RawBar],
-               # max_bi_count: int = 50,
-               bi_min_len: int = 7,
-               # get_signals: Callable = None,
-               # signals_n: int = 0,
-               verbose=False):
+    def __init__(self,
+                 bars: List[RawBar],
+                 max_bi_count: int = 50,
+                 bi_min_len: int = 5,
+                 # get_signals: Callable = None,
+                 # signals_n: int = 0,
+                 verbose=False):
         """
         :param bars: K线数据
         # :param get_signals: 自定义的信号计算函数
-        :param bi_min_len: 笔的最小长度，包括左右分型，默认值为 7，是缠论原文老笔定义的长度
+        :param bi_min_len: 笔的最小长度，包括左右分型，默认值为 7，是缠论原文老笔定义的长度,新笔定义为5
         # :param signals_n: 缓存n个历史时刻的信号，0 表示不缓存；缓存的数据，主要用于计算信号连续次数
         # :param max_bi_count: 最大保存的笔数量
         #     默认值为 50，仅使用内置的信号和因子，不需要调整这个参数。
         #     如果进行新的信号计算需要用到更多的笔，可以适当调大这个参数。
         """
         self.verbose = verbose
-        # self.max_bi_count = max_bi_count
+        self.max_bi_count = max_bi_count
         self.bi_min_len = bi_min_len
         # self.signals_n = signals_n
         self.bars_raw = []  # 原始K线序列
@@ -194,22 +196,113 @@ class CZSC:
     def __repr__(self):
         return "<CZSC~{}~{}>".format(self.symbol, self.freq.value)
 
-    def update(self, _bar: RawBar):
+    # TODO 逻辑二次梳理
+    def update_bi(self):
+        bars_ubi = self.bars_ubi
+        if len(bars_ubi) < 3:
+            return
+
+        # 查找笔
+        if not self.bi_list:
+            # 第一个笔的查找
+            fxs = check_fxs(bars_ubi)
+            if not fxs:
+                return
+
+            fx_a = fxs[0]
+            fxs_a = [x for x in fxs if x.mark == fx_a.mark]
+            for fx in fxs_a:
+                if (fx_a.mark == Mark.D and fx.low <= fx_a.low) \
+                        or (fx_a.mark == Mark.G and fx.high >= fx_a.high):
+                    fx_a = fx
+            bars_ubi = [x for x in bars_ubi if x.dt >= fx_a.elements[0].dt]
+
+            bi, bars_ubi_ = check_bi(bars_ubi)
+            if isinstance(bi, BI):
+                self.bi_list.append(bi)
+            self.bars_ubi = bars_ubi_
+            return
+
+        last_bi = self.bi_list[-1]
+
+        # 如果上一笔被破坏，将上一笔的bars与bars_ubi进行合并
+        min_low_ubi = min([x.low for x in bars_ubi[2:]])
+        max_high_ubi = max([x.high for x in bars_ubi[2:]])
+
+        if last_bi.direction == Direction.Up and max_high_ubi > last_bi.high:
+            bars_ubi_a = last_bi.bars + [x for x in bars_ubi if x.dt > last_bi.bars[-1].dt]
+            self.bi_list.pop(-1)
+
+        elif last_bi.direction == Direction.Down and min_low_ubi < last_bi.low:
+            bars_ubi_a = last_bi.bars + [x for x in bars_ubi if x.dt > last_bi.bars[-1].dt]
+            self.bi_list.pop(-1)
+
+        else:
+            bars_ubi_a = bars_ubi
+
+        if self.verbose and len(bars_ubi_a) > 300:
+            print(f"{self.symbol} - {self.freq} - {bars_ubi_a[-1].dt} 未完成笔延伸超长，延伸数量: {len(bars_ubi_a)}")
+
+        bi, bars_ubi_ = check_bi(bars_ubi_a, self.bi_min_len)
+        self.bars_ubi = bars_ubi_
+        if isinstance(bi, BI):
+            self.bi_list.append(bi)
+
+    # TODO 相关逻辑代码梳理
+    def update(self, bar: RawBar):
         """
         更新分析结果
         :param self:
-        :param _bar: 单根K线对象
+        :param bar: 单根K线对象
         :return:
         """
-        # 如果是第一根K线或则最后一根k线
-        if not self.bars_raw or _bar.dt != self.bars_raw[-1].dt:
-            self.bars_raw.append(_bar)
-            last_bars = [_bar]
+        # 第一根K线或则新的K线
+        if not self.bars_raw or bar.dt != self.bars_raw[-1].dt:
+            self.bars_raw.append(bar)
+            last_bars = [bar]
+        # 当新入的K线和原始的时间不同 TODO 还不明白什么时候会出现这种状态
         else:
-            self.bars_raw[-1] = _bar
+            self.bars_raw[-1] = bar
             last_bars = self.bars_ubi[-1].elements
-            last_bars[-1] = _bar
+            last_bars[-1] = bar
             self.bars_ubi.pop(-1)
+
+        # 去除包含关系
+        bars_ubi = self.bars_ubi
+        for bar in last_bars:
+            if len(bars_ubi) < 2:
+                bars_ubi.append(NewBar(symbol=bar.symbol, id=bar.id, freq=bar.freq, dt=bar.dt,
+                                       open=bar.open, close=bar.close,
+                                       high=bar.high, low=bar.low, vol=bar.vol, elements=[bar]))
+            else:
+                k1, k2 = bars_ubi[-2:]
+                has_include, k3 = remove_include(k1, k2, bar)
+                if has_include:
+                    bars_ubi[-1] = k3
+                else:
+                    bars_ubi.append(k3)
+        self.bars_ubi = bars_ubi
+
+        # 更新笔
+        self.update_bi()
+        self.bi_list = self.bi_list[-self.max_bi_count:]
+        if self.bi_list:
+            sdt = self.bi_list[0].fx_a.elements[0].dt
+            s_index = 0
+            for i, bar in enumerate(self.bars_raw):
+                if bar.dt >= sdt:
+                    s_index = i
+                    break
+            self.bars_raw = self.bars_raw[s_index:]
+
+        # if self.get_signals:
+        #     self.signals = self.get_signals(c=self)
+        #     if self.signals_n > 0:
+        #         self.signals_list.append(self.signals)
+        #         self.signals_list = self.signals_list[-self.signals_n:]
+        #         self.signals.update(self.get_signal_counter())
+        # else:
+        #     self.signals = OrderedDict()
 
     def to_echarts(self, width: str = "1400px", height: str = '580px'):
         kline = [x.__dict__ for x in self.bars_raw]
@@ -225,3 +318,16 @@ class CZSC:
         chart = kline_pro(kline, bi=bi, fx=fx, width=width, height=height,
                           title="{}-{}".format(self.symbol, self.freq.value))
         return chart
+
+    def open_in_browser(self, width: str = "1400px", height: str = '580px'):
+        """直接在浏览器中打开分析结果
+        :param width: 图表宽度
+        :param height: 图表高度
+        :return:
+        """
+        # home_path = os.path.expanduser("~")
+        # file_html = os.path.join(home_path, "temp_czsc.html")
+        file_html = "ShowHtml/chan_render.html"
+        chart = self.to_echarts(width, height)
+        chart.render(file_html)
+        webbrowser.open(file_html)

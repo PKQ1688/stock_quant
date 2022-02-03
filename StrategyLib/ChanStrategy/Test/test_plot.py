@@ -27,19 +27,31 @@ def test_heat_map():
 
 test_heat_map()
 
-cur_path = os.path.split(os.path.realpath(__file__))[0]
+
+# cur_path = os.path.split(os.path.realpath(__file__))[0]
 
 
 def test_kline_pro():
-    file_kline = os.path.join(cur_path, "data/000001.SH_D.csv")
+    # file_kline = os.path.join(cur_path, "data/000001.SH_D.csv")
+    file_kline = "Data/RealData/origin/000538.csv"
     kline = pd.read_csv(file_kline, encoding="utf-8")
-    bars = [RawBar(symbol=row['symbol'], id=i, freq=Freq.D, open=row['open'], dt=row['dt'],
-                   close=row['close'], high=row['high'], low=row['low'], vol=row['vol'])
+    kline = kline[-2000:]
+    kline.reset_index(drop=True, inplace=True)
+    # print(kline)
+
+    bars = [RawBar(symbol=row['code'], id=i, freq=Freq.D, open=row['open'], dt=row['date'],
+                   close=row['close'], high=row['high'], low=row['low'], vol=row['volume'],
+                   amount=row['amount'])
             for i, row in kline.iterrows()]
+
+    print(bars[0])
     ka = CZSC(bars)
     # ka.open_in_browser()
-    file_html = 'czsc_render.html'
-    chart = ka.to_echarts()
+    file_html = 'ShowHtml/czsc_render.html'
+    chart = ka.to_echarts(width="4400px", height='2580px')
     chart.render(file_html)
     assert os.path.exists(file_html)
-    os.remove(file_html)
+    # os.remove(file_html)
+
+
+test_kline_pro()
