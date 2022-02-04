@@ -160,6 +160,7 @@ def check_bi(bars: List[NewBar], bi_min_len: int = 7):
         return None, bars
 
 
+# TODO 寻找中枢的逻辑存在问题
 def get_zs_seq(bis: List[BI]) -> List[ZS]:
     """获取连续笔中的中枢序列
     :param bis: 连续笔对象列表
@@ -191,7 +192,7 @@ def get_zs_seq(bis: List[BI]) -> List[ZS]:
 class CZSC:
     def __init__(self,
                  bars: List[RawBar],
-                 max_bi_count: int = 50,
+                 # max_bi_count: int = 50,
                  bi_min_len: int = 5,
                  # get_signals: Callable = None,
                  # signals_n: int = 0,
@@ -206,7 +207,8 @@ class CZSC:
         #     如果进行新的信号计算需要用到更多的笔，可以适当调大这个参数。
         """
         self.verbose = verbose
-        self.max_bi_count = max_bi_count
+        self.max_bi_count = None
+        # self.max_bi_count = max_bi_count
         self.bi_min_len = bi_min_len
         # self.signals_n = signals_n
         self.bars_raw = []  # 原始K线序列
@@ -313,7 +315,8 @@ class CZSC:
 
         # 更新笔
         self.update_bi()
-        self.bi_list = self.bi_list[-self.max_bi_count:]
+        if self.max_bi_count is not None:
+            self.bi_list = self.bi_list[-self.max_bi_count:]
         if self.bi_list:
             sdt = self.bi_list[0].fx_a.elements[0].dt
             s_index = 0

@@ -58,7 +58,8 @@ def test_kline_pro():
     # os.remove(file_html)
 
 
-# test_kline_pro()
+test_kline_pro()
+
 
 def test_get_zs_seq():
     bars = read_read_daily()
