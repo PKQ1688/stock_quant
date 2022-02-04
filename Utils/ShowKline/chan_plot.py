@@ -93,7 +93,8 @@ def kline_pro(kline: List[dict],
     """
     # 配置项设置
     # ------------------------------------------------------------------------------------------------------------------
-    bg_color = "#1f212d"  # 背景
+    # bg_color = "#1f212d"  # 背景
+    bg_color = "#fcfdff"  # 背景
     up_color = "#F9293E"
     down_color = "#00aa3b"
 
@@ -189,22 +190,23 @@ def kline_pro(kline: List[dict],
 
     # 均线图
     # ------------------------------------------------------------------------------------------------------------------
-    chart_ma = Line()
-    chart_ma.add_xaxis(xaxis_data=dts)
-    if not t_seq:
-        t_seq = [10, 20, 60, 120, 250]
+    if t_seq is not None:
+        chart_ma = Line()
+        chart_ma.add_xaxis(xaxis_data=dts)
+        if not t_seq:
+            t_seq = [10, 20, 60, 120, 250]
 
-    ma_keys = dict()
-    for t in t_seq:
-        ma_keys[f"MA{t}"] = SMA(close, timeperiod=t)
+        ma_keys = dict()
+        for t in t_seq:
+            ma_keys[f"MA{t}"] = SMA(close, timeperiod=t)
 
-    for i, (name, ma) in enumerate(ma_keys.items()):
-        chart_ma.add_yaxis(series_name=name, y_axis=ma, is_smooth=True,
-                           is_selected=True, symbol_size=0, label_opts=label_not_show_opts,
-                           linestyle_opts=opts.LineStyleOpts(opacity=0.8, width=1))
+        for i, (name, ma) in enumerate(ma_keys.items()):
+            chart_ma.add_yaxis(series_name=name, y_axis=ma, is_smooth=True,
+                               is_selected=True, symbol_size=0, label_opts=label_not_show_opts,
+                               linestyle_opts=opts.LineStyleOpts(opacity=0.8, width=1))
 
-    chart_ma.set_global_opts(xaxis_opts=grid0_xaxis_opts, legend_opts=legend_not_show_opts)
-    chart_k = chart_k.overlap(chart_ma)
+        chart_ma.set_global_opts(xaxis_opts=grid0_xaxis_opts, legend_opts=legend_not_show_opts)
+        chart_k = chart_k.overlap(chart_ma)
 
     # 缠论结果
     # ------------------------------------------------------------------------------------------------------------------
@@ -229,7 +231,7 @@ def kline_pro(kline: List[dict],
         chart_bi.add_yaxis(series_name="BI", y_axis=bi_val, is_selected=True,
                            symbol="diamond", symbol_size=10, label_opts=label_not_show_opts,
                            itemstyle_opts=opts.ItemStyleOpts(color="rgba(184, 117, 225, 1.0)", ),
-                           linestyle_opts=opts.LineStyleOpts(width=1.5))
+                           linestyle_opts=opts.LineStyleOpts(width=2))
 
         chart_bi.set_global_opts(xaxis_opts=grid0_xaxis_opts, legend_opts=legend_not_show_opts)
         chart_k = chart_k.overlap(chart_bi)

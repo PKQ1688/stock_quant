@@ -8,7 +8,7 @@
 import os
 import webbrowser
 
-from StrategyLib.ChanStrategy.BasicChan.basic_structure import RawBar, NewBar, FX, BI
+from StrategyLib.ChanStrategy.BasicChan.basic_structure import RawBar, NewBar, FX, BI, ZS
 from StrategyLib.ChanStrategy.BasicChan.basic_enum import Direction, Mark
 from Utils.ShowKline.chan_plot import kline_pro
 from typing import List
@@ -122,7 +122,7 @@ def check_bi(bars: List[NewBar], bi_min_len: int = 7):
                 return None, bars
 
             fx_b = fxs_b[0]
-            for fx in fxs_b:
+            for fx in fxs_b[1:]:
                 if fx.high >= fx_b.high:
                     fx_b = fx
 
@@ -145,7 +145,7 @@ def check_bi(bars: List[NewBar], bi_min_len: int = 7):
         print(e)
         return None, bars
 
-    # TODO 关于笔的逻辑部分存在问题
+    # 知道单笔的逻辑
     bars_a = [x for x in bars if fx_a.elements[0].dt <= x.dt <= fx_b.elements[2].dt]
     bars_b = [x for x in bars if x.dt >= fx_b.elements[0].dt]
 
@@ -158,6 +158,34 @@ def check_bi(bars: List[NewBar], bi_min_len: int = 7):
         return bi, bars_b
     else:
         return None, bars
+
+
+def get_zs_seq(bis: List[BI]) -> List[ZS]:
+    """获取连续笔中的中枢序列
+    :param bis: 连续笔对象列表
+    :return: 中枢序列
+    """
+    zs_list = []
+    if not bis:
+        return []
+
+    for bi in bis:
+        if not zs_list:
+            zs_list.append(ZS(symbol=bi.symbol, bis=[bi]))
+            continue
+
+        zs = zs_list[-1]
+        if not zs.bis:
+            zs.bis.append(bi)
+            zs_list[-1] = zs
+        else:
+            if (bi.direction == Direction.Up and bi.high < zs.zd) \
+                    or (bi.direction == Direction.Down and bi.low > zs.zg):
+                zs_list.append(ZS(symbol=bi.symbol, bis=[bi]))
+            else:
+                zs.bis.append(bi)
+                zs_list[-1] = zs
+    return zs_list
 
 
 class CZSC:
@@ -260,7 +288,7 @@ class CZSC:
         if not self.bars_raw or bar.dt != self.bars_raw[-1].dt:
             self.bars_raw.append(bar)
             last_bars = [bar]
-        # 当新入的K线和原始的时间不同 TODO 还不明白什么时候会出现这种状态
+        # 当新入的K线和原始K线序列最后一个K线的时间相同
         else:
             self.bars_raw[-1] = bar
             last_bars = self.bars_ubi[-1].elements
@@ -268,7 +296,7 @@ class CZSC:
             self.bars_ubi.pop(-1)
 
         # 去除包含关系
-        bars_ubi = self.bars_ubi
+        bars_ubi = self.bars_ubi  # 未完成笔的无包含K线序列
         for bar in last_bars:
             if len(bars_ubi) < 2:
                 bars_ubi.append(NewBar(symbol=bar.symbol, id=bar.id, freq=bar.freq, dt=bar.dt,
@@ -316,7 +344,8 @@ class CZSC:
             bi = None
             fx = None
         chart = kline_pro(kline, bi=bi, fx=fx, width=width, height=height,
-                          title="{}-{}".format(self.symbol, self.freq.value))
+                          title="{}-{}".format(self.symbol, self.freq.value),
+                          t_seq=None)
         return chart
 
     def open_in_browser(self, width: str = "1400px", height: str = '580px'):
