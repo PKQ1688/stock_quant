@@ -347,7 +347,7 @@ class CZSC:
             bi = None
             fx = None
         chart = kline_pro(kline, bi=bi, fx=fx, width=width, height=height,
-                          title="{}-{}".format(self.symbol, self.freq.value),
+                          title="{}-{}".format(self.symbol, self.freq),
                           t_seq=None)
         return chart
 

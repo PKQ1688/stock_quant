@@ -9,3 +9,4 @@ flake8
 yapf
 lightgbm
 schedule
+streamlit-echarts
