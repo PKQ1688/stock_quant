@@ -11,6 +11,7 @@ import pandas as pd
 import akshare as ak
 
 pd.set_option("expand_frame_repr", False)
+pd.set_option('display.max_rows', 1000)
 
 # 历史行情数据
 stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol="000001",
@@ -19,7 +20,7 @@ stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol="000001",
                                         end_date='20210907',
                                         adjust="qfq")
 
-print(stock_zh_a_hist_df)
+# print(stock_zh_a_hist_df)
 
 # 分时数据
 stock_zh_a_hist_min_em_df = ak.stock_zh_a_hist_min_em(symbol="000001",
@@ -32,4 +33,15 @@ stock_zh_a_hist_min_em_df = ak.stock_zh_a_hist_min_em(symbol="000001",
 # 其中 1 分钟数据返回近 5 个交易日数据且不复权
 # TODO 寻找较长时间的分时数据源头
 
-print(stock_zh_a_hist_min_em_df)
+# print(stock_zh_a_hist_min_em_df)
+
+# 指数数据
+# stock_zh_index_spot_df = ak.stock_zh_index_spot()
+# print(stock_zh_index_spot_df)
+
+# "上证指数", "深证成指", "创业板指", "沪深300","中证500"
+index_list = ["sh000001", "sz399001", "sz399006", "sz399300", "sh000905"]
+
+stock_zh_index_daily_tx_df = ak.stock_zh_index_daily_tx(symbol="sh000001")
+print(stock_zh_index_daily_tx_df)
+
