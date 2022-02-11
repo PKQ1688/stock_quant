@@ -13,7 +13,8 @@ from StrategyLib.ChanStrategy.BasicChan.basic_tools import CZSC, RawBar
 from streamlit_echarts import st_pyecharts
 import streamlit.components.v1 as components
 
-symbol = st.sidebar.text_input('stock code', '000001')
+symbol = st.sidebar.text_input('stock code,上证指数:sh000001,深证成指:sz399001,创业板指:sz399006,沪深300:sz399300,中证500:sh000905',
+                               '000001')
 period = st.sidebar.selectbox('time period', ('daily', 'weekly', 'monthly', '1min', '5min', '15min', '30min', '60min'))
 adjust = st.sidebar.selectbox('time period', ('qfq', 'hfq', 'origin'))
 
@@ -29,7 +30,15 @@ if period in ['daily', 'weekly', 'monthly']:
 st.title('股票数据展示')
 st.write("下面是表格")
 
-if period in ['daily', 'weekly', 'monthly']:
+if symbol in ["sh000001", "sz399001", "sz399006", "sz399300", "sh000905"]:
+    df = ak.stock_zh_index_daily_tx(symbol=symbol)
+    print(df)
+    bars = [RawBar(symbol=symbol, id=i, freq=period, open=row['open'], dt=row['date'],
+                   close=row['close'], high=row['high'], low=row['low'], vol=0,
+                   amount=row['amount'])
+            for i, row in df.iterrows()]
+
+elif period in ['daily', 'weekly', 'monthly']:
     df = ak.stock_zh_a_hist(symbol=symbol,
                             period=period,  # choice of {'daily', 'weekly', 'monthly'}
                             start_date=start_date,
@@ -54,11 +63,10 @@ elif period in ['1min', '5min', '15min', '30min', '60min']:
 else:
     raise ValueError
 
-print(df)
-
+# print(df)
 
 ka = CZSC(bars)
-file_html = 'ShowHtml/czsc_render.html'
+# file_html = 'ShowHtml/czsc_render.html'
 # chart = ka.to_echarts(width="1200px", height='600px')
 chart = ka.to_echarts()
 st_pyecharts(chart, height="1200px", width="600px")
