@@ -5,8 +5,6 @@ pandas_ta
 tqdm
 mplfinance
 pyecharts
-flake8
-yapf
 lightgbm
 schedule
 streamlit
