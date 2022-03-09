@@ -13,6 +13,8 @@ from StrategyLib.ChanStrategy.BasicChan.basic_tools import CZSC, RawBar
 from streamlit_echarts import st_pyecharts
 import streamlit.components.v1 as components
 
+st.set_page_config(layout="wide")
+
 symbol = st.sidebar.text_input('stock code,上证指数:sh000001,深证成指:sz399001,创业板指:sz399006,沪深300:sz399300,中证500:sh000905',
                                '000001')
 period = st.sidebar.selectbox('time period', ('daily', 'weekly', 'monthly', '1min', '5min', '15min', '30min', '60min'))
@@ -63,13 +65,27 @@ elif period in ['1min', '5min', '15min', '30min', '60min']:
 else:
     raise ValueError
 
+if start_date is not None:
+    try:
+        df = df[df['日期'] > start_date]
+    except Exception as e:
+        print(e)
+        print(df.columns)
+
+if end_date is not None:
+    try:
+        df = df[df['日期'] < end_date]
+    except Exception as e:
+        print(e)
+        print(df.columns)
+
 # print(df)
 
 ka = CZSC(bars)
 # file_html = 'ShowHtml/czsc_render.html'
-# chart = ka.to_echarts(width="1200px", height='600px')
+# chart = ka.to_echarts(width="1200px", height='1000px')
 chart = ka.to_echarts()
-st_pyecharts(chart, height="1200px", width="600px")
+st_pyecharts(chart, height="600%", width="100%")
 # chart.render(file_html)
 # assert os.path.exists(file_html)
 # st.write(df)
