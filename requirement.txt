@@ -9,3 +9,5 @@ lightgbm
 schedule
 streamlit
 streamlit-echarts
+tabulate
+wcwidth
