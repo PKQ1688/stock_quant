@@ -82,7 +82,7 @@ class BaseTransactionAnalysis:
         # self.logger.info(result_dict)
 
         result_df = pd.DataFrame.from_dict(result_dict, orient='index', columns=["result"])
-        self.logger.debug(result_df)
+        self.logger.info(result_df)
 
         return result_df
 
@@ -110,7 +110,7 @@ class BaseTransactionAnalysis:
         result_dict["标的交易时间"] = len(data)
 
         result_df = pd.DataFrame.from_dict(result_dict, orient='index', columns=["result"])
-        self.logger.debug(result_df)
+        self.logger.info(result_df)
 
         return result_df
 

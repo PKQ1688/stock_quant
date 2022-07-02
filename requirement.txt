@@ -2,6 +2,7 @@ akshare
 pandas
 ray
 pandas_ta
+finta
 tqdm
 mplfinance
 pyecharts
@@ -11,3 +12,4 @@ streamlit
 streamlit-echarts
 tabulate
 wcwidth
+colorlog

@@ -116,7 +116,7 @@ def KDJ(close: np.array, high: np.array, low: np.array):
     return k.round(4), d.round(4), j.round(4)
 
 
-def RSQ(close: [np.array, list]) -> float:
+def RSQ(close) -> float:
     """拟合优度 R SQuare
     :param close: 收盘价序列
     :return:

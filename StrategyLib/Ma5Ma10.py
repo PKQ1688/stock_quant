@@ -1,3 +1,10 @@
+'''
+Description: 
+Author: adolf
+Date: 2022-01-11 20:56:59
+LastEditTime: 2022-07-02 16:59:47
+LastEditors: adolf
+'''
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-"""
 # @Project : stock_quant 
@@ -20,27 +27,27 @@ class Ma5Ma10Strategy(TradeStructure):
         self.logger.debug(indicators_config)
 
         self.data["sma5"] = ta.sma(self.data["close"], length=5)
-        self.data["sma10"] = ta.ema(self.data["close"], length=10)
+        self.data["sma10"] = ta.sma(self.data["close"], length=10)
 
-        macd_df = ta.macd(close=self.data["close"])
+        # macd_df = ta.macd(close=self.data["close"])
 
-        self.data["macd"], self.data["histogram"], self.data["signal"] = [macd_df["MACD_12_26_9"],
-                                                                          macd_df["MACDh_12_26_9"],
-                                                                          macd_df["MACDs_12_26_9"]]
+        # self.data["macd"], self.data["histogram"], self.data["signal"] = [macd_df["MACD_12_26_9"],
+        #                                                                   macd_df["MACDh_12_26_9"],
+        #                                                                   macd_df["MACDs_12_26_9"]]
 
-        self.data["atr"] = ta.atr(high=self.data["high"], low=self.data["low"], close=self.data["close"],
-                                  length=14)
+        # self.data["atr"] = ta.atr(high=self.data["high"], low=self.data["low"], close=self.data["close"],
+        #                           length=14)
 
         # self.logger.debug(help(ta.psar))
 
-        sar_df = ta.psar(high=self.data["high"], low=self.data["low"], close=self.data["close"])
+        # sar_df = ta.psar(high=self.data["high"], low=self.data["low"], close=self.data["close"])
 
-        self.logger.debug(sar_df[:200])
+        # self.logger.debug(sar_df[:200])
 
-        self.data["long"], self.data["short"], self.data["af"], self.data["reversal"] = [sar_df["PSARl_0.02_0.2"],
-                                                                                         sar_df["PSARs_0.02_0.2"],
-                                                                                         sar_df["PSARaf_0.02_0.2"],
-                                                                                         sar_df["PSARr_0.02_0.2"]]
+        # self.data["long"], self.data["short"], self.data["af"], self.data["reversal"] = [sar_df["PSARl_0.02_0.2"],
+        #                                                                                  sar_df["PSARs_0.02_0.2"],
+        #                                                                                  sar_df["PSARaf_0.02_0.2"],
+        #                                                                                  sar_df["PSARr_0.02_0.2"]]
         # self.logger.info(self.data.tail(30))
 
         return True

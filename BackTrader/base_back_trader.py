@@ -18,7 +18,7 @@ import json
 
 import pandas_ta as ta
 
-from Utils.base_utils import get_module_logger
+from Utils.base_utils import Logger
 from BackTrader.position_analysis import BaseTransactionAnalysis
 
 from GetBaseData.hanle_data_show import get_show_data
@@ -32,9 +32,7 @@ class TradeStructure:
 
     def __init__(self, config):
         self.config = config
-
-        self.logger = get_module_logger(module_name="Trade",
-                                        level=config["log_level"], )
+        self.logger = Logger(name="Trade",level=config["log_level"]).logger
 
         self.logger.debug("Trade is begging ......")
 
