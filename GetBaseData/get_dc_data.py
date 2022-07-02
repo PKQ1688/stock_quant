@@ -10,6 +10,7 @@ import os.path
 import time
 
 import ray
+# import socket
 import pandas as pd
 import akshare as ak
 from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
@@ -19,6 +20,7 @@ from tqdm.auto import tqdm
 import json
 
 pd.set_option("expand_frame_repr", False)
+# socket.gethostbyname("")
 # 获取实时行情数据
 stock_zh_a_spot_em_df = ak.stock_zh_a_spot_em()
 stock_zh_a_spot_em_df.rename(columns=ch_eng_mapping_dict, inplace=True)
@@ -92,6 +94,8 @@ def get_one_stock_data(code):
 
 futures = [get_one_stock_data.remote(code) for code in code_list]
 ray.get(futures)
+# for code in code_list:
+    # get_one_stock_data(code)
 
 print("date", time.strftime("%Y-%m-%d"))
 print("=" * 20)
