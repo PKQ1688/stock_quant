@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: adolf
  * @Date: 2022-01-04 20:52:13
- * @LastEditTime: 2022-07-02 15:45:11
+ * @LastEditTime: 2022-07-02 16:58:19
  * @LastEditors: adolf
 -->
 # stock_quant
@@ -18,6 +18,11 @@ export https_proxy="http://127.0.0.1:7890"
 ### 1.2 设置python运行路径
 ```
 export PYTHONPATH=$(pwd):$PYTHONPATH
+```
+
+### 1.3 设置python不生成pyc(__pycache__)
+```
+export PYTHONDONTWRITEBYTECODE=1
 ```
 
 ## 如果要使用前端展示缠论结果
