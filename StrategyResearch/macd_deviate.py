@@ -2,7 +2,7 @@
 Description: 
 Author: adolf
 Date: 2022-07-02 14:18:51
-LastEditTime: 2022-07-02 21:58:10
+LastEditTime: 2022-07-02 22:58:54
 LastEditors: adolf
 '''
 from matplotlib import use
@@ -30,14 +30,15 @@ df = pd.concat([df,res_df],axis=1)
 use_df = df[-200:]
 use_df = use_df[['date','close','code','MACD','SIGNAL','HISTOGRAM']]
 # print(use_df)
-use_df['signal'] = 0
+use_df['state'] = 0
 # print(df[-10:])
 # 获取macd的极大值
 # res = argrelextrema(np.array(use_df['HISTOGRAM']),np.greater)[0].tolist()
 # 获取macd的极小值
 res = argrelextrema(np.array(use_df['HISTOGRAM']),np.less)[0].tolist()
-# print(res)
-use_df.iloc[res,'signal'] = 1
+print(res)
+exit()
+use_df.loc[res,'state'] = 1
 # print(use_df.iloc[res,'is'])
 print(use_df)
 
