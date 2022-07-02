@@ -10,7 +10,7 @@ from pyecharts import options as opts
 from pyecharts.commons.utils import JsCode
 from pyecharts.charts import Kline, Line, Bar, Grid
 
-from GetBaseData.hanle_data_show import get_show_data
+from GetBaseData.hanle_data_show import show_data_from_df
 
 
 def calculate_ma(input_data, day_count: int):
@@ -254,5 +254,5 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
 
 
 if __name__ == '__main__':
-    show_data = get_show_data("Data/RealData/hfq/600570.csv")
-    draw_chart(show_data)
+    show_data = show_data_from_df("Data/RealData/hfq/600570.csv")
+    draw_chart(show_data,show_html_path="ShowHtml/CandleChart.html")

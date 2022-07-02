@@ -1,10 +1,3 @@
-'''
-Description: 
-Author: adolf
-Date: 2022-01-11 20:56:59
-LastEditTime: 2022-07-02 23:18:57
-LastEditors: adolf
-'''
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-'''
 # @Project : stock_quant 
@@ -13,7 +6,6 @@ LastEditors: adolf
 # @File    : hanle_data_show.py
 import pandas as pd
 from finta import TA
-from pyparsing import col
 # import pandas_ta as ta
 
 
@@ -72,7 +64,7 @@ def show_data_from_df(df_or_dfpath: str=None,use_all_data:bool=False):
     elif isinstance(df_or_dfpath, str):
         df_or_dfpath = pd.read_csv(df_or_dfpath)
 
-        macd_df = TA.MACD(ohlc=df_or_dfpath,column='close')
+        macd_df = TA.MACD(df_or_dfpath)
         macd_df["HISTOGRAM"] = macd_df["MACD"] - macd_df["SIGNAL"]
 
         if not use_all_data:
@@ -98,5 +90,6 @@ def show_data_from_df(df_or_dfpath: str=None,use_all_data:bool=False):
 
 
 if __name__ == '__main__':
-    csv_path = "Data/RealData/origin/600570.csv"
+    csv_path = "Data/RealData/qfq/600570.csv"
     print(show_data_from_df(df_or_dfpath=csv_path))
+    # draw_chart(show_data_from_df(df_or_dfpath=csv_path))
