@@ -5,6 +5,7 @@
 # @Author  : Adolf
 # @File    : base_back_trader.py
 # @Function:
+from cmath import nan
 import itertools
 import random
 import statistics
@@ -12,7 +13,7 @@ import statistics
 
 import pandas as pd
 import os
-# from tqdm import tqdm
+from tqdm.auto import tqdm
 
 import json
 
@@ -21,7 +22,7 @@ import pandas_ta as ta
 from Utils.base_utils import Logger
 from BackTrader.position_analysis import BaseTransactionAnalysis
 
-from GetBaseData.hanle_data_show import get_show_data
+from GetBaseData.hanle_data_show import show_data_from_df
 from Utils.ShowKline.base_kline import draw_chart
 
 pd.set_option("expand_frame_repr", False)
@@ -84,6 +85,7 @@ class TradeStructure:
                 [macd_df['MACD_12_26_9'], macd_df['MACDh_12_26_9'], macd_df['MACDs_12_26_9']]
 
     def cal_technical_indicators(self, indicators_config):
+        # self.cal_base_technical_indicators()
         raise NotImplementedError
 
     def trading_algorithm(self):
@@ -126,7 +128,7 @@ class TradeStructure:
     # @staticmethod
     def show_one_stock(self, show_data):
         show_data_path = self.config.get("show_data_path", "ShowHtml/StrategyShowData.html")
-        show_data = get_show_data(_df=show_data)
+        show_data = show_data_from_df(df_or_dfpath=show_data)
         draw_chart(input_data=show_data, show_html_path=show_data_path)
 
     def run_one_stock_once(self, code_name, indicators_config=None):
@@ -139,8 +141,9 @@ class TradeStructure:
                           start_stamp=self.config.get("start_stamp", None),
                           end_stamp=self.config.get("end_stamp", None))
 
-        if not self.cal_technical_indicators(indicators_config):
-            return False
+        self.cal_technical_indicators(indicators_config)
+        # if not self.cal_technical_indicators(indicators_config):
+            # return False
 
         self.trading_algorithm()
         transaction_record_df = self.strategy_execute()
@@ -181,8 +184,9 @@ class TradeStructure:
                     one_indicator_config = {list(indicators_config.keys())[index]: item[index]
                                             for index in range(len(list(indicators_config.keys())))}
 
-                    pl_ration_list.append(
-                        self.run_one_stock_once(code_name=code_name, indicators_config=one_indicator_config))
+                    one_pl_relation = self.run_one_stock_once(code_name=code_name,indicators_config=one_indicator_config)
+                    # if one_pl_relation is not nan:
+                    pl_ration_list.append(one_pl_relation)
                 pl_ration = statistics.mean(pl_ration_list)
 
             else:

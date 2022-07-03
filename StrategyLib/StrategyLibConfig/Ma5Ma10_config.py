@@ -1,3 +1,10 @@
+'''
+Description: 
+Author: adolf
+Date: 2022-01-15 19:06:38
+LastEditTime: 2022-07-03 22:53:48
+LastEditors: adolf
+'''
 # ！/usr/bin/env python
 # -*- coding:utf-8 -*-
 # @Project : stock_quant
@@ -8,11 +15,11 @@
 ma5ma10_config = {
     "random_seed": 42,
     "log_level": "INFO",
-    "code_name": "600570",
-    # "code_name": "ALL_MARKET_100",
+    # "code_name": "600570",
+    "code_name": "ALL_MARKET_100",
     # "code_name": ["600570", "002610", "300663"],
-    "start_stamp": "2020-01-01",
-    "end_stamp": "2020-12-31",
+    # "start_stamp": "2020-01-01",
+    # "end_stamp": "2020-12-31",
     # "show_data_path": "",
     # "strategy_params": {}
 }
