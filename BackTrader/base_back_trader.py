@@ -35,7 +35,7 @@ class TradeStructure:
         self.config = config
         self.logger = Logger(name="Trade",level=config["log_level"]).logger
 
-        self.logger.debug("Trade is begging ......")
+        self.logger.info("Trade is begging ......")
 
         self.trade_rate = 1.5 / 1000
         self.data = None
@@ -96,7 +96,7 @@ class TradeStructure:
         one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
 
         transaction_record_list = []
-        self.logger.debug(one_transaction_record)
+        # self.logger.debug(one_transaction_record)
 
         for index, trading_step in self.data.iterrows():
             # self.logger.debug(trading_step)
@@ -116,6 +116,8 @@ class TradeStructure:
 
         # self.logger.info(transaction_record_list)
         transaction_record_df = pd.DataFrame(transaction_record_list)
+        # self.logger.debug(transaction_record_df)
+        # exit()
 
         transaction_record_df["pct"] = (transaction_record_df["sell_price"] / transaction_record_df["buy_price"]) * (
                 1 - self.trade_rate) - 1
@@ -127,6 +129,8 @@ class TradeStructure:
     # 需要保证show_data里面的核心数据没有空值，不然会造成数据无法显示
     # @staticmethod
     def show_one_stock(self, show_data):
+        if not os.path.exists("ShowHtml"):
+            os.mkdir("ShowHtml")
         show_data_path = self.config.get("show_data_path", "ShowHtml/StrategyShowData.html")
         show_data = show_data_from_df(df_or_dfpath=show_data)
         draw_chart(input_data=show_data, show_html_path=show_data_path)
@@ -150,12 +154,12 @@ class TradeStructure:
 
         asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
         if asset_analysis is not None:
-            self.logger.debug("对标的进行分析:\n{}".format(asset_analysis))
+            self.logger.info("对标的进行分析:\n{}".format(asset_analysis))
 
         strategy_analysis = self.transaction_analysis.cal_trader_analysis(transaction_record_df)
 
-        self.logger.debug("策略使用的参数:\n{}".format(indicators_config))
-        self.logger.debug("对策略结果进行分析:\n{}".format(strategy_analysis))
+        # self.logger.debug("策略使用的参数:\n{}".format(indicators_config))
+        # self.logger.debug("对策略结果进行分析:\n{}".format(strategy_analysis))
 
         pl_ration = strategy_analysis.loc["策略的盈亏比", "result"]
         # self.logger.info(pl_ration)
@@ -195,7 +199,7 @@ class TradeStructure:
         else:
             pl_ration = self.run_one_stock_once(code_name=code_name)
 
-        self.logger.debug("{}的盈亏比是{}".format(code_name, pl_ration))
+        # self.logger.debug("{}的盈亏比是{}".format(code_name, pl_ration))
 
         return pl_ration
 

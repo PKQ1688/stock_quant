@@ -2,7 +2,7 @@
 Description: 
 Author: adolf
 Date: 2022-07-03 17:29:10
-LastEditTime: 2022-07-03 22:54:21
+LastEditTime: 2022-07-03 23:43:12
 LastEditors: adolf
 '''
 from finta import TA
@@ -21,7 +21,7 @@ class MACDDeviate(TradeStructure):
         super(MACDDeviate, self).__init__(config)
 
     def cal_technical_indicators(self, indicators_config):
-        self.logger.debug(indicators_config)
+        self.logger.debug('macd config:{}'.format(indicators_config))
         
         self.data["30_lowest"] = self.data.low.rolling(30).min()
 
@@ -42,11 +42,11 @@ class MACDDeviate(TradeStructure):
         for index in price_res:
 
             if last_low_price is not None and last_macd is not None:
-                if self.data.loc[index,'low'] < last_low_price and \
-                    self.data.loc[index,'MACD'] > last_macd and \
+                if self.data.loc[index,'low'] < last_low_price - 0.1 and \
+                    self.data.loc[index,'MACD'] > last_macd  and \
                         self.data.loc[index,'low'] == self.data.loc[index,'30_lowest']:
                     self.data.loc[index,'price_state'] = 1
-                    self.logger.debug(self.data.loc[index,'date'])
+                    # self.logger.debug(self.data.loc[index,'date'])
 
             last_low_price = self.data.loc[index,'low']
             last_macd = self.data.loc[index,'MACD']    

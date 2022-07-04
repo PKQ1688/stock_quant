@@ -7,8 +7,8 @@
 # @Function:
 rumi_config = {
     "log_level": "INFO",
-    "code_name": "600570",
-    # "code_name": "ALL_MARKET",
+    # "code_name": "600570",
+    "code_name": "ALL_MARKET_100",
     "start_stamp": "2005-01-01",
     "end_stamp": "2020-12-31",
     "strategy_params": {
