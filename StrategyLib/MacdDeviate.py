@@ -2,12 +2,12 @@
 Description: 
 Author: adolf
 Date: 2022-07-03 17:29:10
-LastEditTime: 2022-07-03 23:43:12
+LastEditTime: 2022-07-05 20:17:04
 LastEditors: adolf
 '''
 from finta import TA
 from BackTrader.base_back_trader import TradeStructure
-from StrategyLib.StrategyLibConfig.macd_config import config
+from StrategyLib.config import macd_deviate_config
 
 import numpy as np
 from scipy.signal import argrelextrema
@@ -66,6 +66,5 @@ class MACDDeviate(TradeStructure):
                 self.data.loc[index,'trade'] = "SELL"
 
 if __name__ == '__main__':
-    MACD_strategy = MACDDeviate(config=config)
-    # RUMI_strategy.run_one_stock()
+    MACD_strategy = MACDDeviate(config=macd_deviate_config)
     MACD_strategy.run()

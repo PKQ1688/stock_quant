@@ -104,12 +104,21 @@ class TradeStructure:
             if trading_step["trade"] == "BUY" and one_transaction_record["buy_date"] == "":
                 one_transaction_record["buy_date"] = trading_step["date"]
                 one_transaction_record["buy_price"] = trading_step["close"]
-                one_transaction_record["holding_time"] = -index
+                one_transaction_record["holding_time"] = index
+            
+            if self.config["take_profit"] is not None and one_transaction_record["buy_date"] != "":
+                if (trading_step["close"] - one_transaction_record["buy_price"])/one_transaction_record["buy_price"] > self.config["take_profit"]:
+                    one_transaction_record["sell_date"] = trading_step["date"]
+                    one_transaction_record["sell_price"] = trading_step["close"]
+                    one_transaction_record["holding_time"] = index - one_transaction_record["holding_time"]
+
+                    transaction_record_list.append(one_transaction_record.copy())
+                    one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
 
             if trading_step["trade"] == "SELL" and one_transaction_record["buy_date"] != "":
                 one_transaction_record["sell_date"] = trading_step["date"]
                 one_transaction_record["sell_price"] = trading_step["close"]
-                one_transaction_record["holding_time"] += index
+                one_transaction_record["holding_time"] = index - one_transaction_record["holding_time"]
 
                 transaction_record_list.append(one_transaction_record.copy())
                 one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
@@ -117,7 +126,6 @@ class TradeStructure:
         # self.logger.info(transaction_record_list)
         transaction_record_df = pd.DataFrame(transaction_record_list)
         # self.logger.debug(transaction_record_df)
-        # exit()
 
         transaction_record_df["pct"] = (transaction_record_df["sell_price"] / transaction_record_df["buy_price"]) * (
                 1 - self.trade_rate) - 1
