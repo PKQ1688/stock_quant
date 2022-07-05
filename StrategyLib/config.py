@@ -43,9 +43,10 @@ rumi_params_config = {
 }
 
 macd_deviate_config = {
-    "log_level": "debug",
-    "code_name": "600570",
-    # "code_name": "ALL_MARKET_100",
+    # "random_seed": 42,
+    "log_level": "info",
+    # "code_name": "600638",
+    "code_name": "ALL_MARKET_100",
     # "code_name": ["600570", "002610", "300663","002612"],
     # "start_stamp": "2020-01-01",
     # "end_stamp": "2020-12-31",
@@ -54,8 +55,8 @@ macd_deviate_config = {
 }
 
 macd_ma_config = {
-    "log_level": "info",
-    "code_name": "ALL_MARKET_100",
-    "take_profit": 0.02, 
+    "log_level": "debug",
+    "code_name": "000001",
+    "take_profit": 0.02,
     "stop_loss": "",
 }

@@ -10,6 +10,7 @@ from Utils.base_utils import run_once
 
 
 class BaseTransactionAnalysis:
+
     def __init__(self, logger):
         self.logger = logger
 
@@ -19,10 +20,12 @@ class BaseTransactionAnalysis:
         res_df['max2here'] = res_df[pct_name].expanding().max()
         res_df['dd2here'] = res_df[pct_name] / res_df['max2here'] - 1
         # 计算最大回撤，以及最大回撤结束时间
-        end_date, max_draw_down = tuple(res_df.sort_values(by=['dd2here']).iloc[0][[time_stamp, 'dd2here']])
+        end_date, max_draw_down = tuple(
+            res_df.sort_values(by=['dd2here']).iloc[0][[time_stamp,
+                                                        'dd2here']])
         # 计算最大回撤开始时间
-        start_date = res_df[res_df[time_stamp] <= end_date].sort_values(by=pct_name, ascending=False).iloc[0][
-            time_stamp]
+        start_date = res_df[res_df[time_stamp] <= end_date].sort_values(
+            by=pct_name, ascending=False).iloc[0][time_stamp]
         # 将无关的变量删除
         res_df.drop(['max2here', 'dd2here'], axis=1, inplace=True)
         return max_draw_down, start_date, end_date
@@ -43,8 +46,16 @@ class BaseTransactionAnalysis:
         odds = data["pct"].mean()
 
         # 计算盈亏比
-        profit = data[data["pct"] > 0]["pct"].mean()
-        loss = data[data["pct"] < 0]["pct"].mean()
+        if len(data[data["pct"] > 0]) > 0:
+            profit = data[data["pct"] > 0]["pct"].mean()
+        else:
+            profit = 0
+        
+        if len(data[data["pct"] < 0]) > 0:
+            loss = data[data["pct"] < 0]["pct"].mean()
+        else:
+            loss = 0
+    
         pl_ratio = profit * success_rate + loss * (1 - success_rate)
 
         # 计算策略的平均持股天数
@@ -59,9 +70,8 @@ class BaseTransactionAnalysis:
         # strategy_annual_return = strategy_pct ** (250 / len(self.Data)) - 1
 
         # 统计策略的最大回撤
-        strategy_max_draw_down, strategy_start_date, strategy_end_date = self.cal_max_down(df=data,
-                                                                                           pct_name="strategy_net",
-                                                                                           time_stamp="buy_date")
+        strategy_max_draw_down, strategy_start_date, strategy_end_date = self.cal_max_down(
+            df=data, pct_name="strategy_net", time_stamp="buy_date")
 
         result_dict = dict()
         result_dict["平均持有时间"] = mean_holding_day
@@ -81,7 +91,9 @@ class BaseTransactionAnalysis:
         result_dict["策略的盈亏比"] = pl_ratio
         # self.logger.info(result_dict)
 
-        result_df = pd.DataFrame.from_dict(result_dict, orient='index', columns=["result"])
+        result_df = pd.DataFrame.from_dict(result_dict,
+                                           orient='index',
+                                           columns=["result"])
         self.logger.info(result_df)
 
         return result_df
@@ -92,12 +104,11 @@ class BaseTransactionAnalysis:
         asset_pct = data.close[len(data) - 1] / data.close[0]
 
         # 计算标的年化
-        asset_pct_annual_return = asset_pct ** (250 / len(data)) - 1
+        asset_pct_annual_return = asset_pct**(250 / len(data)) - 1
 
         # 统计策略的最大回撤
-        asset_max_draw_down, asset_start_date, asset_end_date = self.cal_max_down(df=data,
-                                                                                  pct_name="close",
-                                                                                  time_stamp="date")
+        asset_max_draw_down, asset_start_date, asset_end_date = self.cal_max_down(
+            df=data, pct_name="close", time_stamp="date")
 
         result_dict = dict()
         result_dict["标的收益率"] = asset_pct
@@ -109,10 +120,13 @@ class BaseTransactionAnalysis:
 
         result_dict["标的交易时间"] = len(data)
 
-        result_df = pd.DataFrame.from_dict(result_dict, orient='index', columns=["result"])
+        result_df = pd.DataFrame.from_dict(result_dict,
+                                           orient='index',
+                                           columns=["result"])
         # self.logger.debug(result_df)
 
         return result_df
-
+    
+    # TODO 展示股票交易结果买卖点
     def show_analysis_result(self):
         pass

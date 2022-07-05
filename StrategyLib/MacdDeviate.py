@@ -42,11 +42,11 @@ class MACDDeviate(TradeStructure):
         for index in price_res:
 
             if last_low_price is not None and last_macd is not None:
-                if self.data.loc[index,'low'] < last_low_price - 0.1 and \
-                    self.data.loc[index,'MACD'] > last_macd  and \
-                        self.data.loc[index,'low'] == self.data.loc[index,'30_lowest']:
-                    self.data.loc[index,'price_state'] = 1
-                    # self.logger.debug(self.data.loc[index,'date'])
+                if self.data.loc[index,'low'] < last_low_price - 0.1 and self.data.loc[index,'low'] == self.data.loc[index,'30_lowest']:
+                    if self.data.loc[index,'MACD'] > last_macd:        
+                        self.data.loc[index,'price_state'] = 1
+                        
+                        self.logger.debug(self.data.loc[index,'date'])
 
             last_low_price = self.data.loc[index,'low']
             last_macd = self.data.loc[index,'MACD']    
@@ -55,9 +55,15 @@ class MACDDeviate(TradeStructure):
 
     def trading_algorithm(self):
         price_flag = 0
+        lowwest_30 = 0
         for index,row in self.data.iterrows():
+            if row ['low'] < lowwest_30:
+                price_flag = 0
+                lowwest_30 = row['low']
+
             if row['price_state'] == 1:
                 price_flag = 1
+                lowwest_30 = row['low']
     
             if row['trade'] == "LONG" and price_flag == 1:
                 self.data.loc[index,'trade'] = "BUY"

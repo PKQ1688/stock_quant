@@ -5,7 +5,6 @@
 # @Author  : Adolf
 # @File    : base_back_trader.py
 # @Function:
-from cmath import nan
 import itertools
 import random
 import statistics
@@ -33,7 +32,7 @@ class TradeStructure:
 
     def __init__(self, config):
         self.config = config
-        self.logger = Logger(name="Trade",level=config["log_level"]).logger
+        self.logger = Logger(name="Trade", level=config["log_level"]).logger
 
         self.logger.info("Trade is begging ......")
 
@@ -70,7 +69,9 @@ class TradeStructure:
         # self.logger.debug(df)
         self.data = df
 
-    def cal_base_technical_indicators(self, sma_list=(5, 10, 20), macd_parm=(12, 26, 9)):
+    def cal_base_technical_indicators(self,
+                                      sma_list=(5, 10, 20),
+                                      macd_parm=(12, 26, 9)):
         if sma_list is not None:
             for sma_parm in sma_list:
                 self.data["sma" + str(sma_parm)] = ta.sma(self.data["close"],
@@ -93,42 +94,56 @@ class TradeStructure:
 
     def strategy_execute(self):
         asset_name = self.data.name[0]
-        one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
+        one_transaction_record = self.init_one_transaction_record(
+            asset_name=asset_name)
 
         transaction_record_list = []
         # self.logger.debug(one_transaction_record)
+        take_profit = self.config.get("take_profit",None)
 
         for index, trading_step in self.data.iterrows():
             # self.logger.debug(trading_step)
-
-            if trading_step["trade"] == "BUY" and one_transaction_record["buy_date"] == "":
+            if trading_step["trade"] == "BUY" and one_transaction_record[
+                    "buy_date"] == "":
                 one_transaction_record["buy_date"] = trading_step["date"]
                 one_transaction_record["buy_price"] = trading_step["close"]
                 one_transaction_record["holding_time"] = index
-            
-            if self.config["take_profit"] is not None and one_transaction_record["buy_date"] != "":
-                if (trading_step["close"] - one_transaction_record["buy_price"])/one_transaction_record["buy_price"] > self.config["take_profit"]:
+
+            if take_profit is not None and one_transaction_record["buy_date"] != "":
+                if (trading_step["close"] - one_transaction_record["buy_price"]
+                    ) / one_transaction_record["buy_price"] > self.config[
+                        "take_profit"]:
                     one_transaction_record["sell_date"] = trading_step["date"]
-                    one_transaction_record["sell_price"] = trading_step["close"]
-                    one_transaction_record["holding_time"] = index - one_transaction_record["holding_time"]
+                    one_transaction_record["sell_price"] = trading_step[
+                        "close"]
+                    one_transaction_record[
+                        "holding_time"] = index - one_transaction_record[
+                            "holding_time"]
 
-                    transaction_record_list.append(one_transaction_record.copy())
-                    one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
+                    transaction_record_list.append(
+                        one_transaction_record.copy())
+                    one_transaction_record = self.init_one_transaction_record(
+                        asset_name=asset_name)
 
-            if trading_step["trade"] == "SELL" and one_transaction_record["buy_date"] != "":
+            if trading_step["trade"] == "SELL" and one_transaction_record[
+                    "buy_date"] != "":
                 one_transaction_record["sell_date"] = trading_step["date"]
                 one_transaction_record["sell_price"] = trading_step["close"]
-                one_transaction_record["holding_time"] = index - one_transaction_record["holding_time"]
+                one_transaction_record[
+                    "holding_time"] = index - one_transaction_record[
+                        "holding_time"]
 
                 transaction_record_list.append(one_transaction_record.copy())
-                one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
+                one_transaction_record = self.init_one_transaction_record(
+                    asset_name=asset_name)
 
         # self.logger.info(transaction_record_list)
         transaction_record_df = pd.DataFrame(transaction_record_list)
         # self.logger.debug(transaction_record_df)
 
-        transaction_record_df["pct"] = (transaction_record_df["sell_price"] / transaction_record_df["buy_price"]) * (
-                1 - self.trade_rate) - 1
+        transaction_record_df["pct"] = (transaction_record_df["sell_price"] /
+                                        transaction_record_df["buy_price"]) * (
+                                            1 - self.trade_rate) - 1
 
         self.logger.debug(transaction_record_df)
 
@@ -139,7 +154,8 @@ class TradeStructure:
     def show_one_stock(self, show_data):
         if not os.path.exists("ShowHtml"):
             os.mkdir("ShowHtml")
-        show_data_path = self.config.get("show_data_path", "ShowHtml/StrategyShowData.html")
+        show_data_path = self.config.get("show_data_path",
+                                         "ShowHtml/StrategyShowData.html")
         show_data = show_data_from_df(df_or_dfpath=show_data)
         draw_chart(input_data=show_data, show_html_path=show_data_path)
 
@@ -155,16 +171,18 @@ class TradeStructure:
 
         self.cal_technical_indicators(indicators_config)
         # if not self.cal_technical_indicators(indicators_config):
-            # return False
+        # return False
 
         self.trading_algorithm()
         transaction_record_df = self.strategy_execute()
 
-        asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
+        asset_analysis = self.transaction_analysis.cal_asset_analysis(
+            self.data)
         if asset_analysis is not None:
             self.logger.info("对标的进行分析:\n{}".format(asset_analysis))
 
-        strategy_analysis = self.transaction_analysis.cal_trader_analysis(transaction_record_df)
+        strategy_analysis = self.transaction_analysis.cal_trader_analysis(
+            transaction_record_df)
 
         # self.logger.debug("策略使用的参数:\n{}".format(indicators_config))
         # self.logger.debug("对策略结果进行分析:\n{}".format(strategy_analysis))
@@ -189,14 +207,22 @@ class TradeStructure:
         # self.logger.info(p)
 
         if indicators_config:
-            if any([isinstance(value, list) for key, value in indicators_config.items()]):
+            if any([
+                    isinstance(value, list)
+                    for key, value in indicators_config.items()
+            ]):
                 pl_ration_list = []
-                for item in itertools.product(*[value for key, value in indicators_config.items()]):
+                for item in itertools.product(
+                        *[value for key, value in indicators_config.items()]):
                     self.logger.debug(item)
-                    one_indicator_config = {list(indicators_config.keys())[index]: item[index]
-                                            for index in range(len(list(indicators_config.keys())))}
+                    one_indicator_config = {
+                        list(indicators_config.keys())[index]: item[index]
+                        for index in range(len(list(indicators_config.keys())))
+                    }
 
-                    one_pl_relation = self.run_one_stock_once(code_name=code_name,indicators_config=one_indicator_config)
+                    one_pl_relation = self.run_one_stock_once(
+                        code_name=code_name,
+                        indicators_config=one_indicator_config)
                     # if one_pl_relation is not nan:
                     pl_ration_list.append(one_pl_relation)
                 pl_ration = statistics.mean(pl_ration_list)
@@ -224,7 +250,7 @@ class TradeStructure:
 
         # elif code_name.upper() == "ALL_MARKET":
         elif "ALL_MARKET" in code_name.upper():
-            with open("Data/RealData/ALL_MARKET_CODE.json", "r") as all_market_code:
+            with open("Data/RealData/ALL_MARKET_CODE.json","r") as all_market_code:
                 market_code_dict = json.load(all_market_code)
             self.logger.debug(market_code_dict)
 
@@ -238,6 +264,7 @@ class TradeStructure:
 
             pl_ration_list = []
             for code in market_code_list:
+                self.logger.info(code)
                 try:
                     one_pl_ration = self.run_one_stock(code_name=code)
                     # self.logger.info(one_pl_ration)
@@ -257,6 +284,8 @@ class TradeStructure:
         self.logger.info("策略交易一次的收益的数学期望为：{:.2f}%".format(pl_ration * 100))
 
         # self.run_one_stock()
+
+
 # if __name__ == '__main__':
 #     trade_structure = TradeStructure(config="")
 #     trade_structure.run_one_stock(code_name="600570", start_stamp="2021-01-01", end_stamp="2021-12-31")
