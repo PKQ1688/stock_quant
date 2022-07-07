@@ -49,7 +49,7 @@ os.mkdir(qfq_path)
 os.mkdir(hfq_path)
 os.mkdir(origin_path)
 
-pbar = tqdm(total=len(code_list))
+# pbar = tqdm(total=len(code_list))
 
 
 @ray.remote
@@ -62,8 +62,7 @@ def get_one_stock_data(code):
         #     return 0
         stock_zh_a_hist_df["code"] = code
         stock_zh_a_hist_df["name"] = code_name_mapping[code]
-        stock_zh_a_hist_df.to_csv(os.path.join(qfq_path, code + ".csv"),
-                                  index=False)
+        stock_zh_a_hist_df.to_csv(os.path.join(qfq_path, code + ".csv"), index=False)
 
         # 获取后复权数据
         stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, adjust="hfq")
@@ -73,8 +72,7 @@ def get_one_stock_data(code):
         stock_zh_a_hist_df["code"] = code
         stock_zh_a_hist_df["name"] = code_name_mapping[code]
         # stock_zh_a_hist_df["industry"] = get_stock_board_df(code)
-        stock_zh_a_hist_df.to_csv(os.path.join(hfq_path, code + ".csv"),
-                                  index=False)
+        stock_zh_a_hist_df.to_csv(os.path.join(hfq_path, code + ".csv"), index=False)
 
         # 获取原始不复权数据
         stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code)
@@ -84,23 +82,34 @@ def get_one_stock_data(code):
         stock_zh_a_hist_df["code"] = code
         stock_zh_a_hist_df["name"] = code_name_mapping[code]
         # stock_zh_a_hist_df["industry"] = get_stock_board_df(code)
-        stock_zh_a_hist_df.to_csv(os.path.join(origin_path, code + ".csv"),
-                                  index=False)
-        pbar.update(1)
+        stock_zh_a_hist_df.to_csv(os.path.join(origin_path, code + ".csv"), index=False)
+        # pbar.update(1)
 
         return 0
     except Exception as e:
         print(code)
         print(e)
         error_code_list.append(code)
-        pbar.update(1)
+        # pbar.update(1)
 
 
+start_time = time.time
 futures = [get_one_stock_data.remote(code) for code in code_list]
-ray.get(futures)
+
+
+# ray.get(futures)
 # for code in code_list:
 # get_one_stock_data(code)
+def to_iterator(obj_ids):
+    while obj_ids:
+        done, obj_ids = ray.wait(obj_ids)
+        yield ray.get(done[0])
 
-pbar.close()
+
+for x in tqdm(to_iterator(futures), total=len(code_list)):
+    pass
+
+print('本次获取了{}只股票的数据，共用时间为{}'.format(len(code_list, time.time - start_time)))
+# pbar.close()
 print("date", time.strftime("%Y-%m-%d"))
 print("=" * 20)
