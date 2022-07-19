@@ -2,7 +2,7 @@
 Description: 
 Author: adolf
 Date: 2022-07-10 15:46:40
-LastEditTime: 2022-07-19 23:39:23
+LastEditTime: 2022-07-19 23:41:10
 LastEditors: adolf
 '''
 import akshare as ak
@@ -76,7 +76,6 @@ def to_iterator(obj_ids):
     while obj_ids:
         done, obj_ids = ray.wait(obj_ids)
         yield ray.get(done[0])
-
 
 for x in tqdm(to_iterator(futures), total=len(code_list)):
     pass
