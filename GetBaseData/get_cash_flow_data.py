@@ -2,7 +2,7 @@
 Description: 
 Author: adolf
 Date: 2022-07-10 15:46:40
-LastEditTime: 2022-07-19 23:41:10
+LastEditTime: 2022-07-20 21:44:44
 LastEditors: adolf
 '''
 import akshare as ak
@@ -10,19 +10,11 @@ import akshare as ak
 import pandas as pd
 import json
 import os
-from pyrsistent import m
 
 from tqdm.auto import tqdm
 
 import time
 import ray
-
-#显示所有列
-# pd.set_option('display.max_columns', None)
-#显示所有行
-# pd.set_option('display.max_rows', None)
-#设置value的显示长度为100，默认为50
-# pd.set_option('max_colwidth', 100)
 
 ray.init()
 
