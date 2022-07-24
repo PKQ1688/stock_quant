@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: adolf
  * @Date: 2022-01-04 20:52:13
- * @LastEditTime: 2022-07-24 14:38:48
+ * @LastEditTime: 2022-07-24 14:40:57
  * @LastEditors: adolf
 -->
 # stock_quant
@@ -51,10 +51,6 @@ python GetBaseData/get_board_data.py
 ```
 streamlit run StrategyLib/ChanStrategy/automatic_drawing.py
 ```
-
-I welcome pull requests with new indicators or fixes for existing ones.
-Please submit only indicators that belong in public domain and are
-royalty free.
 
 ## Contributing
 
