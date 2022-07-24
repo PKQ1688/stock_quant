@@ -2,14 +2,15 @@
  * @Description: 
  * @Author: adolf
  * @Date: 2022-01-04 20:52:13
- * @LastEditTime: 2022-07-24 13:56:01
+ * @LastEditTime: 2022-07-24 13:58:12
  * @LastEditors: adolf
 -->
 # stock_quant
 用于股票量化策略的测试
 
-## 零、TODOLIST
+## 零、TODO LIST
 - [ ] 支持概念板块的历史数据获取
+- [ ] 完善缠论对股票的分析
 
 ## 一、项目的基础设定
 ### 1.1 用于控制台使用代理
