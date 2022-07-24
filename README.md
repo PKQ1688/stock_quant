@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: adolf
  * @Date: 2022-01-04 20:52:13
- * @LastEditTime: 2022-07-24 13:58:29
+ * @LastEditTime: 2022-07-24 14:38:48
  * @LastEditors: adolf
 -->
 # stock_quant
@@ -51,3 +51,19 @@ python GetBaseData/get_board_data.py
 ```
 streamlit run StrategyLib/ChanStrategy/automatic_drawing.py
 ```
+
+I welcome pull requests with new indicators or fixes for existing ones.
+Please submit only indicators that belong in public domain and are
+royalty free.
+
+## Contributing
+
+1. Fork it (https://github.com/PKQ1688/stock_quant/fork)
+2. Study how it's implemented.
+3. Create your feature branch (`git checkout -b my-new-feature`).
+4. Run [black](https://github.com/ambv/black) code formatter on the finta.py to ensure uniform code style.
+5. Commit your changes (`git commit -am 'Add some feature'`).
+6. Push to the branch (`git push origin my-new-feature`).
+7. Create a new Pull Request.
+
+------------------------------------------------------------------------
