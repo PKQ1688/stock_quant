@@ -94,7 +94,7 @@ def get_one_stock_data(code):
         # pbar.update(1)
 
 
-start_time = time.time
+start_time = time.time()
 futures = [get_one_stock_data.remote(code) for code in code_list]
 
 
@@ -110,7 +110,7 @@ def to_iterator(obj_ids):
 for x in tqdm(to_iterator(futures), total=len(code_list)):
     pass
 
-print('本次获取了{}只股票的数据，共用时间为{}'.format(len(code_list, time.time - start_time)))
+print('本次获取了{}只股票的数据，共用时间为{}'.format(len(code_list, time.time() - start_time)))
 # pbar.close()
 print("date", time.strftime("%Y-%m-%d"))
 print("=" * 20)
