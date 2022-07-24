@@ -2,11 +2,11 @@
  * @Description: 
  * @Author: adolf
  * @Date: 2022-01-04 20:52:13
- * @LastEditTime: 2022-07-24 14:40:57
+ * @LastEditTime: 2022-07-24 14:42:02
  * @LastEditors: adolf
 -->
 # stock_quant
-用于股票量化策略的测试
+用于股票量化策略的研究，欢迎一起讨论交流。
 
 ## 零、TODO LIST
 - [ ] 支持概念板块的历史数据获取
