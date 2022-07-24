@@ -2,17 +2,17 @@
  * @Description: 
  * @Author: adolf
  * @Date: 2022-01-04 20:52:13
- * @LastEditTime: 2022-07-24 14:42:02
+ * @LastEditTime: 2022-07-24 14:44:04
  * @LastEditors: adolf
 -->
 # stock_quant
 用于股票量化策略的研究，欢迎一起讨论交流。
 
-## 零、TODO LIST
+## TODO LIST
 - [ ] 支持概念板块的历史数据获取
 - [ ] 完善缠论对股票的分析
 
-## 一、项目的基础设定
+## 项目的基础设定
 ### 1.1 用于控制台使用代理
 ```
 export http_proxy="http://127.0.0.1:7890"
@@ -29,7 +29,7 @@ export PYTHONPATH=$(pwd):$PYTHONPATH
 export PYTHONDONTWRITEBYTECODE=1
 ```
 
-## 二、获取需要使用到的基本数据
+## 获取需要使用到的基本数据
 ### 2.1 获取基础股票数据
 &nbsp; 从东方财富官网获取个股的历史数据，包含前复权，后复权，未复权。
 ```
