@@ -29,7 +29,7 @@ code_list = stock_zh_a_spot_em_df.code.to_list()
 code_name_mapping = stock_zh_a_spot_em_df.set_index(['code'])['name'].to_dict()
 with open("Data/RealData/ALL_MARKET_CODE.json", "w") as all_market_code:
     json.dump(code_name_mapping, all_market_code,ensure_ascii=False)
-exit()
+# exit()
 
 ray.init()
 
