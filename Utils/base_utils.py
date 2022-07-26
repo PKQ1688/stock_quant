@@ -140,6 +140,7 @@ class Logger:
         yield
         end = True
 
+# logger = Logger()
 
 # 指定只运行一次
 def run_once(f):

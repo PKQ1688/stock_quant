@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: adolf
  * @Date: 2022-01-04 20:52:13
- * @LastEditTime: 2022-07-24 14:44:04
+ * @LastEditTime: 2022-07-26 21:22:33
  * @LastEditors: adolf
 -->
 # stock_quant
@@ -33,7 +33,7 @@ export PYTHONDONTWRITEBYTECODE=1
 ### 2.1 获取基础股票数据
 &nbsp; 从东方财富官网获取个股的历史数据，包含前复权，后复权，未复权。
 ```
-ptyhon GetBaseData/get_dc_data.py
+python GetBaseData/get_dc_data.py
 ```
 ### 2.2 获取基础的个股资金流量数据
 &nbsp; 从东方财富官网获取不同股票的近100日的超大、大、中、小单数据变化。

@@ -2,12 +2,13 @@
 Description: 
 Author: adolf
 Date: 2022-07-23 16:04:07
-LastEditTime: 2022-07-24 14:15:06
+LastEditTime: 2022-07-26 21:44:04
 LastEditors: adolf
 '''
 import os
 import json
 from tqdm.auto import tqdm
+from loguru import logger
 
 import akshare as ak
 from pprint import pprint
@@ -38,14 +39,17 @@ if not os.path.exists(save_path):
 
 for key, value in tqdm(industry_board_name_mapping.items()):
     # print(key,value)
-    stock_board_industry_hist_em_df = ak.stock_board_industry_hist_em(
-        symbol=key, start_date="19900101", end_date="20991231", adjust="")
-    
-    stock_board_industry_hist_em_df.rename(columns=ch_eng_mapping_dict,
-                                           inplace=True)
-    # print(stock_board_industry_hist_em_df)
+    try:
+        stock_board_industry_hist_em_df = ak.stock_board_industry_hist_em(
+            symbol=key, start_date="19900101", end_date="20991231", adjust="")
+        
+        stock_board_industry_hist_em_df.rename(columns=ch_eng_mapping_dict,
+                                            inplace=True)
+        # print(stock_board_industry_hist_em_df)
 
-    stock_board_industry_hist_em_df.to_csv(save_path + "{}.csv".format(key),
-                                           index=False)
+        stock_board_industry_hist_em_df.to_csv(save_path + "{}.csv".format(key),
+                                            index=False)
 
-    # break
+    except Exception as e:
+        logger.error(e)
+        logger.error(key)

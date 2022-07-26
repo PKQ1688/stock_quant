@@ -110,7 +110,7 @@ def to_iterator(obj_ids):
 for x in tqdm(to_iterator(futures), total=len(code_list)):
     pass
 
-print('本次获取了{}只股票的数据，共用时间为{}'.format(len(code_list, time.time() - start_time)))
+print('本次获取了{}只股票的数据，共用时间为{:.2f}'.format(len(code_list), time.time() - start_time))
 # pbar.close()
 print("date", time.strftime("%Y-%m-%d"))
 print("=" * 20)

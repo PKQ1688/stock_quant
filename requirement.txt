@@ -13,3 +13,4 @@ streamlit-echarts
 tabulate
 wcwidth
 colorlog
+loguru
