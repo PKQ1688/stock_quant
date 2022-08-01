@@ -2,7 +2,7 @@
 Description:  
 Author: adolf
 Date: 2022-07-24 14:09:47
-LastEditTime: 2022-07-26 23:10:51
+LastEditTime: 2022-08-01 20:51:31
 LastEditors: adolf
 '''
 import os
@@ -13,6 +13,7 @@ from finta import TA
 from loguru import logger
 # from Utils.base_utils import logger
 os.environ["LOGURU_LEVEL"] = "INFO"
+
 pd.set_option("expand_frame_repr", False)
 pd.set_option('display.max_rows', 100)
 
@@ -31,6 +32,7 @@ for one_board in board_list:
     # print(one_board)
     df = pd.read_csv(board_data_path +
                      "industry_origin/{}.csv".format(one_board))
+                     
     df = df[["date", "open", "close", "high", "low", "volume"]]
     # print(df)
 

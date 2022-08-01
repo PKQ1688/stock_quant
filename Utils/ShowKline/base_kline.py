@@ -250,7 +250,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     )
 
     # grid_chart.render(path="ShowHtml/CandleChart.html")
-    grid_chart.render(path=show_html_path)
+    grid_chart.render(path=show_html_path,height="600%", width="100%")
 
 
 if __name__ == '__main__':

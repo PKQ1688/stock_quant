@@ -6,6 +6,7 @@
 # @File    : hanle_data_show.py
 import pandas as pd
 from finta import TA
+from loguru import logger
 # import pandas_ta as ta
 
 
@@ -58,8 +59,12 @@ from finta import TA
 def show_data_from_df(df_or_dfpath: str=None,use_all_data:bool=False):
 
     if isinstance(df_or_dfpath, pd.DataFrame):
-        macd_df = df_or_dfpath[["MACD","SIGNAL","HISTOGRAM"]]
+        try:
+            macd_df = df_or_dfpath[["MACD","SIGNAL","HISTOGRAM"]]
         # print(macd_df)
+        except:
+            macd_df = TA.MACD(df_or_dfpath)
+            macd_df["HISTOGRAM"] = macd_df["MACD"] - macd_df["SIGNAL"]
 
     elif isinstance(df_or_dfpath, str):
         df_or_dfpath = pd.read_csv(df_or_dfpath)

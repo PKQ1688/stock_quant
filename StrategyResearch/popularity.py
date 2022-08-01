@@ -2,18 +2,25 @@
 Description:  
 Author: adolf
 Date: 2022-07-26 23:45:09
-LastEditTime: 2022-07-31 21:29:19
+LastEditTime: 2022-08-01 20:36:30
 LastEditors: adolf
 '''
 import akshare as ak
 import pandas as pd
+from datetime import date
 
 pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', 100)
+pd.set_option('display.max_rows', 200)
+
+today = date.today()
+d1 = today.strftime("%Y%m%d")
+print("今天的日期:", d1)
+# exit()
 
 # 问财热度排行
-stock_hot_rank_wc_df = ak.stock_hot_rank_wc(date="20220726")
-print(stock_hot_rank_wc_df)
+stock_hot_rank_wc_df = ak.stock_hot_rank_wc(date=d1)
+print(stock_hot_rank_wc_df[:200])
+exit()
 
 # 东财热度排行
 stock_hot_rank_em_df = ak.stock_hot_rank_em()
@@ -26,7 +33,7 @@ print(stock_hot_tgb_df)
 # 雪球讨论热度榜
 new_hot = ak.stock_hot_tweet_xq(symbol="本周新增")
 new_hot['new_hot_rank'] = new_hot.index
-# print(new_hot[:100])
+print(new_hot[:100])
 
 # old_hot = ak.stock_hot_tweet_xq(symbol="最热门")
 # old_hot['old_hot_rank'] = old_hot.index
