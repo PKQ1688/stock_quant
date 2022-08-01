@@ -7,11 +7,14 @@
 # @Function:
 import streamlit as st
 import akshare as ak
-import os
+# import os
+import sys
+sys.path.insert(0,".")
+
 import pandas as pd
 from StrategyLib.ChanStrategy.BasicChan.basic_tools import CZSC, RawBar
 from streamlit_echarts import st_pyecharts
-import streamlit.components.v1 as components
+
 
 st.set_page_config(layout="wide")
 
