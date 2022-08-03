@@ -4,6 +4,7 @@
 # @Date    : 2022/1/6 16:55
 # @Author  : Adolf
 # @File    : base_kline.py
+from tkinter.messagebox import NO
 from typing import List, Sequence, Union
 
 from pyecharts import options as opts
@@ -27,7 +28,7 @@ def calculate_ma(input_data, day_count: int):
     return result
 
 
-def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
+def draw_chart(input_data, show_html_path=None,show_render=False):
     kline = Kline()
     kline.add_xaxis(xaxis_data=input_data["times"])
     kline.add_yaxis(
@@ -250,7 +251,10 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     )
 
     # grid_chart.render(path="ShowHtml/CandleChart.html")
-    grid_chart.render(path=show_html_path,height="600%", width="100%")
+    if show_html_path is not None:
+        grid_chart.render(path=show_html_path,height="600%", width="100%")
+    if show_render:
+        grid_chart.render()
 
 
 if __name__ == '__main__':

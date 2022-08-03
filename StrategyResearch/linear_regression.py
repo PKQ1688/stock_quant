@@ -2,7 +2,7 @@
 Description: 
 Author: adolf
 Date: 2022-08-01 21:05:06
-LastEditTime: 2022-08-01 21:13:07
+LastEditTime: 2022-08-03 20:25:17
 LastEditors: adolf
 '''
 # import numpy as np
@@ -26,4 +26,4 @@ df = df[["date", "open", "close", "high", "low", "volume"]]
 logger.info(df)
 
 show_data = show_data_from_df(df)
-draw_chart(show_data,show_html_path="ShowHtml/CandleChart.html")
+draw_chart(show_data,show_render=True)
