@@ -11,7 +11,8 @@ from pyecharts import options as opts
 from pyecharts.commons.utils import JsCode
 from pyecharts.charts import Kline, Line, Bar, Grid
 
-from GetBaseData.hanle_data_show import show_data_from_df
+# from snapshot_pyppeteer import snapshot
+# from pyecharts.render import make_snapshot
 
 
 def calculate_ma(input_data, day_count: int):
@@ -28,7 +29,7 @@ def calculate_ma(input_data, day_count: int):
     return result
 
 
-def draw_chart(input_data, show_html_path=None,show_render=False):
+def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     kline = Kline()
     kline.add_xaxis(xaxis_data=input_data["times"])
     kline.add_yaxis(
@@ -251,12 +252,14 @@ def draw_chart(input_data, show_html_path=None,show_render=False):
     )
 
     # grid_chart.render(path="ShowHtml/CandleChart.html")
-    if show_html_path is not None:
-        grid_chart.render(path=show_html_path,height="600%", width="100%")
-    if show_render:
-        grid_chart.render()
-
+    # if show_html_path is not None:
+    grid_chart.render(path=show_html_path,height="600%", width="100%")
+    # if show_render:
+    #     grid_chart.render()
+    #     make_snapshot(snapshot, grid_chart.render(), "bar.png")
 
 if __name__ == '__main__':
+    from GetBaseData.hanle_data_show import show_data_from_df
+
     show_data = show_data_from_df("Data/RealData/hfq/600570.csv")
     draw_chart(show_data,show_html_path="ShowHtml/CandleChart.html")
