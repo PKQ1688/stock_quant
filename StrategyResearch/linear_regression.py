@@ -2,7 +2,7 @@
 Description: 
 Author: adolf
 Date: 2022-08-01 21:05:06
-LastEditTime: 2022-08-08 23:05:00
+LastEditTime: 2022-08-08 23:57:07
 LastEditors: adolf
 '''
 import sys
@@ -12,14 +12,13 @@ import pandas as pd
 from loguru import logger
 from tqdm.auto import tqdm
 
-from pip import main
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, median_absolute_error
+# from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, median_absolute_error
 
-from GetBaseData.hanle_data_show import show_data_from_df
-from Utils.ShowKline.base_kline import draw_chart
+# from GetBaseData.hanle_data_show import show_data_from_df
+# from Utils.ShowKline.base_kline import draw_chart
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import ray
 import psutil
 from functools import reduce
@@ -152,7 +151,7 @@ def choose_what_need(all_df):
         # logger.debug(tmp_mom)
         try:
             all_df.loc[index, 'top_mom'] = tmp_mom[0][0]
-            all_df.loc[index, "top_mom_pct"] = row["{}_pct".format(tmp_mom[0][0])]
+            all_df.loc[index, "top_mom_pct"] = all_df.loc[index+1,tmp_mom[0][0].replace('_mom', '_pct')]
         except Exception as e:
             logger.warning(e)
         # if index > 100:
@@ -161,7 +160,11 @@ def choose_what_need(all_df):
     # logger.info(all_df)
 
     # all_df['top_mom_pct'] = all_df["{}_pct".format(all_df['top_mom'])].shift(1)
+
+    all_df = all_df[-1000:]
+    all_df['strategy_net'] = (1 + all_df['top_mom_pct']).cumprod()
     logger.info(all_df)
+
 
 
 if __name__ == "__main__":

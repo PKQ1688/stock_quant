@@ -2,7 +2,32 @@
 Description: 
 Author: adolf
 Date: 2022-07-03 23:11:00
-LastEditTime: 2022-07-03 23:11:08
+LastEditTime: 2022-08-09 00:08:10
 LastEditors: adolf
 '''
+import sys
 import pandas as pd
+from loguru import logger
+from dataclasses import dataclass
+
+@dataclass
+class MarketChooseConfig:
+    LOG_LEVEL: str = "DEBUG"
+
+class MarketChoose:
+    def __init__(self,config) -> None:
+        self.config = MarketChooseConfig(**config)
+
+        logger.remove()  #删去import logger之后自动产生的handler，不删除的话会出现重复输出的现象
+        logger.add(sys.stderr, level=self.config.LOG_LEVEL)  #添加一个终端输出的内容
+        # logger.add("some_file.log", enqueue=True)  #添加一个文件输出的内容
+        logger.info("MarketChoose init")
+    
+    def get_market_data(self):
+        pass
+
+    def cal_one_data(self):
+        pass
+
+if __name__ == "__main__":
+    market_choose = MarketChoose({"LOG_LEVEL":"INFO"})
