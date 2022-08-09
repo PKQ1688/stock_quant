@@ -29,8 +29,7 @@ class MarketChoose:
         pass
 
     def cal_one_data(self):
-        pass
+        raise NotImplementedError
 
 
-if __name__ == "__main__":
-    market_choose = MarketChoose(LOG_LEVEL="INFO")
+
