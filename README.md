@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: adolf
  * @Date: 2022-01-04 20:52:13
- * @LastEditTime: 2022-08-09 23:18:56
+ * @LastEditTime: 2022-08-09 23:20:51
  * @LastEditors: adolf
 -->
 # stock_quant
@@ -33,7 +33,7 @@ export PYTHONDONTWRITEBYTECODE=1
 
 ### 1.4 国内配置github的真实ip
 - 通过网址```https://ipaddress.com/website/github.com```获取到github的真实ip
-- 通过修改```/etc/hosts/```文件，向其中添加```140.82.112.4 github.com```
+- 通过修改```sudo vi /etc/hosts```文件，向其中添加```140.82.112.4 github.com```
 - 安装nscd,如果已经安装了忽略。centos使用```sudo yum install -y nscd```
 - 刷新本地dns缓存```service nscd restart```
 
