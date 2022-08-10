@@ -14,3 +14,4 @@ tabulate
 wcwidth
 colorlog
 loguru
+pathos

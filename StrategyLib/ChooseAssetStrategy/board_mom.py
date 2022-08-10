@@ -22,13 +22,13 @@ class BoardMoMStrategy(MarketChoose):
         # model = Ridge(alpha=1.0, fit_intercept=True)
         # Lasso回归
         # model = Lasso(alpha=1.0, fit_intercept=True)
-    
+
     @staticmethod
     def normalization(data):
         _range = np.max(data) - np.min(data)
         return (data - np.min(data)) / _range
-    
-    def cal_one_date_mom(self,origin_data, period=20):
+
+    def cal_one_date_mom(self, origin_data, period=20):
         """
         计算一天的mom
         :param origin_data: 一天的原始数据
@@ -41,16 +41,16 @@ class BoardMoMStrategy(MarketChoose):
         self.model.fit(x, y)
         return self.model.coef_[0][0]
 
-    def cal_one_data(self, board_name="", period=20):
+    def cal_one_data(self, file_name="", period=20):
         """
         计算一个板块的mom
-        :param board_name: 板块名称
+        :param file_name: 文件名称
         :param period: mom周期
         """
-        origin_data = pd.read_csv(self.board_data_path + board_name + ".csv")
+        origin_data = pd.read_csv(self.config.DATA_PATH + file_name)
         data = origin_data[["date", "open", "close", "high", "low", "volume"]].copy()
         data["mid"] = (data["open"] + data["close"] + data["high"] + data["low"]) / 4
-        self.logger.debug(data)
+        # self.logger.debug(data)
 
         data["line_w"] = (
             data["close"]
@@ -61,15 +61,41 @@ class BoardMoMStrategy(MarketChoose):
         data = data[["date", "close", "line_w"]]
         data.rename(
             columns={
-                "close": "{}_close".format(board_name),
-                "line_w": "{}_mom".format(board_name),
+                "close": "{}_close".format(file_name.split(".")[0]),
+                "line_w": "{}_mom".format(file_name.split(".")[0]),
             },
             inplace=True,
         )
 
-        self.logger.success(data)
+        # self.logger.success(data)
         return data
 
+    def choose_rule(self, data):
+        for index, row in data.iterrows():
+            tmp_mom = row[
+                [
+                    "{}_mom".format(board_name.split(".")[0])
+                    for board_name in self.all_data_list
+                    if not pd.isna(row["{}_mom".format(board_name.split(".")[0])])
+                ]
+            ]
+            tmp_mom = tmp_mom.to_dict()
+            tmp_mom = sorted(tmp_mom.items(), key=lambda x: x[1], reverse=True)
+
+            try:
+                data.loc[index, "top_mom"] = tmp_mom[0][0]
+            except Exception as e:
+                self.logger.warning(e)
+
+        self.logger.debug(data)
+        
+        # data = data[["date", "top_mom", "top_mom_pct"]]
+        return data
+
+
 if __name__ == "__main__":
-    board_mom_strategy = BoardMoMStrategy(LOG_LEVEL="DEBUG")
-    board_mom_strategy.cal_one_data(board_name="汽车零部件", period=20)
+    board_mom_strategy = BoardMoMStrategy(
+        LOG_LEVEL="DEBUG", DATA_PATH="Data/BoardData/industry_origin/"
+    )
+    # board_mom_strategy.cal_one_data(board_name="汽车零部件", period=20)
+    board_mom_strategy.run()
