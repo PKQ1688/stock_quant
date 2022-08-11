@@ -75,4 +75,3 @@ class MarketChoose:
 
         self.choose_rule(df_merged)
 
-        self.logger.trace("only for test")
