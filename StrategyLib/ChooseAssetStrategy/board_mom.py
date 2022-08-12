@@ -83,7 +83,9 @@ class BoardMoMStrategy(MarketChoose):
             tmp_mom = sorted(tmp_mom.items(), key=lambda x: x[1], reverse=True)
 
             try:
-                data.loc[index, "top_mom"] = tmp_mom[0][0]
+                # data.loc[index, "top_mom"] = tmp_mom[0][0].replace("_mom", "")
+                data.loc[index, "choose_assert"] = tmp_mom[0][0].replace("_mom", "")
+                # data.loc[index,"choose_value"] = row[tmp_mom[0][0].replace("_mom", "_close")]
             except Exception as e:
                 self.logger.warning(e)
 
@@ -94,8 +96,11 @@ class BoardMoMStrategy(MarketChoose):
 
 
 if __name__ == "__main__":
+    import time
     board_mom_strategy = BoardMoMStrategy(
         LOG_LEVEL="DEBUG", DATA_PATH="Data/BoardData/industry_origin/"
     )
+    local_time = time.time()
     # board_mom_strategy.cal_one_data(board_name="汽车零部件", period=20)
     board_mom_strategy.run()
+    print(time.time() - local_time)
