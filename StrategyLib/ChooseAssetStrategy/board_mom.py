@@ -90,15 +90,19 @@ class BoardMoMStrategy(MarketChoose):
                 self.logger.warning(e)
 
         self.logger.debug(data)
-        
+
         # data = data[["date", "top_mom", "top_mom_pct"]]
         return data
 
 
 if __name__ == "__main__":
     import time
+
     board_mom_strategy = BoardMoMStrategy(
-        LOG_LEVEL="DEBUG", DATA_PATH="Data/BoardData/industry_origin/"
+        LOG_LEVEL="DEBUG",
+        DATA_PATH="Data/BoardData/industry_origin/",
+        SAVE_PATH="Data/ChooseData/board_mom.csv",
+        RUN_ONLINE=False,
     )
     local_time = time.time()
     # board_mom_strategy.cal_one_data(board_name="汽车零部件", period=20)

@@ -13,15 +13,26 @@ import pathos
 import pandas as pd
 from loguru import logger
 from tqdm.auto import tqdm
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from functools import reduce
 
 
 @dataclass
 class MarketChooseConfig:
-    LOG_LEVEL: str = "DEBUG"
-    DATA_PATH: str = "Data/BoardData/industry_origin"
+    LOG_LEVEL: str = field(
+        default="INFO",
+        metadata={
+            "help": "日志级别,默认INFO,可选DEBUG、INFO、WARNING、ERROR、CRITICAL",
+        },
+    )
+    DATA_PATH: str = field(
+        default="Data/BoardData/industry_origin", metadata={"help": "数据路径"}
+    )
+    SAVE_PATH: str = field(
+        default="Data/ChooseData/board_mom.csv", metadata={"help": "保存获取完指标路径"}
+    )
+    RUN_ONLINE: bool = field(default=True, metadata={"help": "是否在线运行,默认为True"})
 
 
 # @ray.remote
@@ -62,15 +73,22 @@ class MarketChoose:
         raise NotImplementedError
 
     def run(self):
-        res_data_list = self.get_market_data()
+        if self.config.RUN_ONLINE:
+            res_data_list = self.get_market_data()
 
-        df_merged = reduce(
-            lambda left, right: pd.merge(left, right, on=["date"], how="outer"),
-            res_data_list,
-        )
-        df_merged.sort_values(by=["date"], inplace=True)
-        df_merged.reset_index(drop=True, inplace=True)
+            df_merged = reduce(
+                lambda left, right: pd.merge(left, right, on=["date"], how="outer"),
+                res_data_list,
+            )
+            df_merged.sort_values(by=["date"], inplace=True)
+            df_merged.reset_index(drop=True, inplace=True)
 
-        self.logger.success(df_merged)
+            self.logger.success(df_merged)
 
-        self.choose_rule(df_merged)
+            choose_data = self.choose_rule(df_merged)
+            choose_data.to_csv(self.config.SAVE_PATH, index=False)
+
+        else:
+            choose_data = pd.read_csv(self.config.SAVE_PATH)
+
+        self.logger.success(choose_data)

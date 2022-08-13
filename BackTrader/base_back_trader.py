@@ -12,7 +12,7 @@ import statistics
 
 import pandas as pd
 import os
-from tqdm.auto import tqdm
+# from tqdm.auto import tqdm
 
 import json
 
