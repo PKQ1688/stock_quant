@@ -8,10 +8,12 @@
 import itertools
 import random
 import statistics
+
 # from functools import reduce
 
 import pandas as pd
 import os
+
 # from tqdm.auto import tqdm
 
 import json
@@ -25,11 +27,10 @@ from GetBaseData.hanle_data_show import show_data_from_df
 from Utils.ShowKline.base_kline import draw_chart
 
 pd.set_option("expand_frame_repr", False)
-pd.set_option('display.max_rows', None)
+pd.set_option("display.max_rows", None)
 
 
 class TradeStructure:
-
     def __init__(self, config):
         self.config = config
         self.logger = Logger(name="Trade", level=config["log_level"]).logger
@@ -51,7 +52,7 @@ class TradeStructure:
             "buy_price": 1,
             "sell_date": "",
             "sell_price": 1,
-            "holding_time": 0
+            "holding_time": 0,
         }
 
     def load_dataset(self, data_path, start_stamp=None, end_stamp=None):
@@ -69,21 +70,27 @@ class TradeStructure:
         # self.logger.debug(df)
         self.data = df
 
-    def cal_base_technical_indicators(self,
-                                      sma_list=(5, 10, 20),
-                                      macd_parm=(12, 26, 9)):
+    def cal_base_technical_indicators(
+        self, sma_list=(5, 10, 20), macd_parm=(12, 26, 9)
+    ):
         if sma_list is not None:
             for sma_parm in sma_list:
-                self.data["sma" + str(sma_parm)] = ta.sma(self.data["close"],
-                                                          length=sma_parm)
+                self.data["sma" + str(sma_parm)] = ta.sma(
+                    self.data["close"], length=sma_parm
+                )
         if macd_parm is not None:
-            macd_df = ta.macd(close=self.data['close'],
-                              fast=macd_parm[0],
-                              slow=macd_parm[1],
-                              signal=macd_parm[2])
+            macd_df = ta.macd(
+                close=self.data["close"],
+                fast=macd_parm[0],
+                slow=macd_parm[1],
+                signal=macd_parm[2],
+            )
 
-            self.data['macd'], self.data['histogram'], self.data['signal'] = \
-                [macd_df['MACD_12_26_9'], macd_df['MACDh_12_26_9'], macd_df['MACDs_12_26_9']]
+            self.data["macd"], self.data["histogram"], self.data["signal"] = [
+                macd_df["MACD_12_26_9"],
+                macd_df["MACDh_12_26_9"],
+                macd_df["MACDs_12_26_9"],
+            ]
 
     def cal_technical_indicators(self, indicators_config):
         # self.cal_base_technical_indicators()
@@ -94,56 +101,59 @@ class TradeStructure:
 
     def strategy_execute(self):
         asset_name = self.data.name[0]
-        one_transaction_record = self.init_one_transaction_record(
-            asset_name=asset_name)
+        one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
 
         transaction_record_list = []
         # self.logger.debug(one_transaction_record)
-        take_profit = self.config.get("take_profit",None)
+        take_profit = self.config.get("take_profit", None)
 
         for index, trading_step in self.data.iterrows():
             # self.logger.debug(trading_step)
-            if trading_step["trade"] == "BUY" and one_transaction_record[
-                    "buy_date"] == "":
+            if (
+                trading_step["trade"] == "BUY"
+                and one_transaction_record["buy_date"] == ""
+            ):
                 one_transaction_record["buy_date"] = trading_step["date"]
                 one_transaction_record["buy_price"] = trading_step["close"]
                 one_transaction_record["holding_time"] = index
 
             if take_profit is not None and one_transaction_record["buy_date"] != "":
-                if (trading_step["close"] - one_transaction_record["buy_price"]
-                    ) / one_transaction_record["buy_price"] > self.config[
-                        "take_profit"]:
+                if (
+                    trading_step["close"] - one_transaction_record["buy_price"]
+                ) / one_transaction_record["buy_price"] > self.config["take_profit"]:
                     one_transaction_record["sell_date"] = trading_step["date"]
-                    one_transaction_record["sell_price"] = trading_step[
-                        "close"]
-                    one_transaction_record[
-                        "holding_time"] = index - one_transaction_record[
-                            "holding_time"]
+                    one_transaction_record["sell_price"] = trading_step["close"]
+                    one_transaction_record["holding_time"] = (
+                        index - one_transaction_record["holding_time"]
+                    )
 
-                    transaction_record_list.append(
-                        one_transaction_record.copy())
+                    transaction_record_list.append(one_transaction_record.copy())
                     one_transaction_record = self.init_one_transaction_record(
-                        asset_name=asset_name)
+                        asset_name=asset_name
+                    )
 
-            if trading_step["trade"] == "SELL" and one_transaction_record[
-                    "buy_date"] != "":
+            if (
+                trading_step["trade"] == "SELL"
+                and one_transaction_record["buy_date"] != ""
+            ):
                 one_transaction_record["sell_date"] = trading_step["date"]
                 one_transaction_record["sell_price"] = trading_step["close"]
-                one_transaction_record[
-                    "holding_time"] = index - one_transaction_record[
-                        "holding_time"]
+                one_transaction_record["holding_time"] = (
+                    index - one_transaction_record["holding_time"]
+                )
 
                 transaction_record_list.append(one_transaction_record.copy())
                 one_transaction_record = self.init_one_transaction_record(
-                    asset_name=asset_name)
+                    asset_name=asset_name
+                )
 
         # self.logger.info(transaction_record_list)
         transaction_record_df = pd.DataFrame(transaction_record_list)
         # self.logger.debug(transaction_record_df)
 
-        transaction_record_df["pct"] = (transaction_record_df["sell_price"] /
-                                        transaction_record_df["buy_price"]) * (
-                                            1 - self.trade_rate) - 1
+        transaction_record_df["pct"] = (
+            transaction_record_df["sell_price"] / transaction_record_df["buy_price"]
+        ) * (1 - self.trade_rate) - 1
 
         self.logger.debug(transaction_record_df)
 
@@ -154,8 +164,9 @@ class TradeStructure:
     def show_one_stock(self, show_data):
         if not os.path.exists("ShowHtml"):
             os.mkdir("ShowHtml")
-        show_data_path = self.config.get("show_data_path",
-                                         "ShowHtml/StrategyShowData.html")
+        show_data_path = self.config.get(
+            "show_data_path", "ShowHtml/StrategyShowData.html"
+        )
         show_data = show_data_from_df(df_or_dfpath=show_data)
         draw_chart(input_data=show_data, show_html_path=show_data_path)
 
@@ -165,9 +176,11 @@ class TradeStructure:
 
         data_path = os.path.join("Data/RealData/hfq/", code_name + ".csv")
 
-        self.load_dataset(data_path=data_path,
-                          start_stamp=self.config.get("start_stamp", None),
-                          end_stamp=self.config.get("end_stamp", None))
+        self.load_dataset(
+            data_path=data_path,
+            start_stamp=self.config.get("start_stamp", None),
+            end_stamp=self.config.get("end_stamp", None),
+        )
 
         self.cal_technical_indicators(indicators_config)
         # if not self.cal_technical_indicators(indicators_config):
@@ -176,13 +189,14 @@ class TradeStructure:
         self.trading_algorithm()
         transaction_record_df = self.strategy_execute()
 
-        asset_analysis = self.transaction_analysis.cal_asset_analysis(
-            self.data)
+        asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
+        
         if asset_analysis is not None:
             self.logger.info("对标的进行分析:\n{}".format(asset_analysis))
 
         strategy_analysis = self.transaction_analysis.cal_trader_analysis(
-            transaction_record_df)
+            transaction_record_df
+        )
 
         # self.logger.debug("策略使用的参数:\n{}".format(indicators_config))
         # self.logger.debug("对策略结果进行分析:\n{}".format(strategy_analysis))
@@ -207,13 +221,13 @@ class TradeStructure:
         # self.logger.info(p)
 
         if indicators_config:
-            if any([
-                    isinstance(value, list)
-                    for key, value in indicators_config.items()
-            ]):
+            if any(
+                [isinstance(value, list) for key, value in indicators_config.items()]
+            ):
                 pl_ration_list = []
                 for item in itertools.product(
-                        *[value for key, value in indicators_config.items()]):
+                    *[value for key, value in indicators_config.items()]
+                ):
                     self.logger.debug(item)
                     one_indicator_config = {
                         list(indicators_config.keys())[index]: item[index]
@@ -221,8 +235,8 @@ class TradeStructure:
                     }
 
                     one_pl_relation = self.run_one_stock_once(
-                        code_name=code_name,
-                        indicators_config=one_indicator_config)
+                        code_name=code_name, indicators_config=one_indicator_config
+                    )
                     # if one_pl_relation is not nan:
                     pl_ration_list.append(one_pl_relation)
                 pl_ration = statistics.mean(pl_ration_list)
@@ -250,7 +264,7 @@ class TradeStructure:
 
         # elif code_name.upper() == "ALL_MARKET":
         elif "ALL_MARKET" in code_name.upper():
-            with open("Data/RealData/ALL_MARKET_CODE.json","r") as all_market_code:
+            with open("Data/RealData/ALL_MARKET_CODE.json", "r") as all_market_code:
                 market_code_dict = json.load(all_market_code)
             self.logger.debug(market_code_dict)
 

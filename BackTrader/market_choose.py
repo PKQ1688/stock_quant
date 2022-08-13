@@ -16,6 +16,7 @@ from tqdm.auto import tqdm
 from dataclasses import dataclass, field
 
 from functools import reduce
+from BackTrader.core_trade_logic import CoreTradeLogic
 
 
 @dataclass
@@ -36,21 +37,13 @@ class MarketChooseConfig:
 
 
 # @ray.remote
-class MarketChoose:
+class MarketChoose(CoreTradeLogic):
     def __init__(self, *args, **kwargs) -> None:
         self.config = MarketChooseConfig(*args, **kwargs)
+        super().__init__()
 
-        self.logger = logger
-        self.logger.remove()  # 删去import logger之后自动产生的handler，不删除的话会出现重复输出的现象
-        self.logger.add(sys.stderr, level=self.config.LOG_LEVEL)  # 添加一个终端输出的内容
-        # logger.add("some_file.log", enqueue=True)  #添加一个文件输出的内容
         self.logger.info("MarketChoose init")
-
         self.all_data_list = os.listdir(self.config.DATA_PATH)
-
-        # self.data_path = kwargs.get("data_path", "Data/BoardData/industry_origin/")
-
-        # ray.init()
 
     def get_market_data(self):
         with pathos.multiprocessing.ProcessingPool(8) as p:
@@ -72,6 +65,41 @@ class MarketChoose:
     def choose_rule(self, *args, **kwargs):
         raise NotImplementedError
 
+    def buy_logic(self, *args, **kwargs):
+        return True
+
+    def sell_logic(self, trading_step, one_transaction_record):
+        if trading_step["choose_assert"] != one_transaction_record.pos_asset:
+            return True
+        else:
+            return False
+
+    def buy(self, index, trading_step, one_transaction_record):
+        self.logger.trace(f"buy {index} {trading_step} {one_transaction_record}")
+
+        one_transaction_record.pos_asset = trading_step["choose_assert"]
+        one_transaction_record.buy_date = trading_step["date"]
+        one_transaction_record.buy_price = trading_step[
+            f"{trading_step['choose_assert']}_close"
+        ]
+        one_transaction_record.holding_days = index
+
+        return one_transaction_record
+
+    def sell(self, index, trading_step, one_transaction_record):
+        self.logger.debug(f"sell {index} {trading_step} {one_transaction_record}")
+
+        one_transaction_record.sell_date = trading_step["date"]
+        one_transaction_record.sell_price = trading_step[f"{one_transaction_record.pos_asset}_close"]
+        # one_transaction_record.pos_asset = None
+        one_transaction_record.holding_days = index - one_transaction_record.holding_days
+
+        self.logger.debug(one_transaction_record)
+        return one_transaction_record
+        # self.buy(index, trading_step, one_transaction_record)
+        # self.logger.debug(one_transaction_record)
+        # exit()
+
     def run(self):
         if self.config.RUN_ONLINE:
             res_data_list = self.get_market_data()
@@ -91,4 +119,17 @@ class MarketChoose:
         else:
             choose_data = pd.read_csv(self.config.SAVE_PATH)
 
+        # choose_data['choose_assert'].dropna(inplace=True)
+        choose_data = choose_data[~pd.isnull(choose_data["choose_assert"])]
+
+        if self.config.LOG_LEVEL == "DEBUG":
+            choose_data = choose_data[:100]
+
+        choose_data.reset_index(drop=True, inplace=True)
+
         self.logger.success(choose_data)
+        
+        transaction_record_df = self.base_trade(choose_data)
+
+        pl = self.transaction_analysis.cal_trader_analysis(transaction_record_df)
+
