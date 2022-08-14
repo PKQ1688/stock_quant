@@ -14,10 +14,6 @@ class Ma5Ma10Strategy(TradeStructure):
     """
     5日均线和10日均线策略,当5日均线上穿10日均线时买入,当5日均线下穿10日均线时卖出
     """
-
-    def __init__(self, config):
-        super(Ma5Ma10Strategy, self).__init__(config)
-
     def cal_technical_indicators(self, indicators_config):
         self.logger.debug(indicators_config)
 
@@ -63,5 +59,5 @@ class Ma5Ma10Strategy(TradeStructure):
 
 
 if __name__ == "__main__":
-    ma5ma10_strategy = Ma5Ma10Strategy(config=ma5ma10_config)
+    ma5ma10_strategy = Ma5Ma10Strategy(**ma5ma10_config)
     ma5ma10_strategy.run()

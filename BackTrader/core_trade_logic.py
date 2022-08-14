@@ -33,7 +33,7 @@ class CoreTradeLogic:
         self.logger.remove()  # 删去import logger之后自动产生的handler，不删除的话会出现重复输出的现象
         self.logger.add(sys.stderr, level=self.config.LOG_LEVEL)  # 添加一个终端输出的内容
         # logger.add("some_file.log", enqueue=True)  #添加一个文件输出的内容
-        
+
         # 针对交易结果进行分析
         self.transaction_analysis = BaseTransactionAnalysis(logger=self.logger)
 
@@ -56,7 +56,10 @@ class CoreTradeLogic:
         # self.logger.debug(one_transaction_record)
 
         for index, trading_step in data.iterrows():
-            if self.buy_logic() and one_transaction_record.buy_date is None:
+            if (
+                self.buy_logic(trading_step, one_transaction_record)
+                and one_transaction_record.buy_date is None
+            ):
                 one_transaction_record = self.buy(
                     index, trading_step, one_transaction_record
                 )
@@ -71,8 +74,8 @@ class CoreTradeLogic:
 
                 transaction_record_list.append(one_transaction_record)
                 one_transaction_record = OneTransactionRecord()
-                
-                if self.buy_logic():
+
+                if self.buy_logic(trading_step, one_transaction_record):
                     one_transaction_record = self.buy(
                         index, trading_step, one_transaction_record
                     )

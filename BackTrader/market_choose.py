@@ -68,7 +68,7 @@ class MarketChoose(CoreTradeLogic):
     def buy_logic(self, *args, **kwargs):
         return True
 
-    def sell_logic(self, trading_step, one_transaction_record):
+    def sell_logic(self, trading_step, one_transaction_record, *args, **kwargs):
         if trading_step["choose_assert"] != one_transaction_record.pos_asset:
             return True
         else:
@@ -82,7 +82,7 @@ class MarketChoose(CoreTradeLogic):
         one_transaction_record.buy_price = trading_step[
             f"{trading_step['choose_assert']}_close"
         ]
-        one_transaction_record.holding_days = index
+        one_transaction_record.holding_time = index
 
         return one_transaction_record
 
@@ -90,9 +90,13 @@ class MarketChoose(CoreTradeLogic):
         self.logger.debug(f"sell {index} {trading_step} {one_transaction_record}")
 
         one_transaction_record.sell_date = trading_step["date"]
-        one_transaction_record.sell_price = trading_step[f"{one_transaction_record.pos_asset}_close"]
+        one_transaction_record.sell_price = trading_step[
+            f"{one_transaction_record.pos_asset}_close"
+        ]
         # one_transaction_record.pos_asset = None
-        one_transaction_record.holding_days = index - one_transaction_record.holding_days
+        one_transaction_record.holding_time = (
+            index - one_transaction_record.holding_time
+        )
 
         self.logger.debug(one_transaction_record)
         return one_transaction_record
@@ -128,8 +132,7 @@ class MarketChoose(CoreTradeLogic):
         choose_data.reset_index(drop=True, inplace=True)
 
         self.logger.success(choose_data)
-        
+
         transaction_record_df = self.base_trade(choose_data)
 
         pl = self.transaction_analysis.cal_trader_analysis(transaction_record_df)
-

@@ -5,9 +5,13 @@
 # @Author  : Adolf
 # @File    : base_back_trader.py
 # @Function:
+from email.policy import default
+from importlib.metadata import metadata
 import itertools
 import random
 import statistics
+from tkinter import END
+from xml.dom.pulldom import END_DOCUMENT
 
 # from functools import reduce
 
@@ -21,39 +25,61 @@ import json
 import pandas_ta as ta
 
 from Utils.base_utils import Logger
+from BackTrader.core_trade_logic import CoreTradeLogic
 from BackTrader.position_analysis import BaseTransactionAnalysis
 
 from GetBaseData.hanle_data_show import show_data_from_df
 from Utils.ShowKline.base_kline import draw_chart
 
+from dataclasses import dataclass, field
+from typing import Optional, Dict, List
+
 pd.set_option("expand_frame_repr", False)
 pd.set_option("display.max_rows", None)
 
 
-class TradeStructure:
-    def __init__(self, config):
-        self.config = config
-        self.logger = Logger(name="Trade", level=config["log_level"]).logger
+@dataclass
+class TradeStructureCongfig:
+    LOG_LEVEL: str = field(
+        default="INFO",
+        metadata={
+            "help": "日志级别,默认INFO,可选DEBUG、INFO、WARNING、ERROR、CRITICAL",
+        },
+    )
+    CODE_NAME: Optional[str] = field(default=None, metadata={"help": "股票代码"})
+    RANDOM_SEED: int = field(default=42, metadata={"help": "随机种子"})
+    STRATEGY_PARAMS: Dict = field(
+        default_factory=lambda: dict(), metadata={"help": "策略参数"}
+    )
+    START_STAMP: str = field(default=None, metadata={"help": "开始时间"})
+    END_STAMP: str = field(default=None, metadata={"help": "结束时间"})
+    SHOW_DATA_PATH: str = field(default=None, metadata={"help": "展示数据路径"})
+
+
+class TradeStructure(CoreTradeLogic):
+    def __init__(self, *args, **kwargs):
+        # self.config = config
+        self.config = TradeStructureCongfig(*args, **kwargs)
+        super().__init__()
 
         self.logger.info("Trade is begging ......")
 
-        self.trade_rate = 1.5 / 1000
         self.data = None
         self.transaction_analysis = BaseTransactionAnalysis(logger=self.logger)
 
-        if "random_seed" in self.config:
-            random.seed(self.config["random_seed"])
+        # if "random_seed" in self.config:
+        #     random.seed(self.config["random_seed"])
 
-    @staticmethod
-    def init_one_transaction_record(asset_name):
-        return {
-            "pos_asset": asset_name,
-            "buy_date": "",
-            "buy_price": 1,
-            "sell_date": "",
-            "sell_price": 1,
-            "holding_time": 0,
-        }
+    # @staticmethod
+    # def init_one_transaction_record(asset_name):
+    #     return {
+    #         "pos_asset": asset_name,
+    #         "buy_date": "",
+    #         "buy_price": 1,
+    #         "sell_date": "",
+    #         "sell_price": 1,
+    #         "holding_time": 0,
+    #     }
 
     def load_dataset(self, data_path, start_stamp=None, end_stamp=None):
         df = pd.read_csv(data_path)
@@ -99,65 +125,100 @@ class TradeStructure:
     def trading_algorithm(self):
         raise NotImplementedError
 
-    def strategy_execute(self):
-        asset_name = self.data.name[0]
-        one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
+    def buy_logic(self, trading_step, *args, **kwargs):
+        if trading_step.trade == "BUY":
+            return True
+        else:
+            return False
 
-        transaction_record_list = []
-        # self.logger.debug(one_transaction_record)
-        take_profit = self.config.get("take_profit", None)
+    def sell_logic(self, trading_step, *args, **kwargs):
+        if trading_step.trade == "SELL":
+            return True
+        else:
+            return False
 
-        for index, trading_step in self.data.iterrows():
-            # self.logger.debug(trading_step)
-            if (
-                trading_step["trade"] == "BUY"
-                and one_transaction_record["buy_date"] == ""
-            ):
-                one_transaction_record["buy_date"] = trading_step["date"]
-                one_transaction_record["buy_price"] = trading_step["close"]
-                one_transaction_record["holding_time"] = index
+    def buy(self, index, trading_step, one_transaction_record):
+        self.logger.debug(f"buy {index} {trading_step} {one_transaction_record}")
 
-            if take_profit is not None and one_transaction_record["buy_date"] != "":
-                if (
-                    trading_step["close"] - one_transaction_record["buy_price"]
-                ) / one_transaction_record["buy_price"] > self.config["take_profit"]:
-                    one_transaction_record["sell_date"] = trading_step["date"]
-                    one_transaction_record["sell_price"] = trading_step["close"]
-                    one_transaction_record["holding_time"] = (
-                        index - one_transaction_record["holding_time"]
-                    )
+        one_transaction_record.pos_asset = trading_step.code
+        one_transaction_record.buy_date = trading_step.date
+        one_transaction_record.buy_price = trading_step.close
+        one_transaction_record.holding_time = index
 
-                    transaction_record_list.append(one_transaction_record.copy())
-                    one_transaction_record = self.init_one_transaction_record(
-                        asset_name=asset_name
-                    )
+        self.logger.debug(one_transaction_record)
+        return one_transaction_record
 
-            if (
-                trading_step["trade"] == "SELL"
-                and one_transaction_record["buy_date"] != ""
-            ):
-                one_transaction_record["sell_date"] = trading_step["date"]
-                one_transaction_record["sell_price"] = trading_step["close"]
-                one_transaction_record["holding_time"] = (
-                    index - one_transaction_record["holding_time"]
-                )
+    def sell(self, index, trading_step, one_transaction_record):
+        self.logger.debug(f"sell {index} \n {trading_step} \n {one_transaction_record}")
 
-                transaction_record_list.append(one_transaction_record.copy())
-                one_transaction_record = self.init_one_transaction_record(
-                    asset_name=asset_name
-                )
+        one_transaction_record.sell_date = trading_step.date
+        one_transaction_record.sell_price = trading_step.close
+        one_transaction_record.holding_time = (
+            index - one_transaction_record.holding_time
+        )
 
-        # self.logger.info(transaction_record_list)
-        transaction_record_df = pd.DataFrame(transaction_record_list)
-        # self.logger.debug(transaction_record_df)
+        self.logger.debug(one_transaction_record)
+        return one_transaction_record
 
-        transaction_record_df["pct"] = (
-            transaction_record_df["sell_price"] / transaction_record_df["buy_price"]
-        ) * (1 - self.trade_rate) - 1
+    # def strategy_execute(self):
+    #     asset_name = self.data.name[0]
+    #     one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
 
-        self.logger.debug(transaction_record_df)
+    #     transaction_record_list = []
+    #     # self.logger.debug(one_transaction_record)
+    #     take_profit = self.config.get("take_profit", None)
 
-        return transaction_record_df
+    #     for index, trading_step in self.data.iterrows():
+    #         # self.logger.debug(trading_step)
+    #         if (
+    #             trading_step["trade"] == "BUY"
+    #             and one_transaction_record["buy_date"] == ""
+    #         ):
+    #             one_transaction_record["buy_date"] = trading_step["date"]
+    #             one_transaction_record["buy_price"] = trading_step["close"]
+    #             one_transaction_record["holding_time"] = index
+
+    #         if take_profit is not None and one_transaction_record["buy_date"] != "":
+    #             if (
+    #                 trading_step["close"] - one_transaction_record["buy_price"]
+    #             ) / one_transaction_record["buy_price"] > self.config["take_profit"]:
+    #                 one_transaction_record["sell_date"] = trading_step["date"]
+    #                 one_transaction_record["sell_price"] = trading_step["close"]
+    #                 one_transaction_record["holding_time"] = (
+    #                     index - one_transaction_record["holding_time"]
+    #                 )
+
+    #                 transaction_record_list.append(one_transaction_record.copy())
+    #                 one_transaction_record = self.init_one_transaction_record(
+    #                     asset_name=asset_name
+    #                 )
+
+    #         if (
+    #             trading_step["trade"] == "SELL"
+    #             and one_transaction_record["buy_date"] != ""
+    #         ):
+    #             one_transaction_record["sell_date"] = trading_step["date"]
+    #             one_transaction_record["sell_price"] = trading_step["close"]
+    #             one_transaction_record["holding_time"] = (
+    #                 index - one_transaction_record["holding_time"]
+    #             )
+
+    #             transaction_record_list.append(one_transaction_record.copy())
+    #             one_transaction_record = self.init_one_transaction_record(
+    #                 asset_name=asset_name
+    #             )
+
+    #     # self.logger.info(transaction_record_list)
+    #     transaction_record_df = pd.DataFrame(transaction_record_list)
+    #     # self.logger.debug(transaction_record_df)
+
+    #     transaction_record_df["pct"] = (
+    #         transaction_record_df["sell_price"] / transaction_record_df["buy_price"]
+    #     ) * (1 - self.trade_rate) - 1
+
+    #     self.logger.debug(transaction_record_df)
+
+    #     return transaction_record_df
 
     # 需要保证show_data里面的核心数据没有空值，不然会造成数据无法显示
     # @staticmethod
@@ -172,14 +233,14 @@ class TradeStructure:
 
     def run_one_stock_once(self, code_name, indicators_config=None):
         if indicators_config is None:
-            indicators_config = self.config.get("strategy_params", {})
+            indicators_config = self.config.STRATEGY_PARAMS
 
         data_path = os.path.join("Data/RealData/hfq/", code_name + ".csv")
 
         self.load_dataset(
             data_path=data_path,
-            start_stamp=self.config.get("start_stamp", None),
-            end_stamp=self.config.get("end_stamp", None),
+            start_stamp=self.config.START_STAMP,
+            end_stamp=self.config.END_STAMP,
         )
 
         self.cal_technical_indicators(indicators_config)
@@ -187,10 +248,11 @@ class TradeStructure:
         # return False
 
         self.trading_algorithm()
-        transaction_record_df = self.strategy_execute()
+        # transaction_record_df = self.strategy_execute()
+        transaction_record_df = self.base_trade(self.data)
 
         asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
-        
+
         if asset_analysis is not None:
             self.logger.info("对标的进行分析:\n{}".format(asset_analysis))
 
@@ -208,11 +270,12 @@ class TradeStructure:
 
     def run_one_stock(self, code_name=None):
         pl_ration = 0
-        indicators_config = self.config.get("strategy_params", {})
+        # indicators_config = self.config.get("strategy_params", {})
+        indicators_config = self.config.STRATEGY_PARAMS
         # self.logger.info(indicators_config)
 
         if code_name is None:
-            code_name = self.config["code_name"]
+            code_name = self.config.CODE_NAME
 
         # if not self.config["one_param"]:
         #     self.logger.debug(indicators_config)
@@ -252,7 +315,7 @@ class TradeStructure:
         return pl_ration
 
     def run(self) -> None:
-        code_name = self.config["code_name"]
+        code_name = self.config.CODE_NAME
         self.logger.debug(code_name)
 
         if isinstance(code_name, list):
