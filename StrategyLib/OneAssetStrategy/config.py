@@ -33,8 +33,8 @@ rumi_config = {
 rumi_params_config = {
     "LOG_LEVEL": "INFO",
     "CODE_NAME": "600570",
-    "start_stamp": "2005-01-01",
-    "end_stamp": "2020-12-31",
+    "START_STAMP": "2005-01-01",
+    "END_STAMP": "2020-12-31",
     "STRATEGY_PARAMS": {
         "sma_length": [5, 10, 20, 30],
         "ema_length": [10, 20, 30, 60],
@@ -48,10 +48,10 @@ macd_deviate_config = {
     # "CODE_NAME": "600638",
     "CODE_NAME": "ALL_MARKET_100",
     # "CODE_NAME": ["600570", "002610", "300663","002612"],
-    # "start_stamp": "2020-01-01",
-    # "end_stamp": "2020-12-31",
-    # "show_data_path": "",
-    # "strategy_params": {}
+    # "START_STAMP": "2020-01-01",
+    # "END_STAMP": "2020-12-31",
+    # "SHOW_DATA_PATH": "",
+    # "STRATEGY_PARAMS": {}
 }
 
 macd_ma_config = {
