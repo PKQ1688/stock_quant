@@ -1,15 +1,15 @@
-'''
+"""
 Description: 
 Author: adolf
 Date: 2022-07-05 19:44:36
-LastEditTime: 2022-07-05 21:00:01
+LastEditTime: 2022-08-14 13:22:48
 LastEditors: adolf
-'''
+"""
 ma5ma10_config = {
     "random_seed": 42,
     "log_level": "INFO",
-    # "code_name": "600570",
-    "code_name": "ALL_MARKET_100",
+    "code_name": "600570",
+    # "code_name": "ALL_MARKET_100",
     # "code_name": ["600570", "002610", "300663"],
     # "start_stamp": "2020-01-01",
     # "end_stamp": "2020-12-31",
@@ -27,7 +27,7 @@ rumi_config = {
         "sma_length": 10,
         "ema_length": 30,
         "aos_length": 60,
-    }
+    },
 }
 
 rumi_params_config = {
@@ -39,7 +39,7 @@ rumi_params_config = {
         "sma_length": [5, 10, 20, 30],
         "ema_length": [10, 20, 30, 60],
         "aos_length": [5, 10, 20, 30, 60],
-    }
+    },
 }
 
 macd_deviate_config = {

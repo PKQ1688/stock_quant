@@ -2,12 +2,12 @@
 Description: 
 Author: adolf
 Date: 2022-07-03 17:29:10
-LastEditTime: 2022-07-05 20:17:04
+LastEditTime: 2022-08-14 13:21:20
 LastEditors: adolf
 '''
 from finta import TA
 from BackTrader.base_back_trader import TradeStructure
-from StrategyLib.config import macd_deviate_config
+from StrategyLib.OneAssetStrategy import macd_deviate_config
 
 import numpy as np
 from scipy.signal import argrelextrema

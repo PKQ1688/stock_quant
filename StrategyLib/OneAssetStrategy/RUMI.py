@@ -1,13 +1,13 @@
-# ！/usr/bin/env python
-# -*- coding:utf-8 -*-
-# @Project : stock_quant
-# @Date    : 2022/1/2 17:34
-# @Author  : Adolf
-# @File    : RUMI_config.py
-# @Function:
+'''
+Description: 
+Author: adolf
+Date: 2022-08-14 13:19:21
+LastEditTime: 2022-08-14 13:21:29
+LastEditors: adolf
+'''
 import pandas_ta as ta
 from BackTrader.base_back_trader import TradeStructure
-from StrategyLib.StrategyLibConfig.RUMI_config import rumi_config
+from StrategyLib.OneAssetStrategy import rumi_config
 # from StrategyLib.StrategyLibConfig.RUMI_params_config import rumi_config
 
 

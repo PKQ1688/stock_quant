@@ -1,25 +1,20 @@
-'''
+"""
 Description: 
 Author: adolf
 Date: 2022-01-11 20:56:59
-LastEditTime: 2022-07-02 16:59:47
+LastEditTime: 2022-08-14 13:17:09
 LastEditors: adolf
-'''
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-"""
-# @Project : stock_quant 
-# @Date    : 2022/1/10 19:14
-# @Author  : Adolf
-# @File    : Ma5Ma10.py
+"""
 import pandas_ta as ta
 from BackTrader.base_back_trader import TradeStructure
-from StrategyLib.StrategyLibConfig.Ma5Ma10_config import ma5ma10_config
+from StrategyLib.OneAssetStrategy import ma5ma10_config
 
 
 class Ma5Ma10Strategy(TradeStructure):
-    '''
-    5日均线和10日均线策略，当5日均线上穿10日均线时买入，当5日均线下穿10日均线时卖出
-    '''
+    """
+    5日均线和10日均线策略,当5日均线上穿10日均线时买入,当5日均线下穿10日均线时卖出
+    """
+
     def __init__(self, config):
         super(Ma5Ma10Strategy, self).__init__(config)
 
@@ -53,10 +48,16 @@ class Ma5Ma10Strategy(TradeStructure):
         return True
 
     def trading_algorithm(self):
-        self.data.loc[(self.data["sma5"] > self.data["sma10"]) & (
-                self.data["sma5"].shift(1) < self.data["sma10"].shift(1)), "trade"] = "BUY"
-        self.data.loc[(self.data["sma5"] < self.data["sma10"]) & (
-                self.data["sma5"].shift(1) > self.data["sma10"].shift(1)), "trade"] = "SELL"
+        self.data.loc[
+            (self.data["sma5"] > self.data["sma10"])
+            & (self.data["sma5"].shift(1) < self.data["sma10"].shift(1)),
+            "trade",
+        ] = "BUY"
+        self.data.loc[
+            (self.data["sma5"] < self.data["sma10"])
+            & (self.data["sma5"].shift(1) > self.data["sma10"].shift(1)),
+            "trade",
+        ] = "SELL"
 
         # self.logger.info(self.Data.tail(30))
 
