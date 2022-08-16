@@ -15,7 +15,7 @@ from typing import List
 
 
 def remove_include(k1: NewBar, k2: NewBar, k3: RawBar):
-    """去除包含关系：输入三根k线，其中k1和k2为没有包含关系的K线，k3为原始K线"""
+    """去除包含关系:输入三根k线,其中k1和k2为没有包含关系的K线,k3为原始K线"""
     if k1.high < k2.high:
         direction = Direction.Up
     elif k1.high > k2.high:

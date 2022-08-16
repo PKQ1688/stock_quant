@@ -20,12 +20,12 @@ class RawBar:
     id: int  # id 必须是升序
     dt: datetime
     freq: Freq
-    open: [float, int]
-    close: [float, int]
-    high: [float, int]
-    low: [float, int]
-    vol: [float, int]
-    amount: [float, int] = None
+    open: float
+    close: float
+    high: float
+    low: float
+    vol: float
+    amount: float = None
 
 
 @dataclass
@@ -35,12 +35,12 @@ class NewBar:
     id: int  # id 必须是升序
     dt: datetime
     freq: Freq
-    open: [float, int]
-    close: [float, int]
-    high: [float, int]
-    low: [float, int]
-    vol: [float, int]
-    amount: [float, int] = None
+    open: float
+    close: float
+    high: float
+    low: float
+    vol: float
+    amount: float = None
     elements: List = None  # 存入具有包含关系的原始K线
 
     @property
@@ -53,9 +53,9 @@ class FX:
     symbol: str
     dt: datetime
     mark: Mark
-    high: [float, int]
-    low: [float, int]
-    fx: [float, int]
+    high: float
+    low: float
+    fx: float
     power: str = None
     elements: List = None
 
@@ -80,9 +80,9 @@ class FakeBI:
     sdt: datetime
     edt: datetime
     direction: Direction
-    high: [float, int]
-    low: [float, int]
-    power: [float, int]
+    high: float
+    low: float
+    power: float
 
 
 def create_fake_bis(fxs: List[FX]) -> List[FakeBI]:
