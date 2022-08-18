@@ -12,7 +12,15 @@ import pandas as pd
 import json
 from pprint import pprint
 
+import akshare as ak
 from sklearn.linear_model import LinearRegression
+from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
+
+from datetime import date
+# from itertools import reduce
+
+today = date.today()
+today = today.strftime("%Y%m%d")
 
 
 def normalization(data):
@@ -49,6 +57,7 @@ board_list = os.listdir("Data/BoardData/industry_origin")
 with open("Data/BoardData/ALL_INDUSTRY_BOARD.json", "r") as all_market_code:
     industry_board_name_mapping = json.load(all_market_code)
 
+
 def get_choose_board():
     board_res = {}
 
@@ -60,7 +69,9 @@ def get_choose_board():
         # print(R2)
         board_res[board_name.replace(".csv", "")] = w0 * R2
 
-    board_res_sort = dict(sorted(board_res.items(), key=lambda item: item[1], reverse=True))
+    board_res_sort = dict(
+        sorted(board_res.items(), key=lambda item: item[1], reverse=True)
+    )
     # print(board_res_sort)
 
     choose_board = list(board_res_sort.keys())[:10]
@@ -71,4 +82,37 @@ def get_choose_board():
 
     return choose_board
 
+
 choose_board_list = get_choose_board()
+
+# 问财热度排行
+stock_hot_rank_wc_df = ak.stock_hot_rank_wc(date=today)
+# print(stock_hot_rank_wc_df)
+
+stock_hot_rank = stock_hot_rank_wc_df.set_index(["股票代码"])["序号"].to_dict()
+# print(stock_hot_rank)
+# exit()
+res_df_list = []
+
+for one_choose_board in choose_board_list:
+    stock_board_industry_cons = ak.stock_board_industry_cons_em(symbol=one_choose_board)
+
+    stock_board_industry_cons.rename(columns=ch_eng_mapping_dict, inplace=True)
+    stock_board_industry_cons = stock_board_industry_cons[["code", "name", "price"]]
+    stock_board_industry_cons["hot_rank"] = stock_board_industry_cons["code"].apply(
+        lambda x: stock_hot_rank[x] if x in stock_hot_rank else 9999
+    )
+
+    stock_board_industry_cons.sort_values(by="hot_rank", inplace=True)
+    # stock_board_industry_cons = stock_board_industry_cons[::-1]
+    # print(stock_board_industry_cons)
+    # print(stock_board_industry_cons[:5])
+    res_df_list.append(stock_board_industry_cons[:5])
+
+    # break
+res_df = pd.concat(res_df_list)
+res_df.sort_values(by="hot_rank", inplace=True)
+res_df.reset_index(drop=True, inplace=True)
+
+res_df = res_df[:len(res_df) // 2]
+print(res_df)
