@@ -2,7 +2,7 @@
  * @Description: 
  * @Author: adolf
  * @Date: 2022-01-04 20:52:13
- * @LastEditTime: 2022-08-17 22:44:37
+ * @LastEditTime: 2022-08-22 22:46:03
  * @LastEditors: adolf
 -->
 # stock_quant
@@ -37,6 +37,8 @@ export PYTHONDONTWRITEBYTECODE=1
 - 通过修改```sudo vi /etc/hosts```文件，向其中添加```140.82.112.4 github.com```
 - 安装nscd,如果已经安装了忽略。centos使用```sudo yum install -y nscd```
 - 刷新本地dns缓存```service nscd restart```
+- 备选刷新dns缓存命令```sudo /etc/init.d/nscd restart```
+
 
 ## 获取需要使用到的基本数据
 ### 2.1 获取基础股票数据
