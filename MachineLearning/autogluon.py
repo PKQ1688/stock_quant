@@ -6,17 +6,24 @@ LastEditTime: 2022-08-21 22:22:12
 LastEditors: adolf
 """
 import os
-# import pandas as pd
+
+import pandas as pd
 # import dask.dataframe as pd
 from autogluon.tabular import TabularPredictor
-from MachineLearning.secondary_processing import secondary_processing_data
+from tqdm.auto import tqdm
 
 data_list = os.listdir("Data/HandleData/hfq_stock/")
-train_data = secondary_processing_data(data_list)
+# train_data = secondary_processing_data(data_list)
+# train_data_list = []
+train_data_list = [
+    pd.read_csv(f"Data/HandleData/hfq_stock/{one}")
+    for one in tqdm(data_list, total=len(data_list))
+]
+train_data = pd.concat(train_data_list, axis=0)
 # print(train_data.shape)
 
-label = 'label'
-model_path = 'model/ohlcv60/'  # specifies folder to store trained models
+label = "label"
+model_path = "model/ohlcv60/"  # specifies folder to store trained models
 predictor = TabularPredictor(label=label, path=model_path).fit(train_data)
 
 # test_data = secondary_processing_data(data_list)

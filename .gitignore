@@ -142,3 +142,5 @@ PrivacyConfig/
 result/
 # StrategyResearch/
 model/
+
+dask-worker-space/
