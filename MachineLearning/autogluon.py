@@ -7,19 +7,21 @@ LastEditors: adolf
 """
 import os
 
-import pandas as pd
-# import dask.dataframe as pd
+# import pandas as pd
+import dask.dataframe as dd
 from autogluon.tabular import TabularPredictor
 from tqdm.auto import tqdm
 
 data_list = os.listdir("Data/HandleData/hfq_stock/")
 # train_data = secondary_processing_data(data_list)
 # train_data_list = []
-train_data_list = [
-    pd.read_csv(f"Data/HandleData/hfq_stock/{one}")
-    for one in tqdm(data_list, total=len(data_list))
-]
-train_data = pd.concat(train_data_list, axis=0)
+# train_data_list = [
+#     pd.read_csv(f"Data/HandleData/hfq_stock/{one}")
+#     for one in tqdm(data_list, total=len(data_list))
+# ]
+# train_data = pd.concat(train_data_list, axis=0)
+train_data = dd.read_csv(f"Data/HandleData/hfq_stock/handle_*.csv")
+print(train_data.shape)
 # print(train_data.shape)
 
 label = "label"
