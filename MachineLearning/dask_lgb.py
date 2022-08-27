@@ -5,28 +5,56 @@ Date: 2022-08-25 00:10:23
 LastEditTime: 2022-08-25 22:28:07
 LastEditors: adolf
 """
-import dask.array as da
-from distributed import Client, LocalCluster
-from sklearn.datasets import make_blobs
-
+from random import shuffle
+import numpy as np
+import dask.dataframe as dd
 import lightgbm as lgb
 
-print("loading data...")
+import pickle
 
-X, y = make_blobs(n_samples=10000, n_features=10, centers=3)
+from pathlib import Path
+from sklearn.model_selection import train_test_split
+from dask_ml.model_selection import train_test_split as dask_train_test_split
+from sklearn.metrics import accuracy_score
 
-print("initializing dask cluster...")
+filename = Path("Data/HandleData/hfq_stock", "handle_00000*.csv")
+# print(filename)
 
-cluster = LocalCluster(n_workers=2)
-client = Client(cluster)
+df = dd.read_csv(filename)
+# print(df.head())
+# print(len(df))
 
-dX = da.from_array(X, chunks=(100, 50))
-dy = da.from_array(y, chunks=(100,))
+x = df.drop(columns=["label"])
+y = df["label"]
+# train,test = train_test_split(df,test_size=0.2)
+x_train, x_test, y_train, y_test = dask_train_test_split(
+    x, y, test_size=0.2, shuffle=True
+)
 
-print("beginning training")
+# print(x_train.head())
+# print(x_test.head())
 
-dask_model = lgb.DaskLGBMClassifier(n_estimators=10)
-dask_model.fit(dX, dy)
-assert dask_model.fitted_
+# print(len(x_train))
+# print(len(x_test))
+# exit()
+# msk = np.random.rand(len(df)) < 0.8
+# train = df[msk]
+# test = df[~msk]
 
-print("done training")
+# x_train = train.drop(columns=["label"])
+# y_train = train["label"]
+
+
+model = lgb.LGBMClassifier()
+model.fit(x_train, y_train)
+
+# x_test = test.drop(columns=["label"])
+# y_test = test["label"]
+
+# print(model.predict(x))
+y_pred = model.predict(x_test)
+accuracy = accuracy_score(y_test, y_pred)
+print("accuarcy: %.2f%%" % (accuracy * 100.0))
+
+with open('MachineLearning/lgb_model.pkl', 'rb') as fout:
+    pickle.dump(model, fout)
