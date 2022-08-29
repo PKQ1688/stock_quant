@@ -5,19 +5,17 @@ Date: 2022-08-25 00:10:23
 LastEditTime: 2022-08-25 22:28:07
 LastEditors: adolf
 """
-from random import shuffle
-import numpy as np
+import pickle
+from pathlib import Path
+
+# import numpy as np
 import dask.dataframe as dd
 import lightgbm as lgb
-
-import pickle
-
-from pathlib import Path
-from sklearn.model_selection import train_test_split
 from dask_ml.model_selection import train_test_split as dask_train_test_split
 from sklearn.metrics import accuracy_score
+# from sklearn.model_selection import train_test_split
 
-filename = Path("Data/HandleData/hfq_stock", "handle_00000*.csv")
+filename = Path("Data/HandleData/hfq_stock", "handle_*.csv")
 # print(filename)
 
 df = dd.read_csv(filename)
@@ -56,5 +54,5 @@ y_pred = model.predict(x_test)
 accuracy = accuracy_score(y_test, y_pred)
 print("accuarcy: %.2f%%" % (accuracy * 100.0))
 
-with open('MachineLearning/lgb_model.pkl', 'rb') as fout:
+with open('MachineLearning/lgb_model.pkl', 'wb') as fout:
     pickle.dump(model, fout)
