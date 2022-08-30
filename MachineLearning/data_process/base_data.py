@@ -5,6 +5,7 @@ Date: 2022-08-21 15:26:58
 LastEditTime: 2022-08-21 15:27:02
 LastEditors: adolf
 """
+import traceback
 import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
@@ -16,7 +17,7 @@ import ray
 def init_dict():
     new_data_dict = {}
 
-    new_data_dict["code"] = []
+    # new_data_dict["code"] = []
     for i in range(60):
         new_data_dict["open_{}".format(i)] = []
         new_data_dict["high_{}".format(i)] = []
@@ -24,13 +25,14 @@ def init_dict():
         new_data_dict["close_{}".format(i)] = []
         new_data_dict["volume_{}".format(i)] = []
         new_data_dict["turn_{}".format(i)] = []
-    new_data_dict["pct"] = []
+    new_data_dict["label"] = []
     return new_data_dict
 
 
-@ray.remote
+# @ray.remote
 def get_handle_data(data_name):
     try:
+    # if True:
         data_t = pd.read_csv(f"Data/RealData/hfq/{data_name}", dtype={"code": str})
         data_t = data_t[
             ["date", "open", "high", "low", "close", "volume", "turn", "code", "pctChg"]
@@ -44,24 +46,12 @@ def get_handle_data(data_name):
             # print(row)
             if index >= len(data_t) - 1:
                 break
-            tmp_data = data_t[index - 60 : index]
+            tmp_data = data_t[index - 60 : index].copy()
 
-            tmp_data[["open"]].apply(
-                lambda x: (x - np.min(x)) / (np.max(x) - np.min(x))
-            ).copy()
-            tmp_data[["high"]].apply(
-                lambda x: (x - np.min(x)) / (np.max(x) - np.min(x))
-            ).copy()
-            tmp_data[["low"]].apply(
-                lambda x: (x - np.min(x)) / (np.max(x) - np.min(x))
-            ).copy()
-            tmp_data[["close"]].apply(
-                lambda x: (x - np.min(x)) / (np.max(x) - np.min(x))
-            ).copy()
-            tmp_data[["volume"]].apply(
-                lambda x: (x - np.min(x)) / (np.max(x) - np.min(x))
-            ).copy()
-            tmp_data[["turn"]].apply(lambda x: x / 100).copy()
+            for feature in ["open", "high", "low", "close", "volume"]:
+                tmp_data[feature] = tmp_data[[feature]].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
+            
+            tmp_data["turn"] = tmp_data["turn"].apply(lambda x: x / 100)
 
             # print(tmp_data)
             # exit()
@@ -73,7 +63,7 @@ def get_handle_data(data_name):
             volume_list = tmp_data.volume.values.tolist()
             turn_list = tmp_data.turn.values.tolist()
 
-            new_data_dict["code"].append(row.code)
+            # new_data_dict["code"].append(row.code)
 
             for i in range(60):
                 new_data_dict.get("open_{}".format(i)).append(open_list[i])
@@ -83,15 +73,30 @@ def get_handle_data(data_name):
                 new_data_dict.get("volume_{}".format(i)).append(volume_list[i])
                 new_data_dict.get("turn_{}".format(i)).append(turn_list[i])
 
-            new_data_dict["pct"].append(data_t.loc[index + 1, "pctChg"])
-            # break
+            # new_data_dict["pct"].append(data_t.loc[index + 1, "pctChg"])
+            next_pct = data_t.loc[index + 1, "pctChg"]
+            if next_pct > 7:
+                new_data_dict["label"].append("超强")
+            elif next_pct > 3:
+                new_data_dict["label"].append("中强")
+            elif next_pct > 0:
+                new_data_dict["label"].append("小强")
+            elif next_pct > -3:
+                new_data_dict["label"].append("小弱")
+            elif next_pct > -7:
+                new_data_dict["label"].append("中弱")
+            else:
+                new_data_dict["label"].append("超弱")
 
-        # pd.set_option("display.max_columns", None)
         res_data = pd.DataFrame(new_data_dict)
+        # res_data = res_data.drop(columns=['code'])
+
         # print(res_data)
-        res_data.to_csv(f"Data/HandleData/hfq_stock/handle_{data_name}", index=False)
+        res_data.to_csv(f"Data/HandleData/base_ohlcv_data/handle_{data_name}", index=False)
         return res_data
     except:
+    # else:
+        print(traceback.format_exc())
         print(data_name)
         return None
 
