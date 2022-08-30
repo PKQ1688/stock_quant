@@ -16,3 +16,4 @@ colorlog
 loguru
 pathos
 dask_ml
+flask
