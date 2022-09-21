@@ -5,6 +5,7 @@ Date: 2022-08-21 15:26:58
 LastEditTime: 2022-08-21 15:27:02
 LastEditors: adolf
 """
+import os
 import traceback
 import numpy as np
 import pandas as pd
@@ -51,7 +52,7 @@ def get_handle_data(data_name):
             for feature in ["open", "high", "low", "close", "volume"]:
                 tmp_data[feature] = tmp_data[[feature]].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
             
-            tmp_data["turn"] = tmp_data["turn"].apply(lambda x: x / 100)
+            # tmp_data["turn"] = tmp_data["turn"].apply(lambda x: x / 100)
 
             # print(tmp_data)
             # exit()
@@ -92,7 +93,10 @@ def get_handle_data(data_name):
         # res_data = res_data.drop(columns=['code'])
 
         # print(res_data)
-        res_data.to_csv(f"Data/HandleData/base_ohlcv_data/handle_{data_name}", index=False)
+        if not os.path.exists(f"Data/HandleData/base_ohlcv_data"):
+            os.mkdir(f"Data/HandleData/base_ohlcv_data")
+
+        res_data.to_csv(f"Data/HandleData/base_ohlcv_data/{data_name}", index=False)
         return res_data
     except:
     # else:
@@ -105,6 +109,7 @@ def get_handle_data(data_name):
 
 if __name__ == "__main__":
     import os
+    import time
 
     ray.init()
 
@@ -112,6 +117,8 @@ if __name__ == "__main__":
     #     print(data_name)
     #     get_handle_data.remote(data_name)
     #     break
+
+    start_time = time.time()
 
     futures = [get_handle_data.remote(code) for code in os.listdir("Data/RealData/hfq")]
 
@@ -122,3 +129,5 @@ if __name__ == "__main__":
 
     for x in tqdm(to_iterator(futures), total=len(os.listdir("Data/RealData/hfq"))):
         pass
+
+    print("use time: ", time.time() - start_time)
