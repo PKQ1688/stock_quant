@@ -7,6 +7,7 @@ LastEditors: adolf
 """
 import pickle
 from pathlib import Path
+from loguru import logger
 
 # import numpy as np
 import dask.dataframe as dd
@@ -15,7 +16,7 @@ from dask_ml.model_selection import train_test_split as dask_train_test_split
 from sklearn.metrics import accuracy_score
 # from sklearn.model_selection import train_test_split
 
-filename = Path("Data/HandleData/hfq_stock", "handle_*.csv")
+filename = Path("Data/HandleData/base_ohlcv_data", "*.csv")
 # print(filename)
 
 df = dd.read_csv(filename)

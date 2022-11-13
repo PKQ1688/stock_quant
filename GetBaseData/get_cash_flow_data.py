@@ -2,7 +2,7 @@
 Description: 
 Author: adolf
 Date: 2022-07-10 15:46:40
-LastEditTime: 2022-07-20 21:44:44
+LastEditTime: 2022-09-23 00:01:35
 LastEditors: adolf
 '''
 import akshare as ak
@@ -10,6 +10,9 @@ import akshare as ak
 import pandas as pd
 import json
 import os
+from loguru import logger
+
+logger.info("开始获取股票现金流数据")
 
 from tqdm.auto import tqdm
 
@@ -39,8 +42,8 @@ def get_one_stock_cash_data(code):
             now = pd.merge(origin, now, how='inner')
         now.to_csv(csv_path, index=False)
     except Exception as e:
-        print(e)
-        print(code)
+        logger.error(e)
+        logger.error(code)
         # error_code_list.append(code)
 
 # code = 300389

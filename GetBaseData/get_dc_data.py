@@ -8,6 +8,9 @@
 
 import os.path
 import time
+from loguru import logger
+
+logger.info("开始获取股票日线数据")
 
 import ray
 # import socket
@@ -88,8 +91,8 @@ def get_one_stock_data(code):
 
         return 0
     except Exception as e:
-        print(code)
-        print(e)
+        logger.error(code)
+        logger.error(e)
         error_code_list.append(code)
         # pbar.update(1)
 

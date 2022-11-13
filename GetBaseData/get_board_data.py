@@ -10,6 +10,8 @@ import json
 from tqdm.auto import tqdm
 from loguru import logger
 
+logger.info("开始获取股票板块数据")
+
 import akshare as ak
 from pprint import pprint
 from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict

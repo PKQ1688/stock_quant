@@ -30,7 +30,7 @@ def init_dict():
     return new_data_dict
 
 
-# @ray.remote
+@ray.remote
 def get_handle_data(data_name):
     try:
     # if True:
