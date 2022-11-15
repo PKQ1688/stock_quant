@@ -60,3 +60,15 @@ macd_ma_config = {
     "take_profit": 0.02,
     "stop_loss": "",
 }
+
+ma_hl_config = {
+    # "RANDOM_SEED": 42,
+    "LOG_LEVEL": "DEBUG",
+    "CODE_NAME": "600570",
+    # "CODE_NAME": "ALL_MARKET_100",
+    # "CODE_NAME": ["600570", "002610", "300663"],
+    # "START_STAMP": "2020-01-01",
+    # "END_STAMP": "2020-12-31",
+    # "SHOW_DATA_PATH": "",
+    "STRATEGY_PARAMS": {"sma_length": 20},
+}

@@ -9,7 +9,7 @@ import sys
 from tkinter.messagebox import NO
 import pandas as pd
 from typing import List
-from loguru import logger
+from Utils.base_utils import get_logger
 from dataclasses import dataclass
 
 from .position_analysis import BaseTransactionAnalysis
@@ -29,10 +29,11 @@ class CoreTradeLogic:
     def __init__(self) -> None:
         self.trade_rate = 1.5 / 1000
 
-        self.logger = logger
-        self.logger.remove()  # 删去import logger之后自动产生的handler，不删除的话会出现重复输出的现象
-        self.logger.add(sys.stderr, level=self.config.LOG_LEVEL)  # 添加一个终端输出的内容
-        # logger.add("some_file.log", enqueue=True)  #添加一个文件输出的内容
+        self.logger = get_logger(
+            level=self.config.LOG_LEVEL, 
+            console=True, 
+            log_file=None
+        )
 
         # 针对交易结果进行分析
         self.transaction_analysis = BaseTransactionAnalysis(logger=self.logger)

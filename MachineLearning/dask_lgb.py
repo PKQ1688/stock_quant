@@ -17,9 +17,11 @@ from sklearn.metrics import accuracy_score
 # from sklearn.model_selection import train_test_split
 
 filename = Path("Data/HandleData/base_ohlcv_data", "*.csv")
-# print(filename)
 
 df = dd.read_csv(filename)
+print(df)
+exit()
+
 # print(df.head())
 # print(len(df))
 

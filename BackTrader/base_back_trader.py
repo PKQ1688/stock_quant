@@ -5,26 +5,18 @@
 # @Author  : Adolf
 # @File    : base_back_trader.py
 # @Function:
-from email.policy import default
-from importlib.metadata import metadata
 import itertools
 import random
 import statistics
-from tkinter import END
-from xml.dom.pulldom import END_DOCUMENT
-
 # from functools import reduce
-
 import pandas as pd
 import os
-
 # from tqdm.auto import tqdm
 
 import json
 
 import pandas_ta as ta
 
-from Utils.base_utils import Logger
 from BackTrader.core_trade_logic import CoreTradeLogic
 from BackTrader.position_analysis import BaseTransactionAnalysis
 
