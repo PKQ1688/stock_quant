@@ -5,8 +5,6 @@ Date: 2022-08-13 21:45:35
 LastEditTime: 2022-08-13 22:02:08
 LastEditors: adolf
 """
-import sys
-from tkinter.messagebox import NO
 import pandas as pd
 from typing import List
 from Utils.base_utils import get_logger
