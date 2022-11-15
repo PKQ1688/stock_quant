@@ -6,25 +6,23 @@
 # @File    : base_back_trader.py
 # @Function:
 import itertools
+import json
+import os
 import random
 import statistics
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional
+
 # from functools import reduce
 import pandas as pd
-import os
-# from tqdm.auto import tqdm
-
-import json
-
 import pandas_ta as ta
 
 from BackTrader.core_trade_logic import CoreTradeLogic
 from BackTrader.position_analysis import BaseTransactionAnalysis
-
 from GetBaseData.hanle_data_show import show_data_from_df
 from Utils.ShowKline.base_kline import draw_chart
 
-from dataclasses import dataclass, field
-from typing import Optional, Dict, List
+# from tqdm.auto import tqdm
 
 pd.set_option("expand_frame_repr", False)
 pd.set_option("display.max_rows", None)
@@ -50,7 +48,6 @@ class TradeStructureCongfig:
 
 class TradeStructure(CoreTradeLogic):
     def __init__(self, *args, **kwargs):
-        # self.config = config
         self.config = TradeStructureCongfig(*args, **kwargs)
         super().__init__()
 
@@ -58,20 +55,9 @@ class TradeStructure(CoreTradeLogic):
 
         self.data = None
         self.transaction_analysis = BaseTransactionAnalysis(logger=self.logger)
-
-        # if "random_seed" in self.config:
-        #     random.seed(self.config["random_seed"])
-
-    # @staticmethod
-    # def init_one_transaction_record(asset_name):
-    #     return {
-    #         "pos_asset": asset_name,
-    #         "buy_date": "",
-    #         "buy_price": 1,
-    #         "sell_date": "",
-    #         "sell_price": 1,
-    #         "holding_time": 0,
-    #     }
+        
+        # 设置随机种子，保证实验结果的可复现性
+        random.seed(self.config.RANDOM_SEED)
 
     def load_dataset(self, data_path, start_stamp=None, end_stamp=None):
         df = pd.read_csv(data_path)
@@ -110,10 +96,12 @@ class TradeStructure(CoreTradeLogic):
                 macd_df["MACDs_12_26_9"],
             ]
 
+    # 计算需要使用到的指标
     def cal_technical_indicators(self, indicators_config):
         # self.cal_base_technical_indicators()
         raise NotImplementedError
 
+    # 使用的到的交涉策略细节
     def trading_algorithm(self):
         raise NotImplementedError
 
@@ -151,66 +139,6 @@ class TradeStructure(CoreTradeLogic):
 
         self.logger.debug(one_transaction_record)
         return one_transaction_record
-
-    # def strategy_execute(self):
-    #     asset_name = self.data.name[0]
-    #     one_transaction_record = self.init_one_transaction_record(asset_name=asset_name)
-
-    #     transaction_record_list = []
-    #     # self.logger.debug(one_transaction_record)
-    #     take_profit = self.config.get("take_profit", None)
-
-    #     for index, trading_step in self.data.iterrows():
-    #         # self.logger.debug(trading_step)
-    #         if (
-    #             trading_step["trade"] == "BUY"
-    #             and one_transaction_record["buy_date"] == ""
-    #         ):
-    #             one_transaction_record["buy_date"] = trading_step["date"]
-    #             one_transaction_record["buy_price"] = trading_step["close"]
-    #             one_transaction_record["holding_time"] = index
-
-    #         if take_profit is not None and one_transaction_record["buy_date"] != "":
-    #             if (
-    #                 trading_step["close"] - one_transaction_record["buy_price"]
-    #             ) / one_transaction_record["buy_price"] > self.config["take_profit"]:
-    #                 one_transaction_record["sell_date"] = trading_step["date"]
-    #                 one_transaction_record["sell_price"] = trading_step["close"]
-    #                 one_transaction_record["holding_time"] = (
-    #                     index - one_transaction_record["holding_time"]
-    #                 )
-
-    #                 transaction_record_list.append(one_transaction_record.copy())
-    #                 one_transaction_record = self.init_one_transaction_record(
-    #                     asset_name=asset_name
-    #                 )
-
-    #         if (
-    #             trading_step["trade"] == "SELL"
-    #             and one_transaction_record["buy_date"] != ""
-    #         ):
-    #             one_transaction_record["sell_date"] = trading_step["date"]
-    #             one_transaction_record["sell_price"] = trading_step["close"]
-    #             one_transaction_record["holding_time"] = (
-    #                 index - one_transaction_record["holding_time"]
-    #             )
-
-    #             transaction_record_list.append(one_transaction_record.copy())
-    #             one_transaction_record = self.init_one_transaction_record(
-    #                 asset_name=asset_name
-    #             )
-
-    #     # self.logger.info(transaction_record_list)
-    #     transaction_record_df = pd.DataFrame(transaction_record_list)
-    #     # self.logger.debug(transaction_record_df)
-
-    #     transaction_record_df["pct"] = (
-    #         transaction_record_df["sell_price"] / transaction_record_df["buy_price"]
-    #     ) * (1 - self.trade_rate) - 1
-
-    #     self.logger.debug(transaction_record_df)
-
-    #     return transaction_record_df
 
     # 需要保证show_data里面的核心数据没有空值，不然会造成数据无法显示
     # @staticmethod

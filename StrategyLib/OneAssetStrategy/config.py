@@ -1,4 +1,11 @@
 """
+ Author       : adolf
+ Date         : 2022-11-15 22:01:31
+ LastEditors  : adolf adolf1321794021@gmail.com
+ LastEditTime : 2022-11-15 22:01:32
+ FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/config.py
+"""
+"""
 Description: 
 Author: adolf
 Date: 2022-07-05 19:44:36
@@ -67,8 +74,8 @@ ma_hl_config = {
     "CODE_NAME": "600570",
     # "CODE_NAME": "ALL_MARKET_100",
     # "CODE_NAME": ["600570", "002610", "300663"],
-    # "START_STAMP": "2020-01-01",
-    # "END_STAMP": "2020-12-31",
+    "START_STAMP": "2020-01-01",
+    "END_STAMP": "2020-12-31",
     # "SHOW_DATA_PATH": "",
     "STRATEGY_PARAMS": {"sma_length": 20},
 }
