@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 import json
-from pprint import pprint
+# from pprint import pprint
 
 import akshare as ak
 from sklearn.linear_model import LinearRegression
@@ -58,6 +58,7 @@ with open("Data/BoardData/ALL_INDUSTRY_BOARD.json", "r") as all_market_code:
     industry_board_name_mapping = json.load(all_market_code)
 
 
+# 根据行业板块的动量对板块进行选择，选择市场上涨势最强的10个板块
 def get_choose_board():
     board_res = {}
 
@@ -94,6 +95,7 @@ stock_hot_rank = stock_hot_rank_wc_df.set_index(["股票代码"])["序号"].to_d
 # exit()
 res_df_list = []
 
+# 选择板块中的股票，然后通过问财的热度进行排序
 for one_choose_board in choose_board_list:
     stock_board_industry_cons = ak.stock_board_industry_cons_em(symbol=one_choose_board)
 

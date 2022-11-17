@@ -1,9 +1,9 @@
 <!--
- * @Description: 
- * @Author: adolf
- * @Date: 2022-01-04 20:52:13
- * @LastEditTime: 2022-08-22 22:46:03
- * @LastEditors: adolf
+ * @Author       : adolf
+ * @Date         : 2022-11-18 00:21:42
+ * @LastEditors  : adolf adolf1321794021@gmail.com
+ * @LastEditTime : 2022-11-18 00:21:42
+ * @FilePath     : /stock_quant/README.md
 -->
 # stock_quant
 用于股票量化策略的研究，欢迎一起讨论交流。目前主要针对择时和择股两种策略的回测框架进行开发，因对缠论较为感兴趣，对缠论有单独的代码进行开发。
@@ -14,6 +14,7 @@
 - [ ] 完善缠论对股票的分析
 - [x] 开发选股策略基本回测框架
 - [x] 优化回测代码交易核心代码部分
+- [ ] 构建多机器分布式机器学习框架
 
 ## 项目的基础设定
 ### 1.1 用于控制台使用代理

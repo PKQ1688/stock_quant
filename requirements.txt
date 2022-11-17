@@ -12,8 +12,8 @@ streamlit
 streamlit-echarts
 tabulate
 wcwidth
-colorlog
 loguru
 pathos
 dask_ml
 flask
+dask

@@ -2,7 +2,7 @@
  Author       : adolf
  Date         : 2022-11-15 21:45:01
  LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-11-15 23:08:40
+ LastEditTime : 2022-11-17 21:31:46
  FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/HL20.py
 """
 import pandas_ta as ta
@@ -30,21 +30,23 @@ class MaHighLowStrategy(TradeStructure):
             self.data["low"], length=indicators_config["sma_length"]
         )
 
+        if self.data["ma20_high"] > self.data["ma20_high"].shift(1) > self.data["ma20_low"].shift(2):
+            self.data["ma_direction"] = "up"
+        elif self.data["ma20_low"] < self.data["ma20_low"].shift(1) < self.data["ma20_high"].shift(2):
+            self.data["ma_direction"] = "down"
+        else:
+            self.data["ma_direction"] = "flat"
+
+        self.data[self.data["close"] > self.data["ma20_high"],"sentiment"] = "positive"
+        self.data[self.data["close"] < self.data["ma20_low"],"sentiment"] = "negative"
+
         return True
 
     def trading_algorithm(self):
-        self.data.loc[
-            (self.data["sma5"] > self.data["sma10"])
-            & (self.data["sma5"].shift(1) < self.data["sma10"].shift(1)),
-            "trade",
-        ] = "BUY"
-        self.data.loc[
-            (self.data["sma5"] < self.data["sma10"])
-            & (self.data["sma5"].shift(1) > self.data["sma10"].shift(1)),
-            "trade",
-        ] = "SELL"
-
+        # TODO: 买入卖出逻辑
+        # 需要先对当前策略进行解析才能更好的得出结果
         # self.logger.info(self.Data.tail(30))
+        pass
 
 
 if __name__ == "__main__":
