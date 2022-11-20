@@ -1,9 +1,9 @@
 """
-Description: 
-Author: adolf
-Date: 2022-08-25 00:10:23
-LastEditTime: 2022-08-25 22:28:07
-LastEditors: adolf
+ Author       : adolf
+ Date         : 2022-11-19 21:05:12
+ LastEditors  : adolf adolf1321794021@gmail.com
+ LastEditTime : 2022-11-19 21:05:13
+ FilePath     : /stock_quant/MachineLearning/dask_lgb.py
 """
 import pickle
 from pathlib import Path
@@ -19,8 +19,6 @@ from sklearn.metrics import accuracy_score
 filename = Path("Data/HandleData/base_ohlcv_data", "*.csv")
 
 df = dd.read_csv(filename)
-print(df)
-exit()
 
 # print(df.head())
 # print(len(df))

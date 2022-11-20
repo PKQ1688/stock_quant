@@ -30,7 +30,6 @@ def init_dict():
     return new_data_dict
 
 
-@ray.remote
 def get_handle_data(data_name):
     try:
     # if True:
@@ -107,6 +106,10 @@ def get_handle_data(data_name):
 
 # get_handle_data("000001.csv")
 
+@ray.remote
+def ray_get_handle_data(data_name):
+    return get_handle_data(data_name)
+
 if __name__ == "__main__":
     import os
     import time
@@ -120,7 +123,7 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
-    futures = [get_handle_data.remote(code) for code in os.listdir("Data/RealData/hfq")]
+    futures = [ray_get_handle_data.remote(code) for code in os.listdir("Data/RealData/hfq")]
 
     def to_iterator(obj_ids):
         while obj_ids:
