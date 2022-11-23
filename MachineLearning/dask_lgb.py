@@ -2,58 +2,87 @@
  Author       : adolf
  Date         : 2022-11-19 21:05:12
  LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-11-19 21:05:13
+ LastEditTime : 2022-11-23 20:09:54
  FilePath     : /stock_quant/MachineLearning/dask_lgb.py
 """
-import pickle
-from pathlib import Path
-from loguru import logger
-
-# import numpy as np
-import dask.dataframe as dd
+import dask.array as da
 import lightgbm as lgb
-from dask_ml.model_selection import train_test_split as dask_train_test_split
-from sklearn.metrics import accuracy_score
-# from sklearn.model_selection import train_test_split
-
-filename = Path("Data/HandleData/base_ohlcv_data", "*.csv")
-
-df = dd.read_csv(filename)
-
-# print(df.head())
-# print(len(df))
-
-x = df.drop(columns=["label"])
-y = df["label"]
-# train,test = train_test_split(df,test_size=0.2)
-x_train, x_test, y_train, y_test = dask_train_test_split(
-    x, y, test_size=0.2, shuffle=True
-)
-
-# print(x_train.head())
-# print(x_test.head())
-
-# print(len(x_train))
-# print(len(x_test))
-# exit()
-# msk = np.random.rand(len(df)) < 0.8
-# train = df[msk]
-# test = df[~msk]
-
-# x_train = train.drop(columns=["label"])
-# y_train = train["label"]
+from distributed import Client, LocalCluster
+import pickle
+# from sklearn.datasets import make_regression
+# from sklearn.metrics import mean_squared_error
+from sklearn.datasets import make_blobs
 
 
-model = lgb.LGBMClassifier()
-model.fit(x_train, y_train)
+# from sklearn.metrics import mean_squared_error
 
-# x_test = test.drop(columns=["label"])
-# y_test = test["label"]
+if __name__ == "__main__":
+    pass
 
-# print(model.predict(x))
-y_pred = model.predict(x_test)
-accuracy = accuracy_score(y_test, y_pred)
-print("accuarcy: %.2f%%" % (accuracy * 100.0))
+    # cluster = LocalCluster(n_workers=2)
+    # client = Client()
+    # # client = Client("tcp://127.0.0.1:8786")
 
-with open('MachineLearning/lgb_model.pkl', 'wb') as fout:
-    pickle.dump(model, fout)
+    # X, y = make_regression(n_samples=1000, n_features=50)
+    # dX = da.from_array(X, chunks=(100, 50))
+    # dy = da.from_array(y, chunks=(100,))
+
+    # dask_model = lgb.DaskLGBMRegressor(n_estimators=10)
+    # dask_model.fit(dX, dy)
+
+    # with open("model/dask-model.pkl", "wb") as f:
+    #     pickle.dump(dask_model, f)
+
+    # with open("model/dask-model.pkl", "rb") as f:
+    #     dask_model = pickle.load(f)
+
+    # preds = dask_model.predict(dX)
+
+    # print("computing MSE")
+
+    # preds_local = preds.compute()
+    # actuals_local = dy.compute()
+    # mse = mean_squared_error(actuals_local, preds_local)
+
+    # print(f"MSE: {mse}")
+
+    #########################################################################################
+
+    # # 准备数据
+
+    # X, y = make_blobs(n_samples=1000, n_features=50, centers=3)
+
+    # dX = da.from_array(X, chunks=(100, 50))
+    # dy = da.from_array(y, chunks=(100,))
+
+    # # 训练
+    # params={
+    #     'learning_rate':0.1,
+    #     'lambda_l1':0.1,
+    #     'lambda_l2':0.2,
+    #     'max_depth':6,
+    #     'objective':'multiclass',
+    #     'num_class':4,  
+    # }
+    # dask_model = lgb.DaskLGBMClassifier(n_estimators=10)
+    # dask_model.fit(dX, dy,params=params)
+
+    # # 1、AUC
+    # y_pred_pa = clf.predict(X_test)  # !!!注意lgm预测的是分数，类似 sklearn的predict_proba
+    # y_test_oh = label_binarize(y_test, classes= [0,1,2,3])
+    # print '调用函数auc：', roc_auc_score(y_test_oh, y_pred_pa, average='micro')
+
+    # #  2、混淆矩阵
+    # y_pred = y_pred_pa .argmax(axis=1)
+    # confusion_matrix(y_test, y_pred )
+
+    # #  3、经典-精确率、召回率、F1分数
+    # precision_score(y_test, y_pred,average='micro')
+    # recall_score(y_test, y_pred,average='micro')
+    # f1_score(y_test, y_pred,average='micro')
+
+    # # 4、模型报告
+    # print(classification_report(y_test, y_pred))
+
+    # # 保存模型
+    # joblib.dump(clf, './model/lgb.pkl')

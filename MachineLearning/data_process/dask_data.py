@@ -2,7 +2,7 @@
  Author       : adolf
  Date         : 2022-11-19 21:06:39
  LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-11-20 23:34:22
+ LastEditTime : 2022-11-23 21:41:43
  FilePath     : /stock_quant/MachineLearning/data_process/dask_data.py
 """
 import time
@@ -87,17 +87,23 @@ def get_handle_data(data_name):
             # new_data_dict["pct"].append(data_t.loc[index + 1, "pctChg"])
             next_pct = data_t.loc[index + 1, "pctChg"]
             if next_pct > 7:
-                new_data_dict["label"].append("超强")
+                # 超强                
+                new_data_dict["label"].append(0)
             elif next_pct > 3:
-                new_data_dict["label"].append("中强")
+                # 中强
+                new_data_dict["label"].append(1)
             elif next_pct > 0:
-                new_data_dict["label"].append("小强")
+                # 小强
+                new_data_dict["label"].append(2)
             elif next_pct > -3:
-                new_data_dict["label"].append("小弱")
+                # 小弱
+                new_data_dict["label"].append(3)
             elif next_pct > -7:
-                new_data_dict["label"].append("中弱")
+                # 中弱
+                new_data_dict["label"].append(4)
             else:
-                new_data_dict["label"].append("超弱")
+                # 超弱
+                new_data_dict["label"].append(5)
 
         res_data = pd.DataFrame(new_data_dict)
         # res_data = res_data.drop(columns=['code'])
@@ -159,9 +165,10 @@ if __name__ == "__main__":
 
     # progress(client.gather(futures))
     # results = [future.result() for future in futures]
-    with ProgressBar():
-        results = client.gather(futures)  # this can be faster
+    # with ProgressBar():
+    # results = client.gather(futures)  # this can be faster
     # progress(client.gather(futures))
-
-    print(results)
+    # progress(results)
+    progress(futures)
+    print(futures[0].result())
     print("use time: {}".format(time.time() - start_time))
