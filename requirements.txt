@@ -17,3 +17,4 @@ pathos
 dask_ml
 flask
 dask
+prophet
