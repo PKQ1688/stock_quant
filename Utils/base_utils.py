@@ -1,3 +1,10 @@
+"""
+ Author       : adolf
+ Date         : 2022-12-02 00:15:09
+ LastEditors  : adolf adolf1321794021@gmail.com
+ LastEditTime : 2022-12-02 00:27:43
+ FilePath     : /stock_quant/Utils/base_utils.py
+"""
 # ！/usr/bin/env python
 # -*- coding:utf-8 -*-
 # @Project : stock_quant
@@ -7,6 +14,7 @@
 # @Function:
 import sys
 import loguru
+
 
 def get_logger(level="INFO", console=True, logger_file=None):
     """
@@ -18,20 +26,30 @@ def get_logger(level="INFO", console=True, logger_file=None):
     logger = loguru.logger
     logger.remove()
 
+    logger_format = """<green>{time:YYYY-MM-DD HH:mm:ss}</green>| <level>{level}</level> | <cyan>{name}</cyan>=><cyan>{function}</cyan>=><cyan>{line}</cyan>\n<level>{message}</level>"""
+
     if console:
-        logger.add(sys.stderr, level=level.upper())
+        logger.add(
+            sys.stderr,
+            format=logger_format,
+            colorize=True,
+            level=level.upper(),
+        )
 
     # 添加一个文件输出的内容
     # 目前每天一个日志文件，日志文件最多保存7天
     if logger_file is not None:
-        logger.add(logger_file,
-                   enqueue=True,
-                   level=level.upper(),
-                   encoding="utf-8",
-                   rotation="00:00",
-                   retention="7 days")
+        logger.add(
+            logger_file,
+            enqueue=True,
+            level=level.upper(),
+            encoding="utf-8",
+            rotation="00:00",
+            retention="7 days",
+        )
 
     return logger
+
 
 # 指定只运行一次
 def run_once(f):

@@ -1,4 +1,11 @@
 """
+ Author       : adolf
+ Date         : 2022-12-01 23:29:44
+ LastEditors  : adolf adolf1321794021@gmail.com
+ LastEditTime : 2022-12-01 23:29:45
+ FilePath     : /stock_quant/BackTrader/core_trade_logic.py
+"""
+"""
 Description: 
 Author: adolf
 Date: 2022-08-13 21:45:35
@@ -28,9 +35,7 @@ class CoreTradeLogic:
         self.trade_rate = 1.5 / 1000
 
         self.logger = get_logger(
-            level=self.config.LOG_LEVEL, 
-            console=True, 
-            log_file=None
+            level=self.config.LOG_LEVEL, console=True, logger_file=None
         )
 
         # 针对交易结果进行分析

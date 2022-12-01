@@ -2,7 +2,7 @@
  Author       : adolf
  Date         : 2022-11-15 22:01:31
  LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-11-15 22:01:32
+ LastEditTime : 2022-12-01 23:25:04
  FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/config.py
 """
 """
@@ -78,4 +78,16 @@ ma_hl_config = {
     "END_STAMP": "2020-12-31",
     # "SHOW_DATA_PATH": "",
     "STRATEGY_PARAMS": {"sma_length": 20},
+}
+
+ma_ema_cross_config = {
+    # "RANDOM_SEED": 42,
+    "LOG_LEVEL": "DEBUG",
+    "CODE_NAME": "600570",
+    # "CODE_NAME": "ALL_MARKET_100",
+    # "CODE_NAME": ["600570", "002610", "300663"],
+    "START_STAMP": "2020-01-01",
+    "END_STAMP": "2020-12-31",
+    # "SHOW_DATA_PATH": "",
+    "STRATEGY_PARAMS": {"sma_length": 10, "ema_length": 10},
 }
