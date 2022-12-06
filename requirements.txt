@@ -1,6 +1,6 @@
 akshare
 pandas
-ray
+# ray
 pandas_ta
 finta
 tqdm
@@ -11,10 +11,8 @@ schedule
 streamlit
 streamlit-echarts
 tabulate
-wcwidth
 loguru
 pathos
-dask_ml
-flask
+# dask_ml
 dask
-prophet
+# prophet

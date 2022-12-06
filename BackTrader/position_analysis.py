@@ -94,7 +94,7 @@ class BaseTransactionAnalysis:
         result_df = pd.DataFrame.from_dict(result_dict,
                                            orient='index',
                                            columns=["result"])
-        self.logger.info(result_df)
+        self.logger.success(result_df)
 
         return result_df
 

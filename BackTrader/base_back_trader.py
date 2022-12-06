@@ -47,8 +47,8 @@ class TradeStructureCongfig:
 
 
 class TradeStructure(CoreTradeLogic):
-    def __init__(self, *args, **kwargs):
-        self.config = TradeStructureCongfig(*args, **kwargs)
+    def __init__(self, config):
+        self.config = TradeStructureCongfig(**config)
         super().__init__()
 
         self.logger.info("Trade is begging ......")
@@ -59,6 +59,7 @@ class TradeStructure(CoreTradeLogic):
         # 设置随机种子，保证实验结果的可复现性
         random.seed(self.config.RANDOM_SEED)
 
+    # 加载数据集
     def load_dataset(self, data_path, start_stamp=None, end_stamp=None):
         df = pd.read_csv(data_path)
         df["market_cap"] = (df["amount"] * 100 / df["turn"]) / pow(10, 8)
@@ -74,6 +75,7 @@ class TradeStructure(CoreTradeLogic):
         # self.logger.debug(df)
         self.data = df
 
+    # 计算基础的交易指标
     def cal_base_technical_indicators(
         self, sma_list=(5, 10, 20), macd_parm=(12, 26, 9)
     ):
@@ -98,47 +100,14 @@ class TradeStructure(CoreTradeLogic):
 
     # 计算需要使用到的指标
     def cal_technical_indicators(self, indicators_config):
-        # self.cal_base_technical_indicators()
-        raise NotImplementedError
+        """可以计算需要用到的指标，如果不重写则使用默认的指标"""
+        self.cal_base_technical_indicators()
+        # raise NotImplementedError
 
-    # 使用的到的交涉策略细节
-    def trading_algorithm(self):
-        raise NotImplementedError
+    # 使用的到的交涉策略细节(已废弃)
+    # def trading_algorithm(self):
+    #     raise NotImplementedError
 
-    def buy_logic(self, trading_step, *args, **kwargs):
-        if trading_step.trade == "BUY":
-            return True
-        else:
-            return False
-
-    def sell_logic(self, trading_step, *args, **kwargs):
-        if trading_step.trade == "SELL":
-            return True
-        else:
-            return False
-
-    def buy(self, index, trading_step, one_transaction_record):
-        self.logger.debug(f"buy {index} {trading_step} {one_transaction_record}")
-
-        one_transaction_record.pos_asset = trading_step.code
-        one_transaction_record.buy_date = trading_step.date
-        one_transaction_record.buy_price = trading_step.close
-        one_transaction_record.holding_time = index
-
-        self.logger.debug(one_transaction_record)
-        return one_transaction_record
-
-    def sell(self, index, trading_step, one_transaction_record):
-        self.logger.debug(f"sell {index} \n {trading_step} \n {one_transaction_record}")
-
-        one_transaction_record.sell_date = trading_step.date
-        one_transaction_record.sell_price = trading_step.close
-        one_transaction_record.holding_time = (
-            index - one_transaction_record.holding_time
-        )
-
-        self.logger.debug(one_transaction_record)
-        return one_transaction_record
 
     # 需要保证show_data里面的核心数据没有空值，不然会造成数据无法显示
     # @staticmethod
@@ -151,6 +120,7 @@ class TradeStructure(CoreTradeLogic):
         show_data = show_data_from_df(df_or_dfpath=show_data)
         draw_chart(input_data=show_data, show_html_path=show_data_path)
 
+    # 使用一套参数对一只股票进行回测
     def run_one_stock_once(self, code_name, indicators_config=None):
         if indicators_config is None:
             indicators_config = self.config.STRATEGY_PARAMS
@@ -164,11 +134,16 @@ class TradeStructure(CoreTradeLogic):
         )
 
         self.cal_technical_indicators(indicators_config)
+        self.data.dropna(axis=0,how='any',inplace=True) #drop all rows that have any NaN values
+        self.data.reset_index(drop=True, inplace=True)
+
         # if not self.cal_technical_indicators(indicators_config):
         # return False
 
-        self.trading_algorithm()
+        # 废弃了，现在需要编写算法的购买逻辑和卖出逻辑
+        # self.trading_algorithm()
         # transaction_record_df = self.strategy_execute()
+
         transaction_record_df = self.base_trade(self.data)
 
         asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
@@ -176,9 +151,13 @@ class TradeStructure(CoreTradeLogic):
         if asset_analysis is not None:
             self.logger.info("对标的进行分析:\n{}".format(asset_analysis))
 
-        strategy_analysis = self.transaction_analysis.cal_trader_analysis(
-            transaction_record_df
-        )
+        if len(transaction_record_df) > 0:
+            strategy_analysis = self.transaction_analysis.cal_trader_analysis(
+                transaction_record_df
+            )
+        else:
+            self.logger.info("没有交易记录，无法进行交易分析")
+            return None
 
         # self.logger.debug("策略使用的参数:\n{}".format(indicators_config))
         # self.logger.debug("对策略结果进行分析:\n{}".format(strategy_analysis))
@@ -251,11 +230,11 @@ class TradeStructure(CoreTradeLogic):
                 market_code_dict = json.load(all_market_code)
             self.logger.debug(market_code_dict)
 
-            market_code_list = market_code_dict.keys()
+            market_code_list = list(market_code_dict.keys())
 
             if code_name.upper() != "ALL_MARKET":
                 sample_num = int(code_name.split("_")[-1])
-                market_code_list = random.sample(market_code_list, sample_num)
+                market_code_list = random.sample(market_code_list, int(sample_num))
 
             self.logger.debug(market_code_list)
 
@@ -267,7 +246,7 @@ class TradeStructure(CoreTradeLogic):
                     # self.logger.info(one_pl_ration)
 
                     # 判断变量是否为nan,如果是nan则不添加进List
-                    if not one_pl_ration != one_pl_ration:
+                    if not one_pl_ration != one_pl_ration and one_pl_ration is not None:
                         pl_ration_list.append(one_pl_ration)
                     # self.logger.info(pl_ration_list)
                 except Exception as e:
@@ -278,7 +257,8 @@ class TradeStructure(CoreTradeLogic):
         else:
             pl_ration = self.run_one_stock()
 
-        self.logger.info("策略交易一次的收益的数学期望为：{:.2f}%".format(pl_ration * 100))
+        if pl_ration is not None:
+            self.logger.success("策略交易一次的收益的数学期望为：{:.2f}%".format(pl_ration * 100))
 
         # self.run_one_stock()
 

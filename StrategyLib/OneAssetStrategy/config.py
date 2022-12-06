@@ -5,13 +5,6 @@
  LastEditTime : 2022-12-01 23:25:04
  FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/config.py
 """
-"""
-Description: 
-Author: adolf
-Date: 2022-07-05 19:44:36
-LastEditTime: 2022-08-14 13:22:48
-LastEditors: adolf
-"""
 ma5ma10_config = {
     "RANDOM_SEED": 42,
     "LOG_LEVEL": "INFO",

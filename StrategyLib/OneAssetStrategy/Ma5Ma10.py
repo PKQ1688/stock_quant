@@ -1,4 +1,11 @@
 """
+ Author       : adolf
+ Date         : 2022-12-03 17:59:38
+ LastEditors  : adolf adolf1321794021@gmail.com
+ LastEditTime : 2022-12-03 18:01:50
+ FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/Ma5Ma10.py
+"""
+"""
 Description: 
 Author: adolf
 Date: 2022-01-11 20:56:59
@@ -20,45 +27,43 @@ class Ma5Ma10Strategy(TradeStructure):
 
         self.data["sma5"] = ta.sma(self.data["close"], length=5)
         self.data["sma10"] = ta.sma(self.data["close"], length=10)
+    
+    def buy_logic(self, trading_step, one_transaction_record):
+        self.logger.debug(trading_step)
+        exit()
+        if trading_step.sma5 > trading_step.sma10:
+            return True
+    
+    def sell_logic(self, trading_step, one_transaction_record):
+        if trading_step.sma5 < trading_step.sma10:
+            return True
 
-        # macd_df = ta.macd(close=self.data["close"])
+    # def trading_algorithm(self):
+    #     self.data.loc[
+    #         (self.data["sma5"] > self.data["sma10"])
+    #         & (self.data["sma5"].shift(1) < self.data["sma10"].shift(1)),
+    #         "trade",
+    #     ] = "BUY"
+    #     self.data.loc[
+    #         (self.data["sma5"] < self.data["sma10"])
+    #         & (self.data["sma5"].shift(1) > self.data["sma10"].shift(1)),
+    #         "trade",
+    #     ] = "SELL"
 
-        # self.data["macd"], self.data["histogram"], self.data["signal"] = [macd_df["MACD_12_26_9"],
-        #                                                                   macd_df["MACDh_12_26_9"],
-        #                                                                   macd_df["MACDs_12_26_9"]]
-
-        # self.data["atr"] = ta.atr(high=self.data["high"], low=self.data["low"], close=self.data["close"],
-        #                           length=14)
-
-        # self.logger.debug(help(ta.psar))
-
-        # sar_df = ta.psar(high=self.data["high"], low=self.data["low"], close=self.data["close"])
-
-        # self.logger.debug(sar_df[:200])
-
-        # self.data["long"], self.data["short"], self.data["af"], self.data["reversal"] = [sar_df["PSARl_0.02_0.2"],
-        #                                                                                  sar_df["PSARs_0.02_0.2"],
-        #                                                                                  sar_df["PSARaf_0.02_0.2"],
-        #                                                                                  sar_df["PSARr_0.02_0.2"]]
-        # self.logger.info(self.data.tail(30))
-
-        return True
-
-    def trading_algorithm(self):
-        self.data.loc[
-            (self.data["sma5"] > self.data["sma10"])
-            & (self.data["sma5"].shift(1) < self.data["sma10"].shift(1)),
-            "trade",
-        ] = "BUY"
-        self.data.loc[
-            (self.data["sma5"] < self.data["sma10"])
-            & (self.data["sma5"].shift(1) > self.data["sma10"].shift(1)),
-            "trade",
-        ] = "SELL"
-
-        # self.logger.info(self.Data.tail(30))
+    #     # self.logger.info(self.Data.tail(30))
 
 
 if __name__ == "__main__":
-    ma5ma10_strategy = Ma5Ma10Strategy(**ma5ma10_config)
+    config = {
+        "RANDOM_SEED": 42,
+        "LOG_LEVEL": "debug",
+        "CODE_NAME": "600570",
+        # "CODE_NAME": "ALL_MARKET_100",
+        # "CODE_NAME": ["600570", "002610", "300663"],
+        # "START_STAMP": "2020-01-01",
+        # "END_STAMP": "2020-12-31",
+        # "SHOW_DATA_PATH": "",
+        # "STRATEGY_PARAMS": {}
+    }
+    ma5ma10_strategy = Ma5Ma10Strategy(config)
     ma5ma10_strategy.run()
