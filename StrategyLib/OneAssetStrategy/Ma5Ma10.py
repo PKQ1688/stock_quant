@@ -2,19 +2,12 @@
  Author       : adolf
  Date         : 2022-12-03 17:59:38
  LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-12-08 00:07:06
+ LastEditTime : 2022-12-10 18:02:26
  FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/Ma5Ma10.py
 """
-"""
-Description: 
-Author: adolf
-Date: 2022-01-11 20:56:59
-LastEditTime: 2022-08-14 13:17:09
-LastEditors: adolf
-"""
+from pprint import pformat
 import pandas_ta as ta
 from BackTrader.base_back_trader import TradeStructure
-from StrategyLib.OneAssetStrategy import ma5ma10_config
 
 
 class Ma5Ma10Strategy(TradeStructure):
@@ -29,35 +22,32 @@ class Ma5Ma10Strategy(TradeStructure):
         self.data["sma10"] = ta.sma(self.data["close"], length=10)
 
     # def buy_logic(self, trading_step, one_transaction_record, history_trading_step):
-    def buy_logic(self, trading_step, one_transaction_record):
-        self.logger.debug(trading_step)
-        exit()
-        if trading_step.sma5 > trading_step.sma10:
+    def buy_logic(self):
+        self.logger.debug(pformat(self.trade_state, indent=4, width=20))
+        if (
+            self.trade_state.trading_step.sma5 > self.trade_state.trading_step.sma10
+            and self.trade_state.history_trading_step[0].sma5
+            < self.trade_state.history_trading_step[0].sma10
+        ):
             return True
+        else:
+            return False
 
-    def sell_logic(self, trading_step, one_transaction_record):
-        if trading_step.sma5 < trading_step.sma10:
+    def sell_logic(self):
+        if (
+            self.trade_state.trading_step.sma5 < self.trade_state.trading_step.sma10
+            and self.trade_state.history_trading_step[0].sma5
+            > self.trade_state.history_trading_step[0].sma10
+        ):
             return True
-
-    # def trading_algorithm(self):
-    #     self.data.loc[
-    #         (self.data["sma5"] > self.data["sma10"])
-    #         & (self.data["sma5"].shift(1) < self.data["sma10"].shift(1)),
-    #         "trade",
-    #     ] = "BUY"
-    #     self.data.loc[
-    #         (self.data["sma5"] < self.data["sma10"])
-    #         & (self.data["sma5"].shift(1) > self.data["sma10"].shift(1)),
-    #         "trade",
-    #     ] = "SELL"
-
-    #     # self.logger.info(self.Data.tail(30))
+        else:
+            return False
 
 
 if __name__ == "__main__":
     config = {
         "RANDOM_SEED": 42,
-        "LOG_LEVEL": "debug",
+        "LOG_LEVEL": "INFO",
         "CODE_NAME": "600570",
         # "CODE_NAME": "ALL_MARKET_100",
         # "CODE_NAME": ["600570", "002610", "300663"],
@@ -66,5 +56,5 @@ if __name__ == "__main__":
         # "SHOW_DATA_PATH": "",
         # "STRATEGY_PARAMS": {}
     }
-    ma5ma10_strategy = Ma5Ma10Strategy(config)
-    ma5ma10_strategy.run()
+    strategy = Ma5Ma10Strategy(config)
+    strategy.run()

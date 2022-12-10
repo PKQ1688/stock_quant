@@ -2,7 +2,7 @@
  Author       : adolf
  Date         : 2022-12-01 23:29:44
  LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-12-08 00:20:32
+ LastEditTime : 2022-12-10 17:42:41
  FilePath     : /stock_quant/BackTrader/core_trade_logic.py
 """
 import pandas as pd
@@ -35,6 +35,9 @@ class TradeStructure:
         default=None, metadata={"help": "历史交易记录"}
     )
 
+    def __post_init__(self):
+        self.one_transaction_record = OneTransactionRecord()
+        self.history_trading_step = []
 
 class CoreTradeLogic:
     def __init__(self) -> None:
@@ -78,13 +81,18 @@ class CoreTradeLogic:
         return one_transaction_record
 
     def base_trade(self, data) -> List[dict]:
-        self.trade_state.one_transaction_record = OneTransactionRecord()
+        # self.trade_state.one_transaction_record = OneTransactionRecord()
 
-        self.trade_state.history_trading_step = []
+        # self.trade_state.history_trading_step = []
         transaction_record_list = []
         # self.logger.debug(one_transaction_record)
 
         for index, trading_step in data.iterrows():
+
+            if len(self.trade_state.history_trading_step) == 0:
+                self.trade_state.history_trading_step.append(trading_step)
+                continue
+
             self.trade_state.trading_step = trading_step
             if (
                 self.buy_logic()

@@ -1,4 +1,11 @@
 """
+ Author       : adolf
+ Date         : 2022-12-10 17:39:05
+ LastEditors  : adolf adolf1321794021@gmail.com
+ LastEditTime : 2022-12-10 17:39:05
+ FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/MACD_MA.py
+"""
+"""
 Description: 
 Author: adolf
 Date: 2022-07-05 19:38:38
