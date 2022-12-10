@@ -2,7 +2,7 @@
  Author       : adolf
  Date         : 2022-12-03 17:59:38
  LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-12-03 18:01:50
+ LastEditTime : 2022-12-08 00:07:06
  FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/Ma5Ma10.py
 """
 """
@@ -27,13 +27,14 @@ class Ma5Ma10Strategy(TradeStructure):
 
         self.data["sma5"] = ta.sma(self.data["close"], length=5)
         self.data["sma10"] = ta.sma(self.data["close"], length=10)
-    
+
+    # def buy_logic(self, trading_step, one_transaction_record, history_trading_step):
     def buy_logic(self, trading_step, one_transaction_record):
         self.logger.debug(trading_step)
         exit()
         if trading_step.sma5 > trading_step.sma10:
             return True
-    
+
     def sell_logic(self, trading_step, one_transaction_record):
         if trading_step.sma5 < trading_step.sma10:
             return True
