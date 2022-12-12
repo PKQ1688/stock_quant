@@ -74,6 +74,7 @@ class TradeStructure(CoreTradeLogic):
 
         # self.logger.debug(df)
         self.data = df
+        self.data = self.data[["date", "open", "high", "low", "close", "volume","turn", "market_cap","code"]]
 
     # 计算基础的交易指标
     def cal_base_technical_indicators(

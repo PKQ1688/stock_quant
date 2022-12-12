@@ -1,3 +1,10 @@
+"""
+ Author       : adolf
+ Date         : 2022-08-14 13:21:21
+ LastEditors  : adolf adolf1321794021@gmail.com
+ LastEditTime : 2022-12-11 14:19:26
+ FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/MacdDeviate.py
+"""
 '''
 Description: 
 Author: adolf
