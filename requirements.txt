@@ -6,13 +6,12 @@ finta
 tqdm
 mplfinance
 pyecharts
-lightgbm
+# lightgbm
 schedule
 streamlit
 streamlit-echarts
 tabulate
 loguru
 pathos
-# dask_ml
 dask
-# prophet
+scikit-learn
