@@ -8,6 +8,7 @@ LastEditors: adolf
 import os
 import numpy as np
 import pandas as pd
+import pandas_ta as ta
 
 import json
 # from pprint import pprint
@@ -64,6 +65,8 @@ def get_choose_board():
 
     for board_name in board_list:
         (w0, R2) = cal_one_board_mom(board_name)
+        print(board_name, w0, R2)
+        exit()
         # print(board_name)
         # print(industry_board_name_mapping[board_name.replace(".csv","")])
         # print(w0)

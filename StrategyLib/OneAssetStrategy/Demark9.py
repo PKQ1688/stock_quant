@@ -2,7 +2,7 @@
  Author       : adolf
  Date         : 2022-12-11 16:42:58
  LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-12-13 00:23:22
+ LastEditTime : 2022-12-13 23:58:01
  FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/Demark9.py
 """
 import pandas as pd
@@ -22,6 +22,9 @@ class Demark9Strategy(TradeStructure):
         self.data = pd.concat([self.data, return_demark], axis=1)  
 
         self.logger.debug(self.data.head(30))
+        show_data = self.data[(self.data["TD_SEQ_UP"]==9) | (self.data["TD_SEQ_DN"]==9)]
+        self.logger.info(show_data)
+        exit()
         # self.logger.debug(len(self.data))
         # self.logger.debug(len(return_demark))
 
@@ -40,11 +43,11 @@ class Demark9Strategy(TradeStructure):
 if __name__ == "__main__":
     config = {
         "RANDOM_SEED": 42,  
-        "LOG_LEVEL": "SUCCESS",
-        # "CODE_NAME": "300663",
+        "LOG_LEVEL": "INFO",
+        "CODE_NAME": "600570",
         # "CODE_NAME": "ALL_MARKET_100",
-        "CODE_NAME": ["600570", "002610", "300663"],
-        # "START_STAMP": "2020-01-01",
+        # "CODE_NAME": ["600570", "002610", "300663"],
+        "START_STAMP": "2020-01-01",
         # "END_STAMP": "2020-12-31",
         # "SHOW_DATA_PATH": "",
         # "STRATEGY_PARAMS": {}
