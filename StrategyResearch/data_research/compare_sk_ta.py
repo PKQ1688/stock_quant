@@ -1,8 +1,15 @@
+"""
+ Author       : adolf
+ Date         : 2022-12-18 14:19:37
+ LastEditors  : adolf adolf1321794021@gmail.com
+ LastEditTime : 2022-12-18 17:27:09
+ FilePath     : /stock_quant/StrategyResearch/data_research/compare_sk_ta.py
+"""
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Time    : 2022/12/17 16:17
 # @Author  : Adolf
-# @Site    : 
+# @Site    :
 # @File    : compare_sk_ta.py
 # @Software: PyCharm
 import numpy as np
@@ -41,12 +48,10 @@ def use_ta_cal_one_board_mom(board_data_path, period=20):
     data = data[-period:]
     data.reset_index(drop=True, inplace=True)
     # data["mid"] = (data["open"] + data["close"] + data["high"] + data["low"]) / 4
-    res = ta.linreg(data.close,
-                    length=period,
-                    r=True)
-    return res
+    data["linreg"] = ta.linreg(data.close, length=period, slope=True)
+    return data.tail(1).linreg.values[0]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(cal_one_board_mom("汽车整车.csv"))
     print(use_ta_cal_one_board_mom("汽车整车.csv"))
