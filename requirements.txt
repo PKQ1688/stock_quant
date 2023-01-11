@@ -6,7 +6,7 @@ finta
 tqdm
 mplfinance
 pyecharts
-# lightgbm
+lightgbm
 schedule
 streamlit
 streamlit-echarts
