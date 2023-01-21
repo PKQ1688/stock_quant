@@ -2,7 +2,7 @@
  Author       : adolf
  Date         : 2023-01-09 22:34:00
  LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2023-01-10 22:19:21
+ LastEditTime : 2023-01-14 19:32:41
  FilePath     : /stock_quant/MachineLearning/data_process/indicators_cal.py
 """
 import pandas as pd
@@ -42,6 +42,10 @@ def cal_indicators(filename):
         data["atr"] = ta.atr(
             data.high, data.low, data.close, length=14
         )
+
+        data["pct"] = data.pctChg.shift(-1)
+        print(data.tail(30))
+        exit()
 
         data.drop(
             ["date","amount", "amplitude", "priceChg", "code","name"],
