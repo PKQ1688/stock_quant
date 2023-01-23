@@ -8,8 +8,11 @@
 import baostock as bs
 import pandas as pd
 from tqdm import tqdm
+from dask.distributed import Client
 
 date = "2023-01-20"
+# 获取交易日当天的交易股票
+stock_df = bs.query_all_stock(date).get_data()
 
 
 def get_base_k_data(code):
@@ -28,8 +31,9 @@ def get_base_k_data(code):
 
 
 if __name__ == '__main__':
+
+    client = Client(n_workers=4)
     bs.login()
-    stock_df = bs.query_all_stock(date).get_data()
 
     for index, row in tqdm(stock_df.iterrows(), total=stock_df.shape[0]):
         if row['tradeStatus'] == '0' or "bj" in row["code"]:
@@ -38,4 +42,5 @@ if __name__ == '__main__':
         get_base_k_data(_code)
         break
 
+    client.close()
     bs.logout()

@@ -14,5 +14,5 @@ streamlit-echarts
 tabulate
 loguru
 pathos
-dask
+dask[complete]
 scikit-learn
