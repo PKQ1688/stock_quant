@@ -1,12 +1,13 @@
 akshare
+baostock
 pandas
 # ray
 pandas_ta
 finta
 tqdm
-mplfinance
+# mplfinance
 pyecharts
-lightgbm
+# lightgbm
 schedule
 streamlit
 streamlit-echarts
