@@ -5,10 +5,22 @@
 # @Site    : 
 # @File    : stock_k_data_dask.py
 # @Software: PyCharm
+import time
 import baostock as bs
 import pandas as pd
 from tqdm import tqdm
-from dask.distributed import Client
+from dask.distributed import Client, progress
+
+from pathlib import Path
+import shutil
+
+# 对文件夹进行清空处理
+dir_path = Path('Data/RealData/hfq/')
+if dir_path.exists() and dir_path.is_dir():
+    shutil.rmtree(dir_path)
+dir_path.mkdir(parents=True, exist_ok=True)
+
+bs.login()
 
 date = "2023-01-20"
 # 获取交易日当天的交易股票
@@ -31,16 +43,19 @@ def get_base_k_data(code):
 
 
 if __name__ == '__main__':
+    # client = Client(n_workers=4)
 
-    client = Client(n_workers=4)
-    bs.login()
-
+    start_time = time.time()
+    # futures = []
     for index, row in tqdm(stock_df.iterrows(), total=stock_df.shape[0]):
         if row['tradeStatus'] == '0' or "bj" in row["code"]:
             continue
         _code = row['code']
         get_base_k_data(_code)
-        break
+        # future = client.submit(get_base_k_data, _code)
+        # futures.append(future)
 
-    client.close()
+    # progress(futures)
+    print("use time: {}".format(time.time() - start_time))
+    # client.close()
     bs.logout()

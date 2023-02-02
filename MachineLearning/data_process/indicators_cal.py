@@ -14,6 +14,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
+
 def cal_indicators(filename):
     # print(filename.name)
     try:
@@ -48,7 +49,7 @@ def cal_indicators(filename):
         exit()
 
         data.drop(
-            ["date","amount", "amplitude", "priceChg", "code","name"],
+            ["date", "amount", "amplitude", "priceChg", "code", "name"],
             axis=1,
             inplace=True,
         )
@@ -62,13 +63,14 @@ def cal_indicators(filename):
         print(filename.name)
         return None
 
+
 if __name__ == '__main__':
     # import dask
     import pathlib
     from dask.distributed import progress
     from dask.distributed import Client, LocalCluster
+
     client = Client(LocalCluster(n_workers=4, threads_per_worker=1, memory_limit='2GB'))
-    
 
     futures = []
 
@@ -79,7 +81,7 @@ if __name__ == '__main__':
         # break
         futures.append(future)
         # if len(futures) > 10:
-            # break
+        # break
 
     progress(futures)
     # print(futures[0].result())

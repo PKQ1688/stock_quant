@@ -145,8 +145,6 @@ if __name__ == "__main__":
     # client = Client(n_workers=8, threads_per_worker=1, processes=True)
     client = Client("tcp://127.0.0.1:8786")
 
-    ts = time.time()
-
     # contents = []
     # for filename in all_data_list:
     #     contents.append(process_file(filename))
