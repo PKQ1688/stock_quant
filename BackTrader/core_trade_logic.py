@@ -2,7 +2,7 @@
  Author       : adolf
  Date         : 2022-12-01 23:29:44
  LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-12-12 00:19:25
+ LastEditTime : 2023-02-06 00:22:54
  FilePath     : /stock_quant/BackTrader/core_trade_logic.py
 """
 import pandas as pd
@@ -14,7 +14,7 @@ from .position_analysis import BaseTransactionAnalysis
 
 
 @dataclass
-class OneTransactionRecord:
+class   OneTransactionRecord:
     pos_asset: str = field(default=None, metadata={"help": "持仓资产"})
     buy_date: str = field(default=None, metadata={"help": "买入时间"})
     buy_price: float = field(default=0.0, metadata={"help": "买入价格"})
