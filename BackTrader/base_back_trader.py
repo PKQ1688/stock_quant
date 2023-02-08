@@ -115,9 +115,7 @@ class TradeStructure(CoreTradeLogic):
     def show_one_stock(self, show_data):
         if not os.path.exists("ShowHtml"):
             os.mkdir("ShowHtml")
-        show_data_path = self.config.get(
-            "show_data_path", "ShowHtml/StrategyShowData.html"
-        )
+        show_data_path = self.config.SHOW_DATA_PATH if self.config.SHOW_DATA_PATH else "ShowHtml/demo.html"
         show_data = show_data_from_df(df_or_dfpath=show_data)
         draw_chart(input_data=show_data, show_html_path=show_data_path)
 
@@ -150,7 +148,7 @@ class TradeStructure(CoreTradeLogic):
         asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
 
         if asset_analysis is not None:
-            self.logger.info("对标的进行分析:\n{}".format(asset_analysis))
+            self.logger.success("对标的进行分析:\n{}".format(asset_analysis))
 
         if len(transaction_record_df) > 0:
             strategy_analysis = self.transaction_analysis.cal_trader_analysis(
@@ -210,7 +208,8 @@ class TradeStructure(CoreTradeLogic):
         else:
             pl_ration = self.run_one_stock_once(code_name=code_name)
 
-        # self.logger.debug("{}的盈亏比是{}".format(code_name, pl_ration))
+        self.logger.debug("{}的盈亏比是{}".format(code_name, pl_ration))
+        self.show_one_stock(self.data)
 
         return pl_ration
 

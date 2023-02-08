@@ -74,6 +74,7 @@ class BaseTransactionAnalysis:
             df=data, pct_name="strategy_net", time_stamp="buy_date")
 
         result_dict = dict()
+        result_dict["股票代码"]=data.loc[0,'pos_asset']
         result_dict["平均持有时间"] = mean_holding_day
         result_dict["交易次数"] = trade_nums
         result_dict["计算总持有时间"] = sum_holding_day

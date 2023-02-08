@@ -64,7 +64,6 @@ class CoreTradeLogic:
         one_transaction_record.buy_date = trading_step.date
         one_transaction_record.buy_price = trading_step.close
         one_transaction_record.holding_time = index
-
         self.logger.debug(one_transaction_record)
         return one_transaction_record
 
@@ -95,18 +94,21 @@ class CoreTradeLogic:
 
             self.trade_state.trading_step = trading_step
             if (
-                self.buy_logic()
-                and self.trade_state.one_transaction_record.buy_date is None
+                self.trade_state.one_transaction_record.buy_date is None
+                and self.buy_logic()
             ):
+                data.loc[index,"buy"]=1
                 one_transaction_record = self.buy(
                     index, trading_step, self.trade_state.one_transaction_record
                 )
                 continue
 
             if (
-                self.sell_logic()
+                 self.trade_state.one_transaction_record.buy_date!=trading_step.date
                 and self.trade_state.one_transaction_record.buy_date is not None
+                and                 self.sell_logic()
             ):
+                data.loc[index,"sell"]=1
                 one_transaction_record = self.sell(
                     index, trading_step, self.trade_state.one_transaction_record
                 )
@@ -130,9 +132,9 @@ class CoreTradeLogic:
         if len(transaction_record_df) == 0:
             return transaction_record_df
 
-        transaction_record_df["pct"] = (
+        transaction_record_df["pct"] = round((
             transaction_record_df["sell_price"] / transaction_record_df["buy_price"]
-        ) * (1 - self.trade_rate) - 1
+        ) * (1 - self.trade_rate),4) - 1
 
         self.logger.info(transaction_record_df)
 

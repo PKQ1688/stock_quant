@@ -10,6 +10,9 @@
 import pandas as pd
 from dataclasses import dataclass, asdict
 
+# import pandas_ta as ta
+
+from finta import TA
 
 @dataclass
 class Account:
@@ -18,51 +21,82 @@ class Account:
     buy_date: str = ""
     assert_num: float = 0
     account: float = 0
+    put:float=0
     put_in: float = 0
     rate: float = 0
 
 
 def get_AI_plan_result(
-    code="sh.600000", gap_days=3, first_buy_day="2019-01-02", want_rate=1.1
+    code="sh.600000", gap_days=3, first_buy_day="2019-01-05", want_rate=1.1,if_intelli="yes"
 ):
     data = pd.read_csv(f"Data/RealData/Baostock/day/{code}.csv")
     data = data[data["tradestatus"] == 1]
     data = data[["date", "code", "open", "high", "low", "close", "volume"]]
 
+    macd_df = TA.MACD(data)
+    data["MACD"], data["SIGNAL"] = [macd_df["MACD"], macd_df["SIGNAL"]]
+    data["HISTOGRAM"] = data['MACD'] - data['SIGNAL']
+
+    data = pd.concat([data,macd_df])
     data = data[data["date"] >= first_buy_day]
     # print(data)
-
+    data.reset_index(inplace=True,drop=True)
+    # first_buy_day=data.loc[0,"date"]
     my_account = Account()
     rate_list = []
-
     for index, row in data.iterrows():
-        if row.date == first_buy_day:
-            # account = Account(buy_index=index,assert_num=1000/row.close,account=1000,put_in=1000)
-            # print(account)
+        times = 1
+        my_account.put=0
+        buy_flag=True
+        if if_intelli:
+            # if row.HISTOGRAM > 0 or (index >2 and  data.loc[index-1].HISTOGRAM >0 and data.loc[index-2].HISTOGRAM >0 ):
+            if index !=0 and (row.HISTOGRAM > 0 and row.close>row.open):
+                print(row.date+"macd 红柱,或今日上涨不投")
+                buy_flag=False
+            if my_account.put_in != 0 :
+                if my_account.rate > want_rate*0.95 :
+                    print(f"{row.date} + 目前收益率已到达高水位线{want_rate*0.95}，不再买入")
+                    buy_flag=False
+                if my_account.rate <0.95:
+                    times=2
+                if my_account.rate <0.9:
+                    times=max(int(my_account.put_in/1000/6),2)
+                if my_account.rate <0.8:
+                    times=int(my_account.put_in/1000/3)
+                if my_account.rate <0.7:
+                    times=int(my_account.put_in/1000)
+        if index - my_account.buy_index >= gap_days and buy_flag:
+            money= 1000*times
             my_account.buy_index = index
             my_account.buy_date = row.date
-            my_account.assert_num = 1000 / row.close
-            my_account.put_in = 1000
-        # my_account.account = row.close * my_account.assert_num
-
-        if index - my_account.buy_index == gap_days:
-            my_account.buy_index = index
-            my_account.buy_date = row.date
-            my_account.assert_num += 1000 / row.close
-            my_account.put_in += 1000
+            my_account.assert_num += money / row.close
+            my_account.put_in += money
+            my_account.put=money
 
         my_account.date = row.date
         my_account.account = row.close * my_account.assert_num
-        my_account.rate = my_account.account / my_account.put_in
-        rate_list.append(asdict(my_account).copy())
+        if my_account.put_in!=0:
+            my_account.rate = my_account.account / my_account.put_in
+            rate_list.append(asdict(my_account).copy())
         if my_account.rate > want_rate:
+            print("my_account.rate ",my_account.rate )
             break
 
     # print(my_account)
     # print(rate_list)
     rate_df = pd.DataFrame(rate_list)
     # print(rate_df)
-    return rate_df
+    data=data[data['date']<=rate_df.tail(1)['date'].item()]
+    return rate_df,data
 
+code = "sz.399006"
+gap_days = 1
+first_buy_day = "2021-01-02"
+want_rate = 1.1
 
-get_AI_plan_result()
+res,stock = get_AI_plan_result(code=code,
+                         gap_days=int(gap_days),
+                         first_buy_day=first_buy_day,
+                         want_rate=float(want_rate))
+
+print(res)

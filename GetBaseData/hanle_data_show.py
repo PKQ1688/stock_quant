@@ -82,7 +82,8 @@ def show_data_from_df(df_or_dfpath: str=None,use_all_data:bool=False):
 
     datas = [list(oclh) for oclh in
             zip(df_or_dfpath["open"].tolist(), df_or_dfpath["close"].tolist(), df_or_dfpath["high"].tolist(), df_or_dfpath["low"].tolist())]
-
+    if "index" in df_or_dfpath:
+        df_or_dfpath['date'] =df_or_dfpath['date']+ '_' +  df_or_dfpath['index'].map(str)
 
     return {
         "datas": datas,
@@ -91,6 +92,8 @@ def show_data_from_df(df_or_dfpath: str=None,use_all_data:bool=False):
         "macds": macd_df["HISTOGRAM"].tolist(),
         "difs": macd_df["MACD"].tolist(),
         "deas": macd_df['SIGNAL'].tolist(),
+        "buy":df_or_dfpath["buy"].tolist(),
+        "sell":df_or_dfpath["sell"].tolist()
     }
 
 
