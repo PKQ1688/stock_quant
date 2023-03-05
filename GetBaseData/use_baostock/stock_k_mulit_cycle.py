@@ -26,7 +26,6 @@ def get_base_k_data(
         code,
         # "date,code,open,high,low,close,volume,amount,turn,peTTM,tradestatus,isST",
         "date,code,open,high,low,close,volume,amount",
-
         # start_date="1990-12-19",
         # end_date=last_day,
         frequency=frequency,
@@ -54,25 +53,41 @@ def main():
         "m": "month/",
     }
 
-    last_day = "2023-02-07"
+    last_day = "2023-03-03"
 
     stock_df = bs.query_all_stock(last_day).get_data()
     # print(stock_df)
     code_list = []
     for _, row in stock_df.iterrows():
-        if "510300" in row.code or "000001" in row.code or "399006" in row.code or "399106" in row.code:
-            print("row.code:",row.code)
+        if (
+            "510300" in row.code
+            or "000001" in row.code
+            or "399006" in row.code
+            or "399106" in row.code
+        ):
+            print("row.code:", row.code)
             code_list.append(row.code)
-        if row.code[:6] in ["sh.600", "sh.601", "sh.603", "sh.605", "sz.300", "sz.000","sz.002"] :
+        if row.code[:6] in [
+            "sh.600",
+            "sh.601",
+            "sh.603",
+            "sh.605",
+            "sz.300",
+            "sz.000",
+            "sz.002",
+        ]:
             code_list.append(row.code)
     # print(code_list)
     # print(len(code_list))
 
-    for code_name in tqdm(code_list,total=len(code_list)):
+    for code_name in tqdm(code_list, total=len(code_list)):
         for frequency in time_cycle.keys():
             file_name = time_cycle[frequency]
             get_base_k_data(
-                code=code_name, last_day=last_day, file_name=file_name, frequency=frequency
+                code=code_name,
+                last_day=last_day,
+                file_name=file_name,
+                frequency=frequency,
             )
 
     bs.logout()

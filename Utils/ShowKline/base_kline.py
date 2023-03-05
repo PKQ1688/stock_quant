@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-'''
-# @Project : stock_quant 
+# @Project : stock_quant
 # @Date    : 2022/1/6 16:55
 # @Author  : Adolf
 # @File    : base_kline.py
@@ -33,13 +33,13 @@ def calculate_ma(input_data, day_count: int):
 def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     kline = Kline()
     points = []
-    colors_div = {"buy": "red", "sell": "green"}
-    for lable in ["buy", "sell"]:
-        for i, val in enumerate(input_data[lable]):
-            if val == 1:
-                coord = [input_data["times"][i], input_data["datas"][i][1]]
-                point = opts.MarkPointItem(coord=coord, name=lable,itemstyle_opts={"color":colors_div[lable]})
-                points.append(point)
+    # colors_div = {"buy": "red", "sell": "green"}
+    # for lable in ["buy", "sell"]:
+    #     for i, val in enumerate(input_data[lable]):
+    #         if val == 1:
+    #             coord = [input_data["times"][i], input_data["datas"][i][1]]
+    #             point = opts.MarkPointItem(coord=coord, name=lable,itemstyle_opts={"color":colors_div[lable]})
+    # points.append(point)
     # points.extend([opts.MarkPointItem(type_="max", name="最大值"),
     #                opts.MarkPointItem(type_="min", name="最小值")])
     kline.add_xaxis(xaxis_data=input_data["times"])
@@ -52,9 +52,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
             border_color="#ef232a",
             border_color0="#14b143",
         ),
-        markpoint_opts=opts.MarkPointOpts(
-            data=points
-        ),
+        markpoint_opts=opts.MarkPointOpts(data=points),
         # markline_opts=opts.MarkLineOpts(
         #     label_opts=opts.LabelOpts(
         #         position="middle", color="blue", font_size=15
@@ -101,7 +99,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
         is_smooth=True,
         linestyle_opts=opts.LineStyleOpts(opacity=0.5),
         label_opts=opts.LabelOpts(is_show=False),
-        is_symbol_show=False
+        is_symbol_show=False,
     )
     kline_line_ma.add_yaxis(
         series_name="MA10",
@@ -109,7 +107,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
         is_smooth=True,
         linestyle_opts=opts.LineStyleOpts(opacity=0.5),
         label_opts=opts.LabelOpts(is_show=False),
-        is_symbol_show=False
+        is_symbol_show=False,
     )
     kline_line_ma.set_global_opts(
         xaxis_opts=opts.AxisOpts(
@@ -128,42 +126,75 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     )
     overlap_kline_line = kline.overlap(kline_line_ma)
 
+    # bar_vol = Bar()
+    # bar_vol.add_xaxis(xaxis_data=input_data["times"])
+    # bar_vol.add_yaxis(
+    #     series_name="Volumn",
+    #     y_axis=input_data["vols"],
+    #     xaxis_index=1,
+    #     yaxis_index=1,
+    #     label_opts=opts.LabelOpts(is_show=False),
+    #     # 根据 echarts demo 的原版是这么写的
+    #     # itemstyle_opts=opts.ItemStyleOpts(
+    #     #     color=JsCode(
+    #     #         """
+    #     #     function(params) {
+    #     #         var colorList;
+    #     #         if (input_data.datas[params.dataIndex][1]>input_data.datas[params.dataIndex][0]) {
+    #     #           colorList = '#ef232a';
+    #     #         } else {
+    #     #           colorList = '#14b143';
+    #     #         }
+    #     #         return colorList;
+    #     #     }
+    #     #     """)
+    #     # )
+    #     # 改进后在 grid 中 add_js_funcs 后变成如下
+    #     itemstyle_opts=opts.ItemStyleOpts(
+    #         color=JsCode(
+    #             """
+    #             function(params) {
+    #                 var colorList;
+    #                 if (barData[params.dataIndex][1] > barData[params.dataIndex][0]) {
+    #                     colorList = '#ef232a';
+    #                 } else {
+    #                     colorList = '#14b143';
+    #                 }
+    #                 return colorList;
+    #             }
+    #             """
+    #         )
+    #     ),
+    # )
+    # bar_vol.set_global_opts(
+    #     xaxis_opts=opts.AxisOpts(
+    #         type_="category",
+    #         grid_index=1,
+    #         axislabel_opts=opts.LabelOpts(is_show=False),
+    #     ),
+    #     legend_opts=opts.LegendOpts(is_show=False),
+    # )
+
+    # 成交量图
     bar_vol = Bar()
-    bar_vol.add_xaxis(xaxis_data=input_data["times"])
+    bar_vol.add_xaxis(input_data["times"])
     bar_vol.add_yaxis(
-        series_name="Volumn",
+        series_name="Volume",
         y_axis=input_data["vols"],
-        xaxis_index=1,
-        yaxis_index=1,
+        bar_width="60%",
         label_opts=opts.LabelOpts(is_show=False),
-        # 根据 echarts demo 的原版是这么写的
-        # itemstyle_opts=opts.ItemStyleOpts(
-        #     color=JsCode(
-        #         """
-        #     function(params) {
-        #         var colorList;
-        #         if (input_data.datas[params.dataIndex][1]>input_data.datas[params.dataIndex][0]) {
-        #           colorList = '#ef232a';
-        #         } else {
-        #           colorList = '#14b143';
-        #         }
-        #         return colorList;
-        #     }
-        #     """)
-        # )
-        # 改进后在 grid 中 add_js_funcs 后变成如下
         itemstyle_opts=opts.ItemStyleOpts(
             color=JsCode(
                 """
-                function(params) {
-                    var colorList;
-                    if (barData[params.dataIndex][1] > barData[params.dataIndex][0]) {
-                        colorList = '#ef232a';
-                    } else {
-                        colorList = '#14b143';
+                    function(params) {
+                        var colorList;
+                        if (params.data >= 0) {
+                          colorList = '#ef232a';
+                        } else {
+                          colorList = '#14b143';
+                        }
+                        return colorList;
                     }
-                    return colorList;
-                }
                 """
             )
         ),
@@ -172,11 +203,20 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
         xaxis_opts=opts.AxisOpts(
             type_="category",
             grid_index=1,
-            axislabel_opts=opts.LabelOpts(is_show=False),
+            axislabel_opts=opts.LabelOpts(is_show=True, font_size=8, color="#9b9da9"),
+            is_show=False,
+        ),
+        yaxis_opts=opts.AxisOpts(
+            is_scale=True,
+            axislabel_opts=opts.LabelOpts(
+                color="#c7c7c7", font_size=8, position="inside", is_show=False
+            ),
+            is_show=False,
         ),
         legend_opts=opts.LegendOpts(is_show=False),
     )
 
+    # macd图
     bar_macd = Bar()
     bar_macd.add_xaxis(xaxis_data=input_data["times"])
     bar_macd.add_yaxis(
@@ -226,7 +266,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
         xaxis_index=2,
         yaxis_index=2,
         label_opts=opts.LabelOpts(is_show=False),
-        is_symbol_show=False
+        is_symbol_show=False,
     )
     line_macd.add_yaxis(
         series_name="DEA",
@@ -234,30 +274,34 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
         xaxis_index=2,
         yaxis_index=2,
         label_opts=opts.LabelOpts(is_show=False),
-        is_symbol_show=False
+        is_symbol_show=False,
     )
     line_macd.set_global_opts(legend_opts=opts.LegendOpts(is_show=False))
     overlap_macd_line = bar_macd.overlap(line_macd)
-    ops = InitOpts(width="100%", height="800px")
-    grid_chart = Grid(init_opts=ops)
+    # ops = InitOpts(width="100%", height="800px")
+    # grid_chart = Grid(init_opts=ops)
+    grid_chart = Grid()
     grid_chart.add_js_funcs("var barData = {}".format(input_data["datas"]))
 
     grid_chart.add(
         overlap_kline_line,
+        # grid_opts=grid0_opts,
         grid_opts=opts.GridOpts(pos_left="3%", pos_right="1%", height="60%"),
     )
 
-    # Volumn 柱状图
+    # # Volumn 柱状图
     grid_chart.add(
         bar_vol,
+        # grid_opts=grid1_opts
         grid_opts=opts.GridOpts(
             pos_left="3%", pos_right="1%", pos_top="71%", height="10%"
         ),
     )
 
-    # MACD DIFS DEAS
+    # # MACD DIFS DEAS
     grid_chart.add(
         overlap_macd_line,
+        # grid_opts=grid2_opts,
         grid_opts=opts.GridOpts(
             pos_left="3%", pos_right="1%", pos_top="82%", height="14%"
         ),
@@ -265,13 +309,15 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
 
     # grid_chart.render(path="ShowHtml/CandleChart.html")
     # if show_html_path is not None:
-    grid_chart.render(path=show_html_path,height="600%", width="100%")
+    # grid_chart.render(path=show_html_path, height="600%", width="100%")
+    return grid_chart
     # if show_render:
     #     grid_chart.render()
     #     make_snapshot(snapshot, grid_chart.render(), "bar.png")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from GetBaseData.hanle_data_show import show_data_from_df
 
     show_data = show_data_from_df("Data/RealData/hfq/600570.csv")
-    draw_chart(show_data,show_html_path="ShowHtml/CandleChart.html")
+    draw_chart(show_data, show_html_path="ShowHtml/CandleChartv2.html")

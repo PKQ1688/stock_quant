@@ -69,6 +69,7 @@ def show_data_from_df(df_or_dfpath: str=None,use_all_data:bool=False):
     elif isinstance(df_or_dfpath, str):
         df_or_dfpath = pd.read_csv(df_or_dfpath)
 
+
         macd_df = TA.MACD(df_or_dfpath)
         macd_df["HISTOGRAM"] = macd_df["MACD"] - macd_df["SIGNAL"]
 
@@ -78,12 +79,20 @@ def show_data_from_df(df_or_dfpath: str=None,use_all_data:bool=False):
 
     else:
         raise ValueError("df_or_dfpath must be str or pd.DataFrame")
+    
+    df_or_dfpath = df_or_dfpath[-60:]
+    macd_df = macd_df[-60:]
 
 
     datas = [list(oclh) for oclh in
             zip(df_or_dfpath["open"].tolist(), df_or_dfpath["close"].tolist(), df_or_dfpath["high"].tolist(), df_or_dfpath["low"].tolist())]
     if "index" in df_or_dfpath:
         df_or_dfpath['date'] =df_or_dfpath['date']+ '_' +  df_or_dfpath['index'].map(str)
+
+    
+    # buy_list = df_or_dfpath["buy"].tolist() if "buy" in df_or_dfpath else []
+    # sell_list = df_or_dfpath["sell"].tolist() if "sell" in df_or_dfpath else []
+
 
     return {
         "datas": datas,
@@ -92,8 +101,8 @@ def show_data_from_df(df_or_dfpath: str=None,use_all_data:bool=False):
         "macds": macd_df["HISTOGRAM"].tolist(),
         "difs": macd_df["MACD"].tolist(),
         "deas": macd_df['SIGNAL'].tolist(),
-        "buy":df_or_dfpath["buy"].tolist(),
-        "sell":df_or_dfpath["sell"].tolist()
+        # "buy": buy_list,
+        # "sell": sell_list
     }
 
 
