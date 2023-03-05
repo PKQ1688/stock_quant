@@ -24,11 +24,13 @@ def get_base_k_data(
 ):
     rs = bs.query_history_k_data_plus(
         code,
-        "date,code,open,high,low,close,volume,amount,turn,peTTM,tradestatus,isST",
-        start_date="1990-12-19",
-        end_date=last_day,
+        # "date,code,open,high,low,close,volume,amount,turn,peTTM,tradestatus,isST",
+        "date,code,open,high,low,close,volume,amount",
+
+        # start_date="1990-12-19",
+        # end_date=last_day,
         frequency=frequency,
-        adjustflag="1",
+        adjustflag="3",
     )
     # 打印结果集
     data_list = []
@@ -52,13 +54,16 @@ def main():
         "m": "month/",
     }
 
-    last_day = "2023-02-03"
+    last_day = "2023-02-07"
 
     stock_df = bs.query_all_stock(last_day).get_data()
     # print(stock_df)
     code_list = []
     for _, row in stock_df.iterrows():
-        if row.code[:6] in ["sh.600", "sh.601", "sh.603", "sh.605", "sz.300", "sz.000"]:
+        if "510300" in row.code or "000001" in row.code or "399006" in row.code or "399106" in row.code:
+            print("row.code:",row.code)
+            code_list.append(row.code)
+        if row.code[:6] in ["sh.600", "sh.601", "sh.603", "sh.605", "sz.300", "sz.000","sz.002"] :
             code_list.append(row.code)
     # print(code_list)
     # print(len(code_list))

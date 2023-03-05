@@ -13,6 +13,7 @@ from pyecharts.charts import Kline, Line, Bar, Grid
 
 # from snapshot_pyppeteer import snapshot
 # from pyecharts.render import make_snapshot
+from pyecharts.options import InitOpts
 
 
 def calculate_ma(input_data, day_count: int):
@@ -31,6 +32,16 @@ def calculate_ma(input_data, day_count: int):
 
 def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     kline = Kline()
+    points = []
+    colors_div = {"buy": "red", "sell": "green"}
+    for lable in ["buy", "sell"]:
+        for i, val in enumerate(input_data[lable]):
+            if val == 1:
+                coord = [input_data["times"][i], input_data["datas"][i][1]]
+                point = opts.MarkPointItem(coord=coord, name=lable,itemstyle_opts={"color":colors_div[lable]})
+                points.append(point)
+    # points.extend([opts.MarkPointItem(type_="max", name="最大值"),
+    #                opts.MarkPointItem(type_="min", name="最小值")])
     kline.add_xaxis(xaxis_data=input_data["times"])
     kline.add_yaxis(
         series_name="",
@@ -42,10 +53,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
             border_color0="#14b143",
         ),
         markpoint_opts=opts.MarkPointOpts(
-            data=[
-                opts.MarkPointItem(type_="max", name="最大值"),
-                opts.MarkPointItem(type_="min", name="最小值"),
-            ]
+            data=points
         ),
         # markline_opts=opts.MarkLineOpts(
         #     label_opts=opts.LabelOpts(
@@ -93,6 +101,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
         is_smooth=True,
         linestyle_opts=opts.LineStyleOpts(opacity=0.5),
         label_opts=opts.LabelOpts(is_show=False),
+        is_symbol_show=False
     )
     kline_line_ma.add_yaxis(
         series_name="MA10",
@@ -100,6 +109,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
         is_smooth=True,
         linestyle_opts=opts.LineStyleOpts(opacity=0.5),
         label_opts=opts.LabelOpts(is_show=False),
+        is_symbol_show=False
     )
     kline_line_ma.set_global_opts(
         xaxis_opts=opts.AxisOpts(
@@ -216,6 +226,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
         xaxis_index=2,
         yaxis_index=2,
         label_opts=opts.LabelOpts(is_show=False),
+        is_symbol_show=False
     )
     line_macd.add_yaxis(
         series_name="DEA",
@@ -223,11 +234,12 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
         xaxis_index=2,
         yaxis_index=2,
         label_opts=opts.LabelOpts(is_show=False),
+        is_symbol_show=False
     )
     line_macd.set_global_opts(legend_opts=opts.LegendOpts(is_show=False))
     overlap_macd_line = bar_macd.overlap(line_macd)
-
-    grid_chart = Grid()
+    ops = InitOpts(width="100%", height="800px")
+    grid_chart = Grid(init_opts=ops)
     grid_chart.add_js_funcs("var barData = {}".format(input_data["datas"]))
 
     grid_chart.add(
