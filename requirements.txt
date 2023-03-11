@@ -16,3 +16,5 @@ loguru
 pathos
 dask[complete]
 scikit-learn
+torch
+matplotlib
