@@ -90,8 +90,8 @@ def show_data_from_df(
     # import pdb
     # pdb.set_trace()
     # if start_date is not None:
-        # df_or_dfpath = df_or_dfpath[df_or_dfpath["date"] >= start_date]
-        # macd_df = macd_df[macd_df["date"] >= start_date]
+    # df_or_dfpath = df_or_dfpath[df_or_dfpath["date"] >= start_date]
+    # macd_df = macd_df[macd_df["date"] >= start_date]
     if end_date is not None:
         df_or_dfpath = df_or_dfpath[df_or_dfpath["date"] <= end_date]
         # macd_df = macd_df[macd_df["date"] <= end_date]
