@@ -2,7 +2,7 @@
 @Author       : adolf adolf1321794021@gmail.com
 @Date         : 2023-03-09 21:40:11
 @LastEditors  : adolf
-@LastEditTime : 2023-03-09 22:37:48
+@LastEditTime : 2023-03-12 12:46:40
 @FilePath     : /stock_quant/MachineLearning/annotation_platform/buy_and_sell_signals.py
 @Description  : 
 """
@@ -79,6 +79,7 @@ with label_tab:
         st.success("保存成功", icon="✅")
 
 with dataset_tab:
+    # pass
     rank_texts_list = []
     with open("Data/LabelData/total_dataset.tsv", "r", encoding="utf8") as f:
         for i, line in enumerate(f.readlines()):
