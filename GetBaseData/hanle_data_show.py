@@ -59,7 +59,10 @@ from datetime import datetime
 
 
 def show_data_from_df(
-    df_or_dfpath: str = None, use_all_data: bool = True, end_date: str = None
+    df_or_dfpath: str = None,
+    use_all_data: bool = True,
+    start_date: str = None,
+    end_date: str = None,
 ):
 
     if isinstance(df_or_dfpath, pd.DataFrame):
@@ -87,16 +90,15 @@ def show_data_from_df(
     # macd_df = macd_df[-60:]
 
     df_or_dfpath = pd.concat([df_or_dfpath, macd_df], axis=1)
-    # import pdb
-    # pdb.set_trace()
-    # if start_date is not None:
-    # df_or_dfpath = df_or_dfpath[df_or_dfpath["date"] >= start_date]
-    # macd_df = macd_df[macd_df["date"] >= start_date]
+    
+    if start_date is not None:
+        df_or_dfpath = df_or_dfpath[df_or_dfpath["date"] >= start_date]
+
     if end_date is not None:
         df_or_dfpath = df_or_dfpath[df_or_dfpath["date"] <= end_date]
-        # macd_df = macd_df[macd_df["date"] <= end_date]
 
-    df_or_dfpath = df_or_dfpath[-60:]
+    # df_or_dfpath = df_or_dfpath[-60:]
+    df_or_dfpath = df_or_dfpath[:30]
     datas = [
         list(oclh)
         for oclh in zip(

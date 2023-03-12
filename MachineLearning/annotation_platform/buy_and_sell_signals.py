@@ -2,7 +2,7 @@
 @Author       : adolf adolf1321794021@gmail.com
 @Date         : 2023-03-09 21:40:11
 @LastEditors  : adolf
-@LastEditTime : 2023-03-12 16:13:53
+@LastEditTime : 2023-03-12 21:29:22
 @FilePath     : /stock_quant/MachineLearning/annotation_platform/buy_and_sell_signals.py
 @Description  : 
 """
@@ -25,23 +25,29 @@ st.set_page_config(page_title="股票买卖标注平台", layout="wide")
 if "code_name" not in st.session_state:
     st.session_state["code_name"] = "600570"
 
+if "start_time" not in st.session_state:
+    st.session_state["start_time"] = None
+
 if "end_time" not in st.session_state:
     st.session_state["end_time"] = None
 
 if "trade_calendar" not in st.session_state:
-    st.session_state["trade_calendar"] = ak.tool_trade_date_hist_sina().trade_date.tolist()
+    st.session_state[
+        "trade_calendar"
+    ] = ak.tool_trade_date_hist_sina().trade_date.tolist()
 
 if "account_status" not in st.session_state:
     st.session_state["account_status"] = "cash"
 
 # st.write(st.session_state["trade_calendar"])
 
-def base_show_fun(code_name, end_time):
-    # start_time = datetime.strftime(start_time, '%Y-%m-%d')
-    end_time = datetime.strftime(end_time, "%Y-%m-%d")
 
-    show_data = show_data_from_df(
-        f"Data/RealData/hfq/{code_name}.csv", end_date=end_time
+def base_show_fun(code_name, start_time):
+    start_time = datetime.strftime(start_time, "%Y-%m-%d")
+    # end_time = datetime.strftime(end_time, "%Y-%m-%d")
+
+    show_data = show_data_from _df(
+        f"Data/RealData/hfq/{code_name}.csv", start_date=start_time
     )
     chart = draw_chart(show_data)
     st_pyecharts(chart, height="600%", width="100%")
@@ -54,7 +60,9 @@ def base_show_fun(code_name, end_time):
     else:
         st.write("账户状态：持仓")
         trade_result = st.radio(label="操作", options=["卖", "保持"])
-    
+        if trade_result == "卖":
+            st.session_state["account_status"] = "cash"
+
     next_button = st.button("next day")
 
     return trade_result, next_button, show_data
@@ -73,14 +81,23 @@ with label_tab:
         st.session_state["code_name"] = random.choice(code_list).split(".")[0]
     st.write(f'股票代码:{st.session_state["code_name"]}')
 
-    # start_time = st.date_input("开始时间", value=pd.to_datetime("2019-01-01"))
-    if st.session_state["end_time"] is None:
-        st.session_state["end_time"] = st.date_input("结束时间", value=pd.to_datetime("2020-01-01"))
-    
-    while st.session_state["end_time"] not in st.session_state["trade_calendar"]:
-        st.session_state["end_time"] = st.session_state["end_time"] + timedelta(days=1)
-    
-    trade_result, next_button, show_data = base_show_fun(st.session_state["code_name"], st.session_state["end_time"])
+    if st.session_state["start_time"] is None:
+        st.session_state["start_time"] = st.date_input(
+            "开始时间",
+            value=pd.to_datetime("2019-01-01"),
+            max_value=pd.to_datetime("2023-01-01"),
+        )
+
+    # if st.session_state["end_time"] is None:
+    # st.session_state["end_time"] = st.date_input("结束时间", value=pd.to_datetime("2020-01-01"))
+
+    # while st.session_state["end_time"] not in st.session_state["trade_calendar"]:
+    # st.session_state["end_time"] = st.session_state["end_time"] + timedelta(days=1)
+
+    trade_result, next_button, show_data = base_show_fun(
+        code_name=st.session_state["code_name"], start_time=st.session_state["start_time"]
+    )
+    st.write(show_data)
 
     # st.write(st.session_state)
     if next_button:
@@ -96,24 +113,28 @@ with label_tab:
 
         st.session_state["end_time"] = st.session_state["end_time"] + timedelta(days=1)
         while st.session_state["end_time"] not in st.session_state["trade_calendar"]:
-            st.session_state["end_time"] = st.session_state["end_time"] + timedelta(days=1)
+            st.session_state["end_time"] = st.session_state["end_time"] + timedelta(
+                days=1
+            )
         st.success("保存成功", icon="✅")
-    
-    refresh = st.button("刷新")
+
+    refresh = st.button("重开")
     if refresh:
         st.session_state = {}
-        
+
 with dataset_tab:
     # pass
     rank_texts_list = []
     # 判断一个文件是否存在
     if os.path.exists(f"Data/LabelData/{st.session_state['code_name']}.tsv"):
-        with open(f"Data/LabelData/{st.session_state['code_name']}.tsv", "r", encoding="utf8") as f:
+        with open(
+            f"Data/LabelData/{st.session_state['code_name']}.tsv", "r", encoding="utf8"
+        ) as f:
             for i, line in enumerate(f.readlines()):
                 texts = line.strip().split("\t")
                 rank_texts_list.append(texts)
     df = pd.DataFrame(
         np.array(rank_texts_list),
-        columns=(["code", "start_time", "end_time", "trade_result","account_status"]),
+        columns=(["code", "start_time", "end_time", "trade_result", "account_status"]),
     )
     st.dataframe(df, use_container_width=True)
