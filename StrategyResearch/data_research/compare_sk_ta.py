@@ -5,13 +5,6 @@
  LastEditTime : 2022-12-18 17:27:09
  FilePath     : /stock_quant/StrategyResearch/data_research/compare_sk_ta.py
 """
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Time    : 2022/12/17 16:17
-# @Author  : Adolf
-# @Site    :
-# @File    : compare_sk_ta.py
-# @Software: PyCharm
 import numpy as np
 import pandas as pd
 import pandas_ta as ta

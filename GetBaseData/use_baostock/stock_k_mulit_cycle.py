@@ -5,6 +5,7 @@
  LastEditTime : 2023-02-05 18:24:17
  FilePath     : /stock_quant/GetBaseData/use_baostock/stock_k_mulit_cycle.py
 """
+import os
 import pandas as pd
 import baostock as bs
 from tqdm import tqdm
@@ -37,6 +38,9 @@ def get_base_k_data(
         # 获取一条记录，将记录合并在一起
         data_list.append(rs.get_row_data())
     result = pd.DataFrame(data_list, columns=rs.fields)
+    # 判断是否存在文件夹
+    if not os.path.exists("Data/RealData/Baostock/" + file_name):
+        os.makedirs("Data/RealData/Baostock/" + file_name)
     result.to_csv("Data/RealData/Baostock/" + file_name + code + ".csv", index=False)
 
 
@@ -44,16 +48,16 @@ def main():
     bs.login()
 
     time_cycle = {
-        "5": "5min/",
-        "15": "15min/",
-        "30": "30min/",
-        "60": "60min/",
+        # "5": "5min/",
+        # "15": "15min/",
+        # "30": "30min/",
+        # "60": "60min/",
         "d": "day/",
-        "w": "week/",
-        "m": "month/",
+        # "w": "week/",
+        # "m": "month/",
     }
 
-    last_day = "2023-03-03"
+    last_day = "2023-03-10"
 
     stock_df = bs.query_all_stock(last_day).get_data()
     # print(stock_df)

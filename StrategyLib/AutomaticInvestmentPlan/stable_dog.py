@@ -31,7 +31,7 @@ def get_AI_plan_result(
         code="sh.600000", gap_days=3, first_buy_day="2019-01-05", want_rate=1.1, if_intelli=True,threshold=500000,
 ):
     data = pd.read_csv(f"Data/RealData/Baostock/day/{code}.csv")
-    data = data[data["tradestatus"] == 1]
+    # data = data[data["tradestatus"] == 1]
     data = data[["date", "code", "open", "high", "low", "close", "volume"]]
 
     macd_df = TA.MACD(data)
