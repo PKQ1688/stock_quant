@@ -58,20 +58,19 @@ def get_AI_plan_result(
                 if my_account.rate > want_rate * 0.95:
                     print(f"{row.date} + 目前收益率已到达高水位线{want_rate * 0.95}，不再买入")
                     buy_flag = False
-
                 if my_account.rate < 0.9:
                     times = min(int(my_account.put_in / 1000 / 6), 5)
                 if my_account.rate < 0.8:
                     times = min(int(my_account.put_in / 1000 / 3), 10)
                 if my_account.rate < 0.7:
                     times = min(int(my_account.put_in / 1000 / 2), 20)
-                if my_account.put_in > threshold:
-                    print(f"{row.date} + 目前投入已达到{threshold}，需要卖出一半股票以降低成本")
-                    buy_flag = False
-                    sell_amount = my_account.put_in/2
-                    my_account.put = -sell_amount
-                    my_account.put_in -= sell_amount
-                    my_account.assert_num = my_account.assert_num - sell_amount/row.close
+        if my_account.put_in > threshold:
+            print(f"{row.date} + 目前投入已达到{threshold}，需要卖出一半股票以降低仓位")
+            buy_flag = False
+            sell_amount = my_account.put_in/2
+            my_account.put = -sell_amount
+            my_account.put_in -= sell_amount
+            my_account.assert_num = my_account.assert_num - sell_amount/row.close
 
         if index==0 or  (index - my_account.buy_index >= gap_days and buy_flag):
             print("index:%s"%index)

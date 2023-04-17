@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/dataTool.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/bmap.min.js"></script>
+
+<h1>Welcome</h1>
+<input value = "sh.600570" id = "code">
+start_date:<input value = "2022-04-11" id = "start_date">
+end_date:<input value = "2023-04-11" id = "end_date">
+<input type="button" value="确定" onclick="get_data()"> <br/>
+
+current k_count:<input value = "30" id = "k_count">
+<input value="next" id = "next" onclick="show_next()" type="button">
+<div id="container" style="height: 100%;width:100%" ></div>
+
+<script type="text/javascript">
+    var chartDom = document.getElementById('container');
+    var myChart = echarts.init(chartDom);
+    var total_data;
+    var total_macd;
+    function show_next(){
+        k_count = document.getElementById("k_count").value;
+        k_count = parseInt(k_count)+1;
+        document.getElementById("k_count").value = k_count;
+        showKCharts();
+    }
+    function  get_data() {
+        url = "http://172.22.67.15:9999/stock_data"
+        code= document.getElementById("code").value;
+        start_date = document.getElementById("start_date").value;
+        end_date = document.getElementById("end_date").value;
+        var request = new XMLHttpRequest();
+        request.open("post", url);/*设置请求方法与路径*/
+        request.setRequestHeader('Content-Type', 'application/json')
+        request.send(JSON.stringify({
+                "code": code,
+                "start_date": start_date,
+                "end_date": end_date,
+                "frequency":"d"
+            }));
+        request.onload = function () {/*XHR对象获取到返回信息后执行*/
+            if (request.status == 200) {/*返回状态为200，即为数据获取成功*/
+                var json = JSON.parse(request.responseText);
+                // document.getElementById("container").innerHTML = json;
+                //data = json前30个数据
+                total_data = splitData(json);
+                total_macd=calcMACD(12,26,9,total_data.values,1);
+                showKCharts();
+            }
+        };
+}
+
+function splitData(rawData) {
+  let categoryData = [];
+  let values = [];
+  let volumes = [];
+  for (let i = 0; i < rawData.length; i++) {
+    categoryData.push(rawData[i].splice(0, 1)[0]);
+    values.push(rawData[i]);
+    volumes.push([i, rawData[i][4], rawData[i][0] > rawData[i][1] ? 1 : -1]);
+  }
+  return {
+    categoryData: categoryData,
+    values: values,
+    volumes: volumes
+  };
+}
+function calculateMA(dayCount, data) {
+  var result = [];
+  for (var i = 0, len = data.values.length; i < len; i++) {
+    if (i < dayCount) {
+      result.push('-');
+      continue;
+    }
+    var sum = 0;
+    for (var j = 0; j < dayCount; j++) {
+      sum += data.values[i - j][1];
+    }
+    result.push(+(sum / dayCount).toFixed(3));
+  }
+  return result;
+}
+
+var calcEMA,calcDIF,calcDEA,calcMACD;
+
+/*
+ * 计算EMA指数平滑移动平均线，用于MACD
+ * @param {number} n 时间窗口
+ * @param {array} data 输入数据
+ * @param {string} field 计算字段配置
+ */
+calcEMA=function(n,data,field){
+    var i,l,ema,a;
+    a=2/(n+1);
+    if(field){
+        //二维数组
+        ema=[data[0][field]];
+        for(i=1,l=data.length;i<l;i++){
+            ema.push((a*data[i][field]+(1-a)*ema[i-1]).toFixed(2));
+        }
+    }else{
+        //普通一维数组
+        ema=[data[0]];
+        for(i=1,l=data.length;i<l;i++){
+            ema.push((a*data[i]+(1-a)*ema[i-1]).toFixed(3) );
+        }
+    }
+    return ema;
+};
+
+/*
+ * 计算DIF快线，用于MACD
+ * @param {number} short 快速EMA时间窗口
+ * @param {number} long 慢速EMA时间窗口
+ * @param {array} data 输入数据
+ * @param {string} field 计算字段配置
+ */
+calcDIF=function(short,long,data,field){
+    var i,l,dif,emaShort,emaLong;
+    dif=[];
+    emaShort=calcEMA(short,data,field);
+    emaLong=calcEMA(long,data,field);
+    for(i=0,l=data.length;i<l;i++){
+        dif.push((emaShort[i]-emaLong[i]).toFixed(3));
+    }
+    return dif;
+};
+
+/*
+ * 计算DEA慢线，用于MACD
+ * @param {number} mid 对dif的时间窗口
+ * @param {array} dif 输入数据
+ */
+calcDEA=function(mid,dif){
+    return calcEMA(mid,dif);
+};
+
+/*
+ * 计算MACD
+ * @param {number} short 快速EMA时间窗口
+ * @param {number} long 慢速EMA时间窗口
+ * @param {number} mid dea时间窗口
+ * @param {array} data 输入数据
+ * @param {string} field 计算字段配置
+ */
+calcMACD=function(short,long,mid,data,field){
+    var i,l,dif,dea,macd,result;
+    result={};
+    macd=[];
+    dif=calcDIF(short,long,data,field);
+    dea=calcDEA(mid,dif);
+    for(i=0,l=data.length;i<l;i++){
+        macd.push(((dif[i]-dea[i])*2).toFixed(3));
+    }
+    result.dif=dif;
+    result.dea=dea;
+    result.macd=macd;
+    return result;
+};
+function showKCharts() {
+    var option;
+    var upColor="#F9293E";//涨颜色
+    var downColor="#00aa3b";//跌颜色
+    var k_count = document.getElementById("k_count").value;
+    var data ={
+    categoryData: total_data.categoryData.slice(0,k_count),
+    values: total_data.values.slice(0,k_count),
+    volumes: total_data.volumes.slice(0,k_count)
+  };
+    var macd = {
+    dif: total_macd.dif.slice(0,k_count),
+    dea: total_macd.dea.slice(0,k_count),
+    macd: total_macd.macd.slice(0,k_count)
+    };
+
+    myChart.setOption(
+        (option = {
+            animation: false,
+            legend: {
+                bottom: 10,
+                left: 'center',
+                data: ['Dow-Jones index', 'MA5', 'MA10', 'MA20', 'MA30']
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                },
+                borderWidth: 1,
+                borderColor: '#ccc',
+                padding: 10,
+                textStyle: {
+                    color: '#000'
+                },
+                position: function (pos, params, el, elRect, size) {
+                    const obj = {
+                        top: 10
+                    };
+                    obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30;
+                    return obj;
+                }
+                // extraCssText: 'width: 170px'
+            },
+            axisPointer: {
+                link: [
+                    {
+                        xAxisIndex: 'all'
+                    }
+                ],
+                label: {
+                    backgroundColor: '#777'
+                }
+            },
+            toolbox: {
+                feature: {
+                    dataZoom: {
+                        yAxisIndex: false
+                    },
+                    brush: {
+                        type: ['lineX', 'clear']
+                    }
+                }
+            },
+            brush: {
+                xAxisIndex: 'all',
+                brushLink: 'all',
+                outOfBrush: {
+                    colorAlpha: 0.1
+                }
+            },
+            visualMap: {
+                show: false,
+                seriesIndex: 5,
+                dimension: 2,
+                pieces: [
+                    {
+                        value: 1,
+                        color: downColor
+                    },
+                    {
+                        value: -1,
+                        color: upColor
+                    }
+                ]
+            },
+            grid: [
+                {
+                    left: '10%',
+                    right: '8%',
+                    height: '50%'
+                },
+                {
+                    left: '10%',
+                    right: '8%',
+                    top: '63%',
+                    height: '16%'
+                }, {
+				left: '10%',
+				right: '8%',
+				top: '80%', //MACD 指标
+				height: '14%'
+			}
+            ],
+            xAxis: [
+                {
+                    type: 'category',
+                    data: data.categoryData,
+                    boundaryGap: false,
+                    axisLine: {onZero: false},
+                    splitLine: {show: false},
+                    min: 'dataMin',
+                    max: 'dataMax',
+                    axisPointer: {
+                        z: 100
+                    }
+                },
+                {
+                    type: 'category',
+                    gridIndex: 1,
+                    data: data.categoryData,
+                    boundaryGap: false,
+                    axisLine: {onZero: false},
+                    axisTick: {show: false},
+                    splitLine: {show: false},
+                    axisLabel: {show: false},
+                    min: 'dataMin',
+                    max: 'dataMax'
+                },{ //幅图
+					type: 'category',
+					gridIndex: 2,
+					data: data.categoryData,
+					axisLabel: {
+						show: false
+					}
+				}
+            ],
+            yAxis: [
+                {
+                    scale: true,
+                    splitArea: {
+                        show: true
+                    }
+                },
+                {
+                    scale: true,
+                    gridIndex: 1,
+                    splitNumber: 2,
+                    axisLabel: {show: false},
+                    axisLine: {show: false},
+                    axisTick: {show: false},
+                    splitLine: {show: false}
+                }, { //幅图
+					z:4, gridIndex: 2,splitNumber: 4,
+					axisLine: {
+						onZero: false
+					},
+					axisTick: {
+						show: false
+					},
+					splitLine: {
+						show: false
+					},
+					axisLabel: { //label文字设置
+						color: '#c7c7c7',
+						inside: true, //label文字朝内对齐
+						fontSize: 8
+					},
+				}
+            ],
+            dataZoom: [
+                {
+                    type: 'inside',
+                    xAxisIndex: [0, 1,2],
+                    start: 0,
+                    end: 100
+                },
+                {
+                    show: true,
+                    xAxisIndex: [0, 1,2],
+                    type: 'slider',
+                    top: '85%',
+                    start: 0,
+                    end: 100
+                }
+            ],
+            series: [
+                {
+                    name: 'Dow-Jones index',
+                    type: 'candlestick',
+                    data: data.values,
+                    itemStyle: {
+                        color: upColor,
+                        color0: downColor,
+                        borderColor: upColor,
+                        borderColor0: downColor
+                    },
+                    tooltip: {
+                        formatter: function (param) {
+                            param = param[0];
+                            return [
+                                'Date: ' + param.name + '<hr size=1 style="margin: 3px 0">',
+                                'Open: ' + param.data[0] + '<br/>',
+                                'Close: ' + param.data[1] + '<br/>',
+                                'Lowest: ' + param.data[2] + '<br/>',
+                                'Highest: ' + param.data[3] + '<br/>'
+                            ].join('');
+                        }
+                    }
+                },
+                {
+                    name: 'MA5',
+                    type: 'line',
+                    data: calculateMA(5, data),
+                    smooth: true,
+                    symbol: "none", //隐藏选中时有小圆点
+                    lineStyle: {
+                        opacity: 0.5
+                    }
+                },
+                {
+                    name: 'MA10',
+                    type: 'line',
+                    data: calculateMA(10, data),
+                    smooth: true,
+                    symbol: "none", //隐藏选中时有小圆点
+
+                    lineStyle: {
+                        opacity: 0.5
+                    }
+                },
+                {
+                    name: 'MA20',
+                    type: 'line',
+                    data: calculateMA(20, data),
+                    smooth: true,
+                    symbol: "none", //隐藏选中时有小圆点
+                    lineStyle: {
+                        opacity: 0.5
+                    }
+                },
+                {
+                    name: 'MA30',
+                    type: 'line',
+                    data: calculateMA(30, data),
+                    smooth: true,
+                    symbol: "none", //隐藏选中时有小圆点
+                    lineStyle: {
+                        opacity: 0.5
+                    }
+                },
+                {
+                    name: 'Volume',
+                    type: 'bar',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    data: data.volumes
+                }, {
+					name: 'MACD',
+					type: 'bar',
+					xAxisIndex: 2,
+					yAxisIndex: 2,
+					data: macd.macd,
+					barWidth: '40%',
+					itemStyle: {
+						normal: {
+							color: function(params) {
+								var colorList;
+								if (params.data >= 0) {
+									colorList = upColor;
+								} else {
+									colorList = downColor;
+								}
+								return colorList;
+							},
+						}
+					}
+				}, {
+					name: 'DIF',
+					type: 'line',
+					symbol: "none",
+					xAxisIndex: 2,
+					yAxisIndex: 2,
+					data: macd.dif,
+					lineStyle: {
+						normal: {
+							color: '#da6ee8',
+							width: 1
+						}
+					}
+				}, {
+					name: 'DEA',
+					type: 'line',
+					symbol: "none",
+					xAxisIndex: 2,
+					yAxisIndex: 2,
+					data: macd.dea,
+					lineStyle: {
+						normal: {
+							opacity: 0.8,
+							color: '#39afe6',
+							width: 1
+						}
+					}
+				}
+            ]
+        }),
+        true
+    );
+    // myChart.dispatchAction({
+    //     type: 'brush',
+    //     areas: [
+    //         {
+    //             brushType: 'lineX',
+    //             coordRange: ['2016-06-02', '2016-06-20'],
+    //             xAxisIndex: 0
+    //         }
+    //     ]
+    // });
+    option && myChart.setOption(option);
+}
+window.onload=get_data;
+</script>
+
+
+
+</body>
+</html>

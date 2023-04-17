@@ -27,12 +27,18 @@ date = "2023-01-20"
 stock_df = bs.query_all_stock(date).get_data()
 
 
-def get_base_k_data(code):
+def get_base_k_data(code,start_date ,end_date,frequency):
+    if start_date is None:
+        start_date = "1990-12-19"
+    if end_date is None:
+        end_date = date
+    if frequency is None:
+        frequency = "d"
     rs = bs.query_history_k_data_plus(
         code,
         "date,code,open,high,low,close,volume,amount,turn,peTTM,pctChg,tradestatus,isST",
-        start_date="1990-12-19", end_date=date,
-        frequency="d", adjustflag="1")
+        start_date=start_date, end_date=end_date,
+        frequency=frequency, adjustflag="1")
     # 打印结果集
     data_list = []
     while (rs.error_code == '0') & rs.next():
@@ -40,22 +46,24 @@ def get_base_k_data(code):
         data_list.append(rs.get_row_data())
     result = pd.DataFrame(data_list, columns=rs.fields)
     result.to_csv("Data/RealData/hfq/" + code + ".csv", index=False)
+    return result
 
 
-if __name__ == '__main__':
-    # client = Client(n_workers=4)
-
-    start_time = time.time()
-    # futures = []
-    for index, row in tqdm(stock_df.iterrows(), total=stock_df.shape[0]):
-        if row['tradeStatus'] == '0' or "bj" in row["code"]:
-            continue
-        _code = row['code']
-        get_base_k_data(_code)
-        # future = client.submit(get_base_k_data, _code)
-        # futures.append(future)
-
-    # progress(futures)
-    print("use time: {}".format(time.time() - start_time))
-    # client.close()
-    bs.logout()
+# if __name__ == '__main__':
+    # # client = Client(n_workers=4)
+    #
+    # start_time = time.time()
+    # # futures = []
+    # for index, row in tqdm(stock_df.iterrows(), total=stock_df.shape[0]):
+    #     if row['tradeStatus'] == '0' or "bj" in row["code"]:
+    #         continue
+    #     _code = row['code']
+    #     get_base_k_data(_code)
+    #     # future = client.submit(get_base_k_data, _code)
+    #     # futures.append(future)
+    #
+    # # progress(futures)
+    # print("use time: {}".format(time.time() - start_time))
+    # # client.close()
+    # bs.logout()
+    # get_base_k_data("sh.600570")
