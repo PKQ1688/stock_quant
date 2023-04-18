@@ -19,7 +19,12 @@ end_date:<input value = "2023-04-11" id = "end_date">
 <input type="button" value="确定" onclick="get_data()"> <br/>
 
 current k_count:<input value = "30" id = "k_count">
-<input value="next" id = "next" onclick="show_next()" type="button">
+<input value="buy" id = "opt" onclick="buy_or_sell()" type="button">
+
+<input value="过" id = "next" onclick="show_next()" type="button">
+<input value="提交" id = "push" onclick="push_records()" type="button">
+
+
 <div id="container" style="height: 100%;width:100%" ></div>
 
 <script type="text/javascript">
@@ -27,37 +32,96 @@ current k_count:<input value = "30" id = "k_count">
     var myChart = echarts.init(chartDom);
     var total_data;
     var total_macd;
+    var total_records=[];
     function show_next(){
         k_count = document.getElementById("k_count").value;
         k_count = parseInt(k_count)+1;
         document.getElementById("k_count").value = k_count;
-        showKCharts();
+        initKCharts();
     }
+
+    function buy_or_sell(){
+        opt = document.getElementById("opt").value;
+        console.log(myChart.getOption().series[0].data[myChart.getOption().series[0].data.length-1])
+        cur_price = myChart.getOption().series[0].data[myChart.getOption().series[0].data.length-1][1];
+        record ={
+            "opt": document.getElementById("opt").value,
+            "price": cur_price,
+            "date": myChart.getOption().xAxis[0].data[myChart.getOption().xAxis[0].data.length-1],
+        };
+        total_records.push(record);
+        add_point();
+        if (opt == "buy"){
+            document.getElementById("opt").value = "sell";
+        }else{
+            document.getElementById("opt").value = "buy";
+        };
+        show_next();
+
+    }
+
+    function add_point(){
+        //给k线图加上markpoints
+        var opt = document.getElementById("opt").value;
+        color = "red"
+        if (opt == "sell"){
+            color = "green"
+        }
+        var option = myChart.getOption();
+        var data = option.series[0].data;
+        var markPoints = option.series[0].markPoint ==undefined ? [] : option.series[0].markPoint.data;
+        var cur_cord = data[data.length-1];
+        var cur_date = option.xAxis[0].data[option.xAxis[0].data.length-1];
+        var cur_price = cur_cord[1];
+        markPoints.push({
+            coord: [cur_date, cur_price],
+            value: opt,
+            itemStyle: {
+                color: color
+            }
+        });
+        myChart.setOption(option);
+    }
+
     function  get_data() {
         url = "http://172.22.67.15:9999/stock_data"
-        code= document.getElementById("code").value;
+        code = document.getElementById("code").value;
         start_date = document.getElementById("start_date").value;
         end_date = document.getElementById("end_date").value;
         var request = new XMLHttpRequest();
         request.open("post", url);/*设置请求方法与路径*/
         request.setRequestHeader('Content-Type', 'application/json')
         request.send(JSON.stringify({
-                "code": code,
-                "start_date": start_date,
-                "end_date": end_date,
-                "frequency":"d"
-            }));
+            "code": code,
+            "start_date": start_date,
+            "end_date": end_date,
+            "frequency": "d"
+        }));
         request.onload = function () {/*XHR对象获取到返回信息后执行*/
             if (request.status == 200) {/*返回状态为200，即为数据获取成功*/
                 var json = JSON.parse(request.responseText);
                 // document.getElementById("container").innerHTML = json;
                 //data = json前30个数据
                 total_data = splitData(json);
-                total_macd=calcMACD(12,26,9,total_data.values,1);
-                showKCharts();
+                total_macd = calcMACD(12, 26, 9, total_data.values, 1);
+                initKCharts();
             }
         };
-}
+    }
+    function  push_records() {
+        url = "http://172.22.67.15:9999/push_records"
+        var request = new XMLHttpRequest();
+        request.open("post", url);/*设置请求方法与路径*/
+        request.setRequestHeader('Content-Type', 'application/json')
+        request.send(JSON.stringify(total_records));
+        request.onload = function () {/*XHR对象获取到返回信息后执行*/
+            if (request.status == 200) {/*返回状态为200，即为数据获取成功*/
+                var json = JSON.parse(request.responseText);
+                alert("push_records success");
+            }
+        };
+    }
+
 
 function splitData(rawData) {
   let categoryData = [];
@@ -166,11 +230,15 @@ calcMACD=function(short,long,mid,data,field){
     result.macd=macd;
     return result;
 };
-function showKCharts() {
+
+
+
+function initKCharts() {
     var option;
     var upColor="#F9293E";//涨颜色
     var downColor="#00aa3b";//跌颜色
     var k_count = document.getElementById("k_count").value;
+    var start = myChart.getOption() ==  undefined?0:myChart.getOption().dataZoom[0].start;
     var data ={
     categoryData: total_data.categoryData.slice(0,k_count),
     values: total_data.values.slice(0,k_count),
@@ -340,7 +408,7 @@ function showKCharts() {
                 {
                     type: 'inside',
                     xAxisIndex: [0, 1,2],
-                    start: 0,
+                    start: start,
                     end: 100
                 },
                 {
@@ -348,7 +416,7 @@ function showKCharts() {
                     xAxisIndex: [0, 1,2],
                     type: 'slider',
                     top: '85%',
-                    start: 0,
+                    start: start,
                     end: 100
                 }
             ],

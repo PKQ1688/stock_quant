@@ -34,6 +34,12 @@ def get_stock_data(code = Body(None) , start_date= Body(None), end_date= Body(No
     return data_list
 
 
+@app.post("/push_records")
+def push_records(records = Body(None) ):
+    print(f"get records from browser:{records}")
+    return "success"
+
+
 @app.get('/index')
 def func():
     with open('api/test.html', 'r', encoding='utf8') as file:
