@@ -62,10 +62,6 @@ def get_records(user_id = Body(None),start_date= Body(None), end_date= Body(None
         history.pop("records")
         print("history: ",history)
         return_records.append([history["user_id"],history["date"],history["stock_code"],history["stock_profit_rate"],history["profit_rate"]])
-    # table = Table(f'records form {start_date} to {end_date}')
-    # headers = ["user_id", "date", "stock_code", "stock_profit_rate","profit_rate"]
-    # table.add(headers, return_records)
-    # html_script=table.render_embed()
     return return_records
 
 
