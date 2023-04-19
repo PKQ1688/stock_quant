@@ -18,6 +18,7 @@
     <input value="sh.600570" id="code">
     start_date:<input value="2022-04-11" id="start_date">
     end_date:<input value="2023-04-11" id="end_date">
+    user_id:<input value="wxt" id="user_id">
     <input type="button" value="确定" onclick="get_data()"> <br />
 
     current k_count:<input value="30" id="k_count">
@@ -28,7 +29,6 @@
     <div id="profit">
         总收益率:<span id="profit_rate">0</span>
         持仓收益率:<span id="cur_profit_rate">0</span>
-
         股票涨跌幅:<span id="stock_rate">0</span>
     </div>
 
@@ -42,6 +42,7 @@
         var total_records = [];
         var start_price;
         var total_profit;
+        var base_url = "http://172.22.67.15:9999";
         function show_next() {
             k_count = document.getElementById("k_count").value;
             k_count = parseInt(k_count) + 1;
@@ -111,7 +112,17 @@
         }
 
         function get_data() {
-            url = "http://172.22.67.15:9999/stock_data"
+            //清空之前的全局变量
+            total_records = [];
+            total_profit = 0;
+            document.getElementById("profit_rate").innerText = 0;
+            document.getElementById("cur_profit_rate").innerText = 0;
+            document.getElementById("stock_rate").innerText = 0;
+            document.getElementById("k_count").value = 30;
+            document.getElementById("opt").value = "buy";
+
+
+            var url = base_url+"/stock_data"
             code = document.getElementById("code").value;
             start_date = document.getElementById("start_date").value;
             end_date = document.getElementById("end_date").value;
@@ -135,13 +146,22 @@
                     start_price = myChart.getOption().series[0].data[myChart.getOption().series[0].data.length - 1][1];
                 }
             };
+
+
         }
         function push_records() {
-            url = "http://172.22.67.15:9999/push_records"
+            //提交的时候如果有持仓先sell
+            opt = document.getElementById("opt").value;
+            if (opt == "sell") {
+                buy_or_sell();
+            }
+            //提交到后端
+            var url = base_url+"/push_records"
             var request = new XMLHttpRequest();
             request.open("post", url);/*设置请求方法与路径*/
             request.setRequestHeader('Content-Type', 'application/json')
-            request.send(JSON.stringify(total_records));
+            user_id = document.getElementById("user_id").value;
+            request.send(JSON.stringify({"records":total_records,"user_id":user_id}));
             request.onload = function () {/*XHR对象获取到返回信息后执行*/
                 if (request.status == 200) {/*返回状态为200，即为数据获取成功*/
                     var json = JSON.parse(request.responseText);

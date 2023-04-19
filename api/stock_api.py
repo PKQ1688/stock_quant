@@ -1,7 +1,9 @@
+import time
+
 import baostock as bs
 from fastapi import FastAPI,Body,Response
 import uvicorn
-
+from pymongo import MongoClient
 
 app = FastAPI()
 bs.login()
@@ -35,10 +37,24 @@ def get_stock_data(code = Body(None) , start_date= Body(None), end_date= Body(No
 
 
 @app.post("/push_records")
-def push_records(records = Body(None) ):
-    print(f"get records from browser:{records}")
-    return "success"
+def push_records(records = Body(None),user_id = Body(None) ):
+    print(f"request body : {Body}")
+    print(f"get {user_id} records from browser:{records}")
+    mongo_config = {"host": "172.22.66.198", "port": 27017}
+    db = MongoClient(mongo_config["host"], mongo_config["port"])["stock_db"]
+    profit_rate = cal_profit_rate(records)
+    today = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+    db["play_records"].insert_one({"user_id":user_id,"records":records,"profit_rate":profit_rate,"date":today})
+    return f"success,profit_rate is {profit_rate}"
 
+def cal_profit_rate(records):
+    profit_rate = 1
+    assert len(records) % 2 == 0
+    i = 0
+    while i < len(records):
+        profit_rate = records[i+1]["price"] / records[i]["price"] * profit_rate
+        i = i + 2
+    return str(round((profit_rate-1)*100,2)) +'%'
 
 @app.get('/index')
 def func():
@@ -50,5 +66,4 @@ def func():
 
 
 if __name__ == '__main__':
-
     uvicorn.run(app, host='172.22.67.15', port=9999)
