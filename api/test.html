@@ -27,9 +27,9 @@
     <input value="过" id="next" onclick="show_next()" type="button">
     <input value="提交" id="push" onclick="push_records()" type="button">
     <div id="profit">
-        总收益率:<span id="profit_rate">0</span>
+        总收益率:<span id="your_profit">0</span>
         持仓收益率:<span id="cur_profit_rate">0</span>
-        股票涨跌幅:<span id="stock_rate">0</span>
+        股票涨跌幅:<span id="stock_profit_rate">0</span>
     </div>
 
     <div id="container" style="height: 100%;width:100%"></div>
@@ -56,14 +56,14 @@
             } else {
                 var buy_price = total_records[total_records.length - 1].price;
                 var last_day_price = myChart.getOption().series[0].data[myChart.getOption().series[0].data.length - 2][1];
-                var origin_profit_rate = document.getElementById("profit_rate").innerText;
+                var origin_profit_rate = document.getElementById("your_profit").innerText;
                 var cur_profit_rate = (cur_price / buy_price - 1).toFixed(2);
                 var last_day_profite = (cur_price / last_day_price);
                 document.getElementById("cur_profit_rate").innerText = cur_profit_rate;
                 total_profit = (parseFloat(origin_profit_rate) + 1) * last_day_profite - 1;
-                document.getElementById("profit_rate").innerText = total_profit.toFixed(2);
+                document.getElementById("your_profit").innerText = total_profit.toFixed(2);
             }
-            document.getElementById("stock_rate").innerText = (cur_price / start_price - 1).toFixed(2);
+            document.getElementById("stock_profit_rate").innerText = (cur_price / start_price - 1).toFixed(2);
         }
 
         function buy_or_sell() {
@@ -115,9 +115,9 @@
             //清空之前的全局变量
             total_records = [];
             total_profit = 0;
-            document.getElementById("profit_rate").innerText = 0;
+            document.getElementById("your_profit").innerText = 0;
             document.getElementById("cur_profit_rate").innerText = 0;
-            document.getElementById("stock_rate").innerText = 0;
+            document.getElementById("stock_profit_rate").innerText = 0;
             document.getElementById("k_count").value = 30;
             document.getElementById("opt").value = "buy";
 
@@ -161,7 +161,10 @@
             request.open("post", url);/*设置请求方法与路径*/
             request.setRequestHeader('Content-Type', 'application/json')
             user_id = document.getElementById("user_id").value;
-            request.send(JSON.stringify({"records":total_records,"user_id":user_id}));
+            stock_code = document.getElementById("code").value;
+            stock_profit_rate = document.getElementById("stock_profit_rate").innerText;
+            your_profit = document.getElementById("your_profit").value;
+            request.send(JSON.stringify({"records":total_records,"user_id":user_id,"stock_code":stock_code,"stock_profit_rate":stock_profit_rate,"your_profit":your_profit}));
             request.onload = function () {/*XHR对象获取到返回信息后执行*/
                 if (request.status == 200) {/*返回状态为200，即为数据获取成功*/
                     var json = JSON.parse(request.responseText);
@@ -278,8 +281,6 @@
             result.macd = macd;
             return result;
         };
-
-
 
         function initKCharts() {
             var option = myChart.getOption() == undefined ? {} : myChart.getOption();

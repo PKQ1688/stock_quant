@@ -1,5 +1,5 @@
 import time
-
+from pyecharts.components import Table
 import baostock as bs
 from fastapi import FastAPI,Body,Response
 import uvicorn
@@ -7,6 +7,9 @@ from pymongo import MongoClient
 
 app = FastAPI()
 bs.login()
+mongo_config = {"host": "172.22.66.198", "port": 27017}
+db = MongoClient(mongo_config["host"], mongo_config["port"])["stock_db"]
+
 
 @app.post("/stock_data")
 def get_stock_data(code = Body(None) , start_date= Body(None), end_date= Body(None),frequency= Body(None)):
@@ -36,15 +39,44 @@ def get_stock_data(code = Body(None) , start_date= Body(None), end_date= Body(No
     return data_list
 
 
+
+@app.post("/get_records")
+def get_records(user_id = Body(None),start_date= Body(None), end_date= Body(None),stock_code = Body(None)):
+    print("user_id:",user_id)
+    filter = {}
+    if user_id is not None:
+        filter["user_id"] = user_id
+    if start_date is not None :
+        filter["date"] = {"$gte":start_date}
+    if end_date is not None :
+        if "date" in filter:
+            filter["date"]["$lte"] = end_date
+        else:
+            filter["date"]= {"$lte":end_date}
+    if stock_code is not None:
+        filter["stock_code"] = stock_code
+    print(f"filter:{filter}")
+    return_records = []
+    for history in db["play_records"].find(filter):
+        history.pop("_id")
+        history.pop("records")
+        print("history: ",history)
+        return_records.append([history["user_id"],history["date"],history["stock_code"],history["stock_profit_rate"],history["profit_rate"]])
+    # table = Table(f'records form {start_date} to {end_date}')
+    # headers = ["user_id", "date", "stock_code", "stock_profit_rate","profit_rate"]
+    # table.add(headers, return_records)
+    # html_script=table.render_embed()
+    return return_records
+
+
+
 @app.post("/push_records")
-def push_records(records = Body(None),user_id = Body(None) ):
+def push_records(records = Body(None),user_id = Body(None),stock_code = Body(None) ,stock_profit_rate = Body(None)):
     print(f"request body : {Body}")
     print(f"get {user_id} records from browser:{records}")
-    mongo_config = {"host": "172.22.66.198", "port": 27017}
-    db = MongoClient(mongo_config["host"], mongo_config["port"])["stock_db"]
     profit_rate = cal_profit_rate(records)
     today = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-    db["play_records"].insert_one({"user_id":user_id,"records":records,"profit_rate":profit_rate,"date":today})
+    db["play_records"].insert_one({"user_id":user_id,"records":records,"profit_rate":profit_rate,"date":today,"stock_code":stock_code,"stock_profit_rate":stock_profit_rate})
     return f"success,profit_rate is {profit_rate}"
 
 def cal_profit_rate(records):
@@ -63,6 +95,14 @@ def func():
     # 4.返回响应数据
     return Response(content=content, media_type='text/html')
 
+
+
+@app.get('/hist')
+def func():
+    with open('api/hist.html', 'r', encoding='utf8') as file:
+        content = file.read()
+    # 4.返回响应数据
+    return Response(content=content, media_type='text/html')
 
 
 if __name__ == '__main__':
