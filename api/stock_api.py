@@ -45,23 +45,6 @@ def get_stock_data(
     # 将data_list的第1列的全部数据保留3位小数
     return data_list
 
-
-<<<<<<< Updated upstream
-
-@app.post("/get_records")
-def get_records(user_id = Body(None),start_date= Body(None), end_date= Body(None),stock_code = Body(None)):
-    print("user_id:",user_id)
-    filter = {}
-    if user_id is not None:
-        filter["user_id"] = user_id
-    if start_date is not None :
-        filter["date"] = {"$gte":start_date}
-    if end_date is not None :
-        if "date" in filter:
-            filter["date"]["$lte"] = end_date
-        else:
-            filter["date"]= {"$lte":end_date}
-=======
 @app.post("/get_records")
 def get_records(
     user_id=Body(None),
@@ -80,15 +63,13 @@ def get_records(
             filter["date"]["$lte"] = end_date
         else:
             filter["date"] = {"$lte": end_date}
->>>>>>> Stashed changes
-    if stock_code is not None:
+    if stock_code is not None and stock_code != "":
         filter["stock_code"] = stock_code
     print(f"filter:{filter}")
     return_records = []
     for history in db["play_records"].find(filter):
         history.pop("_id")
         history.pop("records")
-<<<<<<< Updated upstream
         print("history: ",history)
         return_records.append([history["user_id"],history["date"],history["stock_code"],history["stock_profit_rate"],history["profit_rate"]])
     return return_records
@@ -103,59 +84,19 @@ def push_records(records = Body(None),user_id = Body(None),stock_code = Body(Non
     today = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     db["play_records"].insert_one({"user_id":user_id,"records":records,"profit_rate":profit_rate,"date":today,"stock_code":stock_code,"stock_profit_rate":stock_profit_rate})
     return f"success,profit_rate is {profit_rate}"
-=======
-        print("history: ", history)
-        return_records.append(
-            [
-                history["user_id"],
-                history["date"],
-                history["stock_code"],
-                history["stock_profit_rate"],
-                history["profit_rate"],
-            ]
-        )
-    return return_records
 
 
-@app.post("/push_records")
-def push_records(
-    records=Body(None),
-    user_id=Body(None),
-    stock_code=Body(None),
-    stock_profit_rate=Body(None),
-):
-    print(f"request body : {Body}")
-    print(f"get {user_id} records from browser:{records}")
-    profit_rate = cal_profit_rate(records)
-    today = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-    db["play_records"].insert_one(
-        {
-            "user_id": user_id,
-            "records": records,
-            "profit_rate": profit_rate,
-            "date": today,
-            "stock_code": stock_code,
-            "stock_profit_rate": stock_profit_rate,
-        }
-    )
-    return f"success,profit_rate is {profit_rate}"
 
->>>>>>> Stashed changes
+
 
 def cal_profit_rate(records):
     profit_rate = 1
     assert len(records) % 2 == 0
     i = 0
     while i < len(records):
-<<<<<<< Updated upstream
-        profit_rate = records[i+1]["price"] / records[i]["price"] * profit_rate
-        i = i + 2
-    return str(round((profit_rate-1)*100,2)) +'%'
-=======
         profit_rate = records[i + 1]["price"] / records[i]["price"] * profit_rate
         i = i + 2
     return str(round((profit_rate - 1) * 100, 2)) + "%"
->>>>>>> Stashed changes
 
 
 @app.get("/index")
@@ -173,19 +114,5 @@ def func():
     # 4.返回响应数据
     return Response(content=content, media_type="text/html")
 
-<<<<<<< Updated upstream
-@app.get('/hist')
-def func():
-    with open('api/hist.html', 'r', encoding='utf8') as file:
-        content = file.read()
-    # 4.返回响应数据
-    return Response(content=content, media_type='text/html')
-
-
 if __name__ == '__main__':
     uvicorn.run(app, host='172.22.67.15', port=9999)
-=======
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="172.22.67.15", port=9999)
->>>>>>> Stashed changes

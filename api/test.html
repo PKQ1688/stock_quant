@@ -121,12 +121,7 @@
             document.getElementById("k_count").value = 30;
             document.getElementById("opt").value = "buy";
 
-
-<<<<<<< Updated upstream
-            var url = base_url+"/stock_data"
-=======
             var url = base_url + "/stock_data"
->>>>>>> Stashed changes
             code = document.getElementById("code").value;
             start_date = document.getElementById("start_date").value;
             end_date = document.getElementById("end_date").value;
@@ -160,11 +155,8 @@
                 buy_or_sell();
             }
             //提交到后端
-<<<<<<< Updated upstream
-            var url = base_url+"/push_records"
-=======
+
             var url = base_url + "/push_records"
->>>>>>> Stashed changes
             var request = new XMLHttpRequest();
             request.open("post", url);/*设置请求方法与路径*/
             request.setRequestHeader('Content-Type', 'application/json')
@@ -172,11 +164,7 @@
             stock_code = document.getElementById("code").value;
             stock_profit_rate = document.getElementById("stock_profit_rate").innerText;
             your_profit = document.getElementById("your_profit").value;
-<<<<<<< Updated upstream
-            request.send(JSON.stringify({"records":total_records,"user_id":user_id,"stock_code":stock_code,"stock_profit_rate":stock_profit_rate,"your_profit":your_profit}));
-=======
             request.send(JSON.stringify({ "records": total_records, "user_id": user_id, "stock_code": stock_code, "stock_profit_rate": stock_profit_rate, "your_profit": your_profit }));
->>>>>>> Stashed changes
             request.onload = function () {/*XHR对象获取到返回信息后执行*/
                 if (request.status == 200) {/*返回状态为200，即为数据获取成功*/
                     var json = JSON.parse(request.responseText);
@@ -294,11 +282,7 @@
             return result;
         };
 
-<<<<<<< Updated upstream
-        function initKCharts() {
-=======
         function initKCharts(is_new) {
->>>>>>> Stashed changes
             var option = myChart.getOption() == undefined ? {} : myChart.getOption();
             var markPoints;
             if (is_new) {
