@@ -3,9 +3,18 @@
 
 <head>
     <meta charset="utf-8">
+                <style>
+        .my_btn {
+            margin-left: 5%;
+            margin-right:5%;
+            width: 40%;
+            opacity: 0.9;
+        }
+    </style>
 </head>
 
-<body style="height: 100%; margin: 0">
+<body style="height: 90%; margin-left: 5%;margin-right: 5%;margin-top: 1%">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
@@ -14,26 +23,37 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/bmap.min.js"></script>
 
-    <h1>Welcome</h1>
-    <input value="sh.600570" id="code">
-    start_date:<input value="2022-04-11" id="start_date">
-    end_date:<input value="2023-04-11" id="end_date">
-    user_id:<input value="wxt" id="user_id">
-    <input type="button" value="确定" onclick="get_data()"> <br />
+    <div class="input-group input-group-lg">
+        <span class="input-group-text">user_id:</span>
+      <input type="text" class="form-control" value="rose" aria-label="user_id" id = "user_id">
+        <span class="input-group-text">code:</span>
+        <input type="text" class="form-control" value="sh.600570" aria-label="code" id = "code">
+        <span class="input-group-text">start_date:</span>
+      <input type="text" class="form-control" value="2022-04-11" aria-label="start_date" id ="start_date">
+      <span class="input-group-text">end_date:</span>
+      <input type="text" class="form-control" value="2025-06-20" aria-label="end_date" id = "end_date">
+        <span class="input-group-text">game start at:</span>
+      <input type="text" class="form-control" value=30 aria-label="k_count" id = "k_count">
+    <button type="button" class="btn btn-success" onclick="get_data()">GO</button>
+    <button type="button" class="btn btn-success" onclick="push_records()" id = "push" >SAVE</button>
+    <button type="button" class="btn btn-success" onclick="get_records()" id = "history" >RECORDS</button>
+</div>
 
-    current k_count:<input value="30" id="k_count">
-    <input value="buy" id="opt" onclick="buy_or_sell()" type="button">
 
-    <input value="过" id="next" onclick="show_next()" type="button">
-    <input value="提交" id="push" onclick="push_records()" type="button">
-    <div id="profit">
-        总收益率:<span id="your_profit">0</span>
-        持仓收益率:<span id="cur_profit_rate">0</span>
-        股票涨跌幅:<span id="stock_profit_rate">0</span>
+    <p id="profit" class="text-xl-start fs-5">
+        <span >cur profit:</span>
+        <span id="cur_profit_rate" >0</span>
+        <span >totol profit:</span>
+        <span id="your_profit" >0</span>
+        <span >stock profit:</span>
+        <span id="stock_profit_rate" >0</span>
+    </p>
+
+    <div id="container" style="height: 90%;"></div>
+    <div class="input-group input-group-lg" style="width: 100%" >
+        <button type="button" class="btn btn-success my_btn" onclick="buy_or_sell()" id = "opt" >buy</button>
+        <button type="button" class="btn btn-warning my_btn" onclick="show_next()" id = "next" >next</button>
     </div>
-
-    <div id="container" style="height: 100%;width:100%"></div>
-
     <script type="text/javascript">
         var chartDom = document.getElementById('container');
         var myChart = echarts.init(chartDom);
@@ -42,7 +62,8 @@
         var total_records = [];
         var start_price;
         var total_profit;
-        var base_url = "http://172.22.67.15:9999";
+        var base_url = window.location.protocol + "//" + window.location.host;
+
         function show_next() {
             k_count = document.getElementById("k_count").value;
             k_count = parseInt(k_count) + 1;
@@ -111,6 +132,10 @@
             myChart.setOption(option);
         }
 
+        function get_records(){
+            window.location.href = base_url + "/hist";
+        }
+
         function get_data() {
             //清空之前的全局变量
             total_records = [];
@@ -118,7 +143,7 @@
             document.getElementById("your_profit").innerText = 0;
             document.getElementById("cur_profit_rate").innerText = 0;
             document.getElementById("stock_profit_rate").innerText = 0;
-            document.getElementById("k_count").value = 30;
+            // document.getElementById("k_count").value = 30;
             document.getElementById("opt").value = "buy";
 
             var url = base_url + "/stock_data"
@@ -472,7 +497,7 @@
                             end: 100
                         },
                         {
-                            show: true,
+                            show: false,
                             xAxisIndex: [0, 1, 2],
                             type: 'slider',
                             top: '85%',
@@ -606,16 +631,6 @@
                 }),
                 true
             );
-            // myChart.dispatchAction({
-            //     type: 'brush',
-            //     areas: [
-            //         {
-            //             brushType: 'lineX',
-            //             coordRange: ['2016-06-02', '2016-06-20'],
-            //             xAxisIndex: 0
-            //         }
-            //     ]
-            // });
             option && myChart.setOption(option);
         }
         window.onload = get_data;

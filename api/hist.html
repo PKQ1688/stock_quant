@@ -3,46 +3,63 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
-<body style="height: 100%; margin: 0">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/dataTool.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/bmap.min.js"></script>
+<body style="height: 100%; margin-left: 5%;margin-right: 5%;margin-top: 1%">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <h1>Opt records</h1>
 
-    <h1>History</h1>
-    start_date:<input value="2022-04-11" id="start_date">
-    end_date:<input value="2023-04-20" id="end_date">
-    user_id:<input value="wxt" id="user_id">
-    stock_code :<input value="" id="stock_code">
+    <div class="align-end"  id = "profit"> </div>
+<div class="input-group input-group-lg">
+    <span class="input-group-text">start_date:</span>
+  <input type="text" class="form-control" value="2022-04-11" aria-label="start_date" id ="start_date">
+  <span class="input-group-text">end_date:</span>
+  <input type="text" class="form-control" value="2029-12-31" aria-label="end_date" id = "end_date">
+      <span class="input-group-text">user_id:</span>
+  <input type="text" class="form-control" value="rose" aria-label="user_id" id = "user_id">
+      <span class="input-group-text">stock_code:</span>
+  <input type="text" class="form-control" value="" aria-label="stock_code" id = "stock_code">
+    <span class="input-group-text">count:</span>
+  <input type="text" class="form-control" value=100 aria-label="count" id = "count">
+<button type="button" class="btn btn-success" onclick="get_records()">Query</button>
+    <button type="button" class="btn btn-success" onclick="go_game()">Game</button>
 
-    <input type="button" value="确定" onclick="get_records()"> <br />
+</div>
 
-    <div id="container" style="height: 100%;width:100%">
-        <table id = "records">
-            <tr>
+    <div id="container" >
+        <table  class="table table-bordered table-hover">
+            <thead>
+                <tr>
                 <th>user_id</th>
                 <th>date</th>
                 <th>stock_code</th>
                 <th>stock_profit_rate</th>
                 <th>profit_rate</th>
-            </tr>
+                <th>over_profit</th>
+                </tr>
+            </thead>
+            <tbody id = "records" >
+
+            </tbody>
+
         </table>
     </div>
 
     <script type="text/javascript">
-        var base_url = "http://172.22.67.15:9999";
-        function get_records() {
-            //清空之前的全局变量
+        //获取当前访问的url
+        var base_url = window.location.protocol + "//" + window.location.host;
 
+        function go_game() {
+            window.location.href = base_url + "/index";
+        }
+        function get_records() {
             var url = base_url + "/get_records"
-            start_date = document.getElementById("start_date").value;
-            end_date = document.getElementById("end_date").value;
-            user_id = document.getElementById("user_id").value;
+            var start_date = document.getElementById("start_date").value;
+             var end_date = document.getElementById("end_date").value;
+            var user_id = document.getElementById("user_id").value;
+            var stock_code = document.getElementById("stock_code").value;
+            var count = document.getElementById("count").value;
             var request = new XMLHttpRequest();
             request.open("post", url);/*设置请求方法与路径*/
             request.setRequestHeader('Content-Type', 'application/json')
@@ -50,22 +67,37 @@
                 "user_id": user_id,
                 "start_date": start_date,
                 "end_date": end_date,
+                "stock_code":stock_code,
+                "count":count
             }));
             request.onload = function () {/*XHR对象获取到返回信息后执行*/
                 if (request.status == 200) {/*返回状态为200，即为数据获取成功*/
                     //先清空除了head以外的records
                     var records = document.getElementById("records");
-                    for (var i = records.rows.length - 1; i > 0; i--) {
+                    for (var i = records.rows.length-1 ; i >= 0; i--) {
                         records.deleteRow(i);
                     }
                     var response = JSON.parse(request.responseText);
-                    for (var i = 0; i < response.length; i++) {
-                        var record = response[i];
+                    var total_profit = response["stock_profit_rate"].toFixed(2);
+                    var your_profit = response["profit_rate"].toFixed(2);
+                    document.getElementById("profit").innerHTML = "股票总收益率：" + total_profit + ",您的收益率：" + your_profit;
+                    for (var i = 0; i < response["records"].length; i++) {
+                        var record = response["records"][i];
                         console.log(record);
+
                         var tr = document.createElement("tr");
                         for (var j = 0; j < record.length; j++) {
                             var td = document.createElement("td");
-                            td.innerHTML = record[Object.keys(record)[j]];
+                            //判断如果带%号，且数值>0，就标记为红色
+                            val = record[Object.keys(record)[j]].toString();
+                            if (val.indexOf("%") != -1 ){
+                                if (val.indexOf("-") == -1) {
+                                    td.style.color = "green";
+                                }else{
+                                    td.style.color = "red";
+                                }
+                            }
+                            td.innerHTML = val;
                             tr.appendChild(td);
                         }
                         document.getElementById("records").appendChild(tr);
