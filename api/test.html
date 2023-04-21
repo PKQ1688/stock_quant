@@ -186,8 +186,9 @@
                     var json = JSON.parse(request.responseText);
                     // document.getElementById("container").innerHTML = json;
                     //data = json前30个数据
-                    total_data = splitData(json);
-                    total_macd = calcMACD(12, 26, 9, total_data.values, 1);
+                    total_data = splitData(json["base_data"]);
+                    // total_macd = calcMACD(12, 26, 9, total_data.values, 1);
+                    total_macd={"macd":json["macd"],"diff":json["diff"],"dea":json["dea"]}
                     initKCharts(true);
                     start_price = myChart.getOption().series[0].data[myChart.getOption().series[0].data.length - 1][1];
                 }
