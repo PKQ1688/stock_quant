@@ -24,13 +24,13 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/bmap.min.js"></script>
 
     <div class="input-group input-group-lg">
-        <span class="input-group-text">user_id:</span>
+        <span class="input-group-text">id</span>
       <input type="text" class="form-control" value="rose" aria-label="user_id" id = "user_id">
-        <span class="input-group-text">code:</span>
+        <span class="input-group-text">code</span>
         <input type="text" class="form-control" value="sh.600570" aria-label="code" id = "code">
-        <span class="input-group-text">start_date:</span>
-      <input type="text" class="form-control" value="2022-04-11" aria-label="start_date" id ="start_date">
-      <span class="input-group-text">end_date:</span>
+        <span class="input-group-text">start</span>
+      <input type="text" class="form-control" value="2023-01-01" aria-label="start_date" id ="start_date">
+      <span class="input-group-text">end</span>
       <input type="text" class="form-control" value="2025-06-20" aria-label="end_date" id = "end_date">
 <!--        <span class="input-group-text">game start at:</span>-->
       <input type="text" class="form-control" value=30 aria-label="k_count" hidden=true id = "k_count">
@@ -38,16 +38,20 @@
     <button type="button" class="btn btn-success" onclick="push_records()" id = "push" >SAVE</button>
     <button type="button" class="btn btn-success" onclick="get_records()" id = "history" >RECORDS</button>
 </div>
-
-
-    <p id="profit" class="text-xl-start fs-5">
-        <span >cur profit:</span>
+    <div class="input-group input-group-lg">
+         <span >cur profit:</span>
         <span id="cur_profit_rate" >0</span>
         <span >totol profit:</span>
         <span id="your_profit" >0</span>
         <span >stock profit:</span>
         <span id="stock_profit_rate" >0</span>
-    </p>
+
+</div>
+
+
+<!--    <p id="profit" class="text-xl-start fs-5">-->
+<!--       -->
+<!--    </p>-->
 
     <div id="container" style="height: 90%;"></div>
     <div class="input-group input-group-lg" style="width: 100%" >
@@ -88,11 +92,11 @@
         }
 
         function buy_or_sell() {
-            opt = document.getElementById("opt").value;
+            opt = document.getElementById("opt").innerHTML;
             console.log(myChart.getOption().series[0].data[myChart.getOption().series[0].data.length - 1])
             cur_price = myChart.getOption().series[0].data[myChart.getOption().series[0].data.length - 1][1];
             record = {
-                "opt": document.getElementById("opt").value,
+                "opt": document.getElementById("opt").innerHTML,
                 "price": cur_price,
                 "date": myChart.getOption().xAxis[0].data[myChart.getOption().xAxis[0].data.length - 1],
             };
