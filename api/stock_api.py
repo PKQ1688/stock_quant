@@ -74,13 +74,17 @@ def get_stock_data(
             data_df["amount"].tolist(),
         )
     ]
-    macd_list = [
-        list(macd) for macd in zip(
-            data_df["MACD"].tolist(),
-            data_df["SIGNAL"].tolist(),
-            data_df["HISTOGRAM"].to_list(),
-        )
-    ]
+    # macd_list = [
+    #     list(macd) for macd in zip(
+    #         data_df["MACD"].tolist(),
+    #         data_df["SIGNAL"].tolist(),
+    #         data_df["HISTOGRAM"].to_list(),
+    #     )
+    # ]
+    macd_list = data_df["HISTOGRAM"].tolist()
+    diff_list = data_df["MACD"].tolist()
+    dea_list = data_df["SIGNAL"].tolist()
+
     ma5_list = data_df["MA5"].tolist()
     ma10_list = data_df["MA10"].tolist()
     ma20_list = data_df["MA20"].tolist()
@@ -91,6 +95,8 @@ def get_stock_data(
     return {
         "base_data": base_data_list,
         "macd": macd_list,
+        "diff": diff_list,
+        "dea": dea_list,
         "ma5": ma5_list,
         "ma10": ma10_list,
         "ma20": ma20_list,
