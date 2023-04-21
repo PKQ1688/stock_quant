@@ -39,9 +39,9 @@ def get_base_k_data(
         data_list.append(rs.get_row_data())
     result = pd.DataFrame(data_list, columns=rs.fields)
     # 判断是否存在文件夹
-    if not os.path.exists("Data/RealData/Baostock/" + file_name):
-        os.makedirs("Data/RealData/Baostock/" + file_name)
-    result.to_csv("Data/RealData/Baostock/" + file_name + code + ".csv", index=False)
+    if not os.path.exists("Data/Baostock/" + file_name):
+        os.makedirs("Data/Baostock/" + file_name)
+    result.to_csv("Data/Baostock/" + file_name + code + ".csv", index=False)
 
 
 def main():
@@ -57,7 +57,7 @@ def main():
         # "m": "month/",
     }
 
-    last_day = "2023-03-10"
+    last_day = "2025-03-10"
 
     stock_df = bs.query_all_stock(last_day).get_data()
     # print(stock_df)
