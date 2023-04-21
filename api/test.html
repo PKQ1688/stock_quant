@@ -32,8 +32,8 @@
       <input type="text" class="form-control" value="2022-04-11" aria-label="start_date" id ="start_date">
       <span class="input-group-text">end_date:</span>
       <input type="text" class="form-control" value="2025-06-20" aria-label="end_date" id = "end_date">
-        <span class="input-group-text">game start at:</span>
-      <input type="text" class="form-control" value=30 aria-label="k_count" id = "k_count">
+<!--        <span class="input-group-text">game start at:</span>-->
+      <input type="text" class="form-control" value=30 aria-label="k_count" hidden=true id = "k_count">
     <button type="button" class="btn btn-success" onclick="get_data()">GO</button>
     <button type="button" class="btn btn-success" onclick="push_records()" id = "push" >SAVE</button>
     <button type="button" class="btn btn-success" onclick="get_records()" id = "history" >RECORDS</button>
@@ -99,9 +99,9 @@
             total_records.push(record);
             add_point(record);
             if (opt == "buy") {
-                document.getElementById("opt").value = "sell";
+                document.getElementById("opt").innerHTML = "sell";
             } else {
-                document.getElementById("opt").value = "buy";
+                document.getElementById("opt").innerHTML = "buy";
             };
             show_next();
         }
