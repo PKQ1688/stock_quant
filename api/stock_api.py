@@ -9,6 +9,7 @@ import baostock as bs
 from fastapi import FastAPI, Body, Response
 import uvicorn
 from pymongo import MongoClient
+from loguru import logger
 
 app = FastAPI()
 # mongo_config = {"host": "172.22.66.198", "port": 27017}
@@ -66,9 +67,9 @@ def get_stock_data(
             data_df["date"].tolist(),
             data_df["code"].tolist(),
             data_df["open"].tolist(),
+            data_df["close"].tolist(),
             data_df["high"].tolist(),
             data_df["low"].tolist(),
-            data_df["close"].tolist(),
             data_df["volume"].tolist(),
             data_df["amount"].tolist(),
         )
@@ -85,6 +86,8 @@ def get_stock_data(
     ma20_list = data_df["MA20"].tolist()
     ma30_list = data_df["MA30"].tolist()
     ma60_list = data_df["MA60"].tolist()
+
+    logger.info("get data success!!!")
     return dict(
         base_data=base_data_list,
         macd=macd_list,
