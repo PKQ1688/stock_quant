@@ -179,7 +179,7 @@
         }
         function push_records() {
             //提交的时候如果有持仓先sell
-            opt = document.getElementById("opt").value;
+            opt = document.getElementById("opt").innerHTML;
             if (opt == "sell") {
                 buy_or_sell();
             }
