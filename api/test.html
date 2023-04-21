@@ -8,11 +8,12 @@
             margin-left: 10%;
             margin-right: 5%;
             width: 35%;
-            opacity: 0.9;
+            opacity: 0.85;
         }
 
         .align-right {
-            padding-left: 50%;
+            align-items: right;
+            text-align: right;
             opacity: 0.9;
             float: right;
             position: relative;
@@ -44,12 +45,13 @@
         <input type="text" class="form-control" value="23-01-01" aria-label="start_date" id="start_date">
         <span class="input-group-text">end</span>
         <input type="text" class="form-control" value="25-06-20" aria-label="end_date" id="end_date">
-        <!--        <span class="input-group-text">game start at:</span>-->
-        <input type="text" class="form-control" value=30 aria-label="k_count" hidden=true id="k_count">
+        <span class="input-group-text">at</span>
+        <input type="text" class="form-control" value=30 aria-label="k_count" id="k_count">
     </div>
     <div class="input-group input-group-lg" style="width:100%">
 
-        <div style="width:30%"><span>CurP:</span>
+        <div style="width:30%">
+            <span>CurP:</span>
             <span id="cur_profit_rate" class="my_span">0.0</span>
             <span>TotolP:</span>
             <span id="your_profit" class="my_span">0.0</span>
@@ -79,6 +81,7 @@
     <script type="text/javascript">
         var chartDom = document.getElementById('container');
         var myChart = echarts.init(chartDom);
+        var server_data;
         var total_data;
         var total_macd;
         var total_records = [];
@@ -88,6 +91,11 @@
 
         function show_next() {
             k_count = document.getElementById("k_count").value;
+            if (k_count == total_data["values"].length) {
+                alert("已经是最后一天了")
+                return false;
+            }
+
             k_count = parseInt(k_count) + 1;
             document.getElementById("k_count").value = k_count;
             var opt = document.getElementById("opt").innerHTML;
@@ -107,6 +115,7 @@
                 document.getElementById("your_profit").innerHTML = total_profit.toFixed(2);
             }
             document.getElementById("stock_profit_rate").innerHTML = (cur_price / start_price - 1).toFixed(2);
+            return true;
         }
 
         function buy_or_sell() {
@@ -119,14 +128,16 @@
                 "date": myChart.getOption().xAxis[0].data[myChart.getOption().xAxis[0].data.length - 1],
             };
             total_records.push(record);
-            add_point(record);
-            if (opt == "buy") {
-                document.getElementById("opt").innerHTML = "sell";
-            } else {
-                document.getElementById("opt").innerHTML = "buy";
-            };
-            show_next();
+            if (show_next()) {
+                add_point(record);
+                if (opt == "buy") {
+                    document.getElementById("opt").innerHTML = "sell";
+                } else {
+                    document.getElementById("opt").innerHTML = "buy";
+                };
+            }
         }
+
 
         function add_point(record) {
             //给k线图加上markpoints
@@ -136,14 +147,12 @@
                 color = "green"
             }
             var option = myChart.getOption();
-            var data = option.series[0].data;
             var markPoints = option.series[0].markPoint == undefined ? [] : option.series[0].markPoint.data;
-            // var cur_cord = data[data.length - 1];
-            // var cur_date = option.xAxis[0].data[option.xAxis[0].data.length - 1];
-            // var cur_price = cur_cord[1];
+
+
             markPoints.push({
                 coord: [record.date, record.price],
-                value: opt,
+                value: opt.slice(0, 1),
                 itemStyle: {
                     color: color
                 }
@@ -183,12 +192,12 @@
             }));
             request.onload = function () {/*XHR对象获取到返回信息后执行*/
                 if (request.status == 200) {/*返回状态为200，即为数据获取成功*/
-                    var json = JSON.parse(request.responseText);
+                    server_data = JSON.parse(request.responseText);
                     // document.getElementById("container").innerHTML = json;
                     //data = json前30个数据
-                    total_data = splitData(json["base_data"]);
+                    total_data = splitData(server_data["base_data"]);
                     // total_macd = calcMACD(12, 26, 9, total_data.values, 1);
-                    total_macd={"macd":json["macd"],"diff":json["diff"],"dea":json["dea"]}
+                    total_macd = { "macd": server_data["macd"], "dif": server_data["diff"], "dea": server_data["dea"] }
                     initKCharts(true);
                     start_price = myChart.getOption().series[0].data[myChart.getOption().series[0].data.length - 1][1];
                 }
@@ -208,8 +217,8 @@
             var request = new XMLHttpRequest();
             request.open("post", url);/*设置请求方法与路径*/
             request.setRequestHeader('Content-Type', 'application/json')
-            user_id = document.getElementById("user_id").innerHTML;
-            stock_code = document.getElementById("code").innerHTML;
+            user_id = document.getElementById("user_id").value;
+            stock_code = document.getElementById("code").value;
             stock_profit_rate = document.getElementById("stock_profit_rate").innerHTML;
             your_profit = document.getElementById("your_profit").innerHTML;
             request.send(JSON.stringify({ "records": total_records, "user_id": user_id, "stock_code": stock_code, "stock_profit_rate": stock_profit_rate, "your_profit": your_profit }));
@@ -237,98 +246,6 @@
                 volumes: volumes
             };
         }
-        function calculateMA(dayCount, data) {
-            var result = [];
-            for (var i = 0, len = data.values.length; i < len; i++) {
-                if (i < dayCount) {
-                    result.push('-');
-                    continue;
-                }
-                var sum = 0;
-                for (var j = 0; j < dayCount; j++) {
-                    sum += data.values[i - j][1];
-                }
-                result.push(+(sum / dayCount).toFixed(3));
-            }
-            return result;
-        }
-
-        var calcEMA, calcDIF, calcDEA, calcMACD;
-
-        /*
-         * 计算EMA指数平滑移动平均线，用于MACD
-         * @param {number} n 时间窗口
-         * @param {array} data 输入数据
-         * @param {string} field 计算字段配置
-         */
-        calcEMA = function (n, data, field) {
-            var i, l, ema, a;
-            a = 2 / (n + 1);
-            if (field) {
-                //二维数组
-                ema = [data[0][field]];
-                for (i = 1, l = data.length; i < l; i++) {
-                    ema.push((a * data[i][field] + (1 - a) * ema[i - 1]).toFixed(2));
-                }
-            } else {
-                //普通一维数组
-                ema = [data[0]];
-                for (i = 1, l = data.length; i < l; i++) {
-                    ema.push((a * data[i] + (1 - a) * ema[i - 1]).toFixed(3));
-                }
-            }
-            return ema;
-        };
-
-        /*
-         * 计算DIF快线，用于MACD
-         * @param {number} short 快速EMA时间窗口
-         * @param {number} long 慢速EMA时间窗口
-         * @param {array} data 输入数据
-         * @param {string} field 计算字段配置
-         */
-        calcDIF = function (short, long, data, field) {
-            var i, l, dif, emaShort, emaLong;
-            dif = [];
-            emaShort = calcEMA(short, data, field);
-            emaLong = calcEMA(long, data, field);
-            for (i = 0, l = data.length; i < l; i++) {
-                dif.push((emaShort[i] - emaLong[i]).toFixed(3));
-            }
-            return dif;
-        };
-
-        /*
-         * 计算DEA慢线，用于MACD
-         * @param {number} mid 对dif的时间窗口
-         * @param {array} dif 输入数据
-         */
-        calcDEA = function (mid, dif) {
-            return calcEMA(mid, dif);
-        };
-
-        /*
-         * 计算MACD
-         * @param {number} short 快速EMA时间窗口
-         * @param {number} long 慢速EMA时间窗口
-         * @param {number} mid dea时间窗口
-         * @param {array} data 输入数据
-         * @param {string} field 计算字段配置
-         */
-        calcMACD = function (short, long, mid, data, field) {
-            var i, l, dif, dea, macd, result;
-            result = {};
-            macd = [];
-            dif = calcDIF(short, long, data, field);
-            dea = calcDEA(mid, dif);
-            for (i = 0, l = data.length; i < l; i++) {
-                macd.push(((dif[i] - dea[i]) * 2).toFixed(3));
-            }
-            result.dif = dif;
-            result.dea = dea;
-            result.macd = macd;
-            return result;
-        };
 
         function initKCharts(is_new) {
             var option = myChart.getOption() == undefined ? {} : myChart.getOption();
@@ -350,7 +267,13 @@
             var data = {
                 categoryData: total_data.categoryData.slice(0, k_count),
                 values: total_data.values.slice(0, k_count),
-                volumes: total_data.volumes.slice(0, k_count)
+                volumes: total_data.volumes.slice(0, k_count),
+                ma5: server_data.ma5.slice(0, k_count),
+                ma10: server_data.ma10.slice(0, k_count),
+                ma20: server_data.ma20.slice(0, k_count),
+                ma30: server_data.ma30.slice(0, k_count),
+                ma60: server_data.ma60.slice(0, k_count),
+
             };
             var macd = {
                 dif: total_macd.dif.slice(0, k_count),
@@ -432,18 +355,18 @@
                         {
                             left: '10%',
                             right: '8%',
-                            height: '40%'
+                            height: '50%'
                         },
                         {
                             left: '10%',
                             right: '8%',
-                            top: '50%',
+                            top: '60%',
                             height: '20%'
                         }, {
                             left: '10%',
                             right: '8%',
-                            top: '70%', //MACD 指标
-                            height: '25%'
+                            top: '80%', //MACD 指标
+                            height: '23%'
                         }
                     ],
                     xAxis: [
@@ -558,7 +481,7 @@
                         {
                             name: 'MA5',
                             type: 'line',
-                            data: calculateMA(5, data),
+                            data: data.ma5,
                             smooth: true,
                             symbol: "none", //隐藏选中时有小圆点
                             lineStyle: {
@@ -568,7 +491,7 @@
                         {
                             name: 'MA10',
                             type: 'line',
-                            data: calculateMA(10, data),
+                            data: data.ma10,
                             smooth: true,
                             symbol: "none", //隐藏选中时有小圆点
 
@@ -579,7 +502,7 @@
                         {
                             name: 'MA20',
                             type: 'line',
-                            data: calculateMA(20, data),
+                            data: data.ma20,
                             smooth: true,
                             symbol: "none", //隐藏选中时有小圆点
                             lineStyle: {
@@ -589,7 +512,17 @@
                         {
                             name: 'MA30',
                             type: 'line',
-                            data: calculateMA(30, data),
+                            data: data.ma30,
+                            smooth: true,
+                            symbol: "none", //隐藏选中时有小圆点
+                            lineStyle: {
+                                opacity: 0.5
+                            }
+                        },
+                        {
+                            name: 'MA60',
+                            type: 'line',
+                            data: data.ma60,
                             smooth: true,
                             symbol: "none", //隐藏选中时有小圆点
                             lineStyle: {
