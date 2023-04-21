@@ -91,15 +91,24 @@ def get_stock_data(
     ma60_list = data_df["MA60"].tolist()
 
     logger.info("get data success!!!")
-    return dict(
-        base_data=base_data_list,
-        macd=macd_list,
-        ma5=ma5_list,
-        ma10=ma10_list,
-        ma20=ma20_list,
-        ma30=ma30_list,
-        ma60=ma60_list,
-    )
+    return {
+        "base_data": base_data_list,
+        "macd": macd_list,
+        "ma5": ma5_list,
+        "ma10": ma10_list,
+        "ma20": ma20_list,
+        "ma30": ma30_list,
+        "ma60": ma60_list
+    }
+    # return dict(
+    #     base_data=base_data_list,
+    #     macd=macd_list,
+    #     ma5=ma5_list,
+    #     ma10=ma10_list,
+    #     ma20=ma20_list,
+    #     ma30=ma30_list,
+    #     ma60=ma60_list,
+    # )
 
 
 @app.post("/get_records")
