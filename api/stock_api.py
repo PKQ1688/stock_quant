@@ -8,7 +8,8 @@ import uvicorn
 from pymongo import MongoClient
 
 app = FastAPI()
-mongo_config = {"host": "172.22.66.198", "port": 27017}
+# mongo_config = {"host": "172.22.66.198", "port": 27017}
+mongo_config = {"host": "localhost", "port": 27017}
 db = MongoClient(mongo_config["host"], mongo_config["port"])["stock_db"]
 
 
