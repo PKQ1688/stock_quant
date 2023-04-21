@@ -14,7 +14,7 @@ db = MongoClient(mongo_config["host"], mongo_config["port"])["stock_db"]
 
 @app.post("/stock_data")
 def get_stock_data(
-    code=Body(None), start_date=Body(None), end_date=Body(None), frequency=Body(None)
+        code=Body(None), start_date=Body(None), end_date=Body(None), frequency=Body(None)
 ):
     bs.login()
     if start_date is None:
@@ -47,13 +47,14 @@ def get_stock_data(
     # 将data_list的第1列的全部数据保留3位小数
     return data_list
 
+
 @app.post("/get_records")
 def get_records(
-    user_id=Body(None),
-    start_date=Body(None),
-    end_date=Body(None),
-    stock_code=Body(None),
-    count = Body(None),
+        user_id=Body(None),
+        start_date=Body(None),
+        end_date=Body(None),
+        stock_code=Body(None),
+        count=Body(None),
 ):
     print("user_id:", user_id)
     filter = {}
@@ -72,7 +73,7 @@ def get_records(
     print(f"count:{count}")
     count = int(count)
     return_records = []
-    profit_rate= 1
+    profit_rate = 1
     stock_profit_rate = 1
     for history in db["play_records"].find(filter).limit(count):
         history.pop("_id")
@@ -80,24 +81,29 @@ def get_records(
         profit_rate *= (1 + float(history["profit_rate"]))
         stock_profit_rate *= (1 + float(history["stock_profit_rate"]))
         print(f"profit_rate {profit_rate} stock_profit_rate {stock_profit_rate}")
-        print("history: ",history)
-        return_records.append([history["user_id"], history["date"], history["stock_code"], float_to_pct(history["stock_profit_rate"]), float_to_pct(history["profit_rate"]), float_to_pct(history["over_profit"])])
-    return {"records":return_records,"profit_rate":profit_rate-1, "stock_profit_rate":stock_profit_rate-1}
-
+        print("history: ", history)
+        return_records.append(
+            [history["user_id"], history["date"], history["stock_code"], float_to_pct(history["stock_profit_rate"]),
+             float_to_pct(history["profit_rate"]), float_to_pct(history["over_profit"])])
+    return {"records": return_records, "profit_rate": profit_rate - 1, "stock_profit_rate": stock_profit_rate - 1}
 
 
 @app.post("/push_records")
-def push_records(records = Body(None),user_id = Body(None),stock_code = Body(None) ,stock_profit_rate = Body(None)):
+def push_records(records=Body(None), user_id=Body(None), stock_code=Body(None), stock_profit_rate=Body(None)):
     print(f"get {user_id} records from browser:{records}")
     profit_rate = cal_profit_rate(records)
     today = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     over_profit = float(profit_rate) - float(stock_profit_rate)
-    db["play_records"].insert_one({"user_id":user_id,"records":records,"profit_rate":profit_rate,"date":today,"stock_code":stock_code,"stock_profit_rate":stock_profit_rate,"over_profit":over_profit})
+    db["play_records"].insert_one(
+        {"user_id": user_id, "records": records, "profit_rate": profit_rate, "date": today, "stock_code": stock_code,
+         "stock_profit_rate": stock_profit_rate, "over_profit": over_profit})
     return f"success,profit_rate is {float_to_pct(profit_rate)},over_profit is {float_to_pct(over_profit)}"
+
 
 def float_to_pct(f):
     val = round(float(f) * 100, 2)
     return str(val) + "%"
+
 
 def cal_profit_rate(records):
     profit_rate = 1
@@ -106,7 +112,7 @@ def cal_profit_rate(records):
     while i < len(records):
         profit_rate = records[i + 1]["price"] / records[i]["price"] * profit_rate
         i = i + 2
-    return round((profit_rate - 1) , 2)
+    return round((profit_rate - 1), 2)
 
 
 @app.get("/index")
@@ -124,8 +130,9 @@ def func():
     # 4.返回响应数据
     return Response(content=content, media_type="text/html")
 
+
 if __name__ == '__main__':
-    #获取本机ip
+    # 获取本机ip
     ip = socket.gethostbyname(socket.gethostname())
     print(f"ip : {ip}")
-    uvicorn.run(app, host = ip, port=9999)
+    uvicorn.run(app, host=ip, port=8501)
