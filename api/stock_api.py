@@ -18,14 +18,11 @@ db = MongoClient(mongo_config["host"], mongo_config["port"])["stock_db"]
 
 @app.post("/stock_data")
 def get_stock_data(
-        code=Body(None), start_date=Body(None), end_date=Body(None), frequency=Body(None)
+        code=Body("sh.600570"),
+        start_date=Body("2022-12-19"),
+        end_date=Body("2023-04-10"),
+        frequency=Body("d")
 ):
-    if start_date is None:
-        start_date = "2022-12-19"
-    if end_date is None:
-        end_date = "2023-04-10"
-    if frequency is None:
-        frequency = "d"
     print(
         f"code:{code} start_date:{start_date} end_date:{end_date} frequency:{frequency}"
     )
