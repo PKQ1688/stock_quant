@@ -7,16 +7,16 @@ def test_push_records():
     response = requests.post(url, json=rec)
     print(f"response {response.text}")
 
-def test_get_code_data():
-    url = "http://localhost:9999/stock_data"
-    rec = {
-        "start_date": "2023-04-19",
-        "end_date": "2023-04-19",
-        "stock_code": "sz.002044",
-    }
-    response = requests.post(url, json=rec)
-    print(len(response.json()))
-    print(f"response {response.json()}")
+# def test_get_code_data():
+url = "http://172.22.67.15:9999/stock_data"
+rec = {
+    "start_date": "2023-04-19",
+    "end_date": "2023-04-19",
+    "stock_code": "sz.002044",
+}
+response = requests.post(url, json=rec)
+print(len(response.json()))
+print(f"response {response.json()}")
 
 
 def test_get_records():

@@ -3,18 +3,30 @@
 
 <head>
     <meta charset="utf-8">
-                <style>
+    <style>
         .my_btn {
-            margin-left: 5%;
-            margin-right:5%;
-            width: 40%;
+            margin-left: 10%;
+            margin-right: 5%;
+            width: 35%;
             opacity: 0.9;
+        }
+
+        .align-right {
+            padding-left: 50%;
+            opacity: 0.9;
+            float: right;
+            position: relative;
+        }
+
+        .my_span {
+            margin-right: 3%;
         }
     </style>
 </head>
 
 <body style="height: 90%; margin-left: 5%;margin-right: 5%;margin-top: 1%">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
@@ -25,38 +37,44 @@
 
     <div class="input-group input-group-lg">
         <span class="input-group-text">id</span>
-      <input type="text" class="form-control" value="rose" aria-label="user_id" id = "user_id">
+        <input type="text" class="form-control" value="rose" aria-label="user_id" id="user_id">
         <span class="input-group-text">code</span>
-        <input type="text" class="form-control" value="sh.600570" aria-label="code" id = "code">
+        <input type="text" class="form-control" value="sh.600570" aria-label="code" id="code">
         <span class="input-group-text">start</span>
-      <input type="text" class="form-control" value="2023-01-01" aria-label="start_date" id ="start_date">
-      <span class="input-group-text">end</span>
-      <input type="text" class="form-control" value="2025-06-20" aria-label="end_date" id = "end_date">
-<!--        <span class="input-group-text">game start at:</span>-->
-      <input type="text" class="form-control" value=30 aria-label="k_count" hidden=true id = "k_count">
-    <button type="button" class="btn btn-success" onclick="get_data()">GO</button>
-    <button type="button" class="btn btn-success" onclick="push_records()" id = "push" >SAVE</button>
-    <button type="button" class="btn btn-success" onclick="get_records()" id = "history" >RECORDS</button>
-</div>
-    <div class="input-group input-group-lg">
-         <span >cur profit:</span>
-        <span id="cur_profit_rate" >0</span>
-        <span >totol profit:</span>
-        <span id="your_profit" >0</span>
-        <span >stock profit:</span>
-        <span id="stock_profit_rate" >0</span>
+        <input type="text" class="form-control" value="23-01-01" aria-label="start_date" id="start_date">
+        <span class="input-group-text">end</span>
+        <input type="text" class="form-control" value="25-06-20" aria-label="end_date" id="end_date">
+        <!--        <span class="input-group-text">game start at:</span>-->
+        <input type="text" class="form-control" value=30 aria-label="k_count" hidden=true id="k_count">
+    </div>
+    <div class="input-group input-group-lg" style="width:100%">
 
-</div>
+        <div style="width:30%"><span>CurP:</span>
+            <span id="cur_profit_rate" class="my_span">0.0</span>
+            <span>TotolP:</span>
+            <span id="your_profit" class="my_span">0.0</span>
+            <span>StockP:</span>
+            <span id="stock_profit_rate" class="my_span">0.0</span>
+        </div>
+
+        <div class="align-right" style="width:70%">
+            <button type="button" class="btn btn-success " onclick="get_data()">GO</button>
+            <button type="button" class="btn btn-success  " onclick="push_records()" id="push">SAVE</button>
+            <button type="button" class="btn btn-success  " onclick="get_records()" id="history">RECORDS</button>
+        </div>
+    </div>
 
 
-<!--    <p id="profit" class="text-xl-start fs-5">-->
-<!--       -->
-<!--    </p>-->
+
+
+    <!--    <p id="profit" class="text-xl-start fs-5">-->
+    <!--       -->
+    <!--    </p>-->
 
     <div id="container" style="height: 90%;"></div>
-    <div class="input-group input-group-lg" style="width: 100%" >
-        <button type="button" class="btn btn-success my_btn" onclick="buy_or_sell()" id = "opt" >buy</button>
-        <button type="button" class="btn btn-warning my_btn" onclick="show_next()" id = "next" >next</button>
+    <div class="input-group input-group-lg" style="width: 100%;height: 8%;">
+        <button type="button" class="btn btn-success my_btn " onclick="buy_or_sell()" id="opt">buy</button>
+        <button type="button" class="btn btn-warning my_btn" onclick="show_next()" id="next">next</button>
     </div>
     <script type="text/javascript">
         var chartDom = document.getElementById('container');
@@ -72,23 +90,23 @@
             k_count = document.getElementById("k_count").value;
             k_count = parseInt(k_count) + 1;
             document.getElementById("k_count").value = k_count;
-            var opt = document.getElementById("opt").value;
+            var opt = document.getElementById("opt").innerHTML;
             initKCharts(false);
             var cur_price = myChart.getOption().series[0].data[myChart.getOption().series[0].data.length - 1][1];
             if (opt == "buy") {
-                document.getElementById("cur_profit_rate").innerText = 0;
+                document.getElementById("cur_profit_rate").innerHTML = 0;
                 console.log("current empty")
             } else {
                 var buy_price = total_records[total_records.length - 1].price;
                 var last_day_price = myChart.getOption().series[0].data[myChart.getOption().series[0].data.length - 2][1];
-                var origin_profit_rate = document.getElementById("your_profit").innerText;
+                var origin_profit_rate = document.getElementById("your_profit").innerHTML;
                 var cur_profit_rate = (cur_price / buy_price - 1).toFixed(2);
                 var last_day_profite = (cur_price / last_day_price);
-                document.getElementById("cur_profit_rate").innerText = cur_profit_rate;
+                document.getElementById("cur_profit_rate").innerHTML = cur_profit_rate;
                 total_profit = (parseFloat(origin_profit_rate) + 1) * last_day_profite - 1;
-                document.getElementById("your_profit").innerText = total_profit.toFixed(2);
+                document.getElementById("your_profit").innerHTML = total_profit.toFixed(2);
             }
-            document.getElementById("stock_profit_rate").innerText = (cur_price / start_price - 1).toFixed(2);
+            document.getElementById("stock_profit_rate").innerHTML = (cur_price / start_price - 1).toFixed(2);
         }
 
         function buy_or_sell() {
@@ -136,7 +154,7 @@
             myChart.setOption(option);
         }
 
-        function get_records(){
+        function get_records() {
             window.location.href = base_url + "/hist";
         }
 
@@ -144,9 +162,9 @@
             //清空之前的全局变量
             total_records = [];
             total_profit = 0;
-            document.getElementById("your_profit").innerText = 0;
-            document.getElementById("cur_profit_rate").innerText = 0;
-            document.getElementById("stock_profit_rate").innerText = 0;
+            document.getElementById("your_profit").innerHTML = 0;
+            document.getElementById("cur_profit_rate").innerHTML = 0;
+            document.getElementById("stock_profit_rate").innerHTML = 0;
             // document.getElementById("k_count").value = 30;
             document.getElementById("opt").value = "buy";
 
@@ -159,8 +177,8 @@
             request.setRequestHeader('Content-Type', 'application/json')
             request.send(JSON.stringify({
                 "code": code,
-                "start_date": start_date,
-                "end_date": end_date,
+                "start_date": "20" + start_date,
+                "end_date": "20" + end_date,
                 "frequency": "d"
             }));
             request.onload = function () {/*XHR对象获取到返回信息后执行*/
@@ -189,10 +207,10 @@
             var request = new XMLHttpRequest();
             request.open("post", url);/*设置请求方法与路径*/
             request.setRequestHeader('Content-Type', 'application/json')
-            user_id = document.getElementById("user_id").value;
-            stock_code = document.getElementById("code").value;
-            stock_profit_rate = document.getElementById("stock_profit_rate").innerText;
-            your_profit = document.getElementById("your_profit").value;
+            user_id = document.getElementById("user_id").innerHTML;
+            stock_code = document.getElementById("code").innerHTML;
+            stock_profit_rate = document.getElementById("stock_profit_rate").innerHTML;
+            your_profit = document.getElementById("your_profit").innerHTML;
             request.send(JSON.stringify({ "records": total_records, "user_id": user_id, "stock_code": stock_code, "stock_profit_rate": stock_profit_rate, "your_profit": your_profit }));
             request.onload = function () {/*XHR对象获取到返回信息后执行*/
                 if (request.status == 200) {/*返回状态为200，即为数据获取成功*/
@@ -316,14 +334,14 @@
             var markPoints;
             if (is_new) {
                 markPoints = []
-            }else{
-                if (myChart.getOption() == undefined) {
-                markPoints = []
             } else {
-                markPoints = option.series[0].markPoint.data;
+                if (myChart.getOption() == undefined) {
+                    markPoints = []
+                } else {
+                    markPoints = option.series[0].markPoint.data;
+                }
             }
-            }
-            
+
             var upColor = "#F9293E";//涨颜色
             var downColor = "#00aa3b";//跌颜色
             var k_count = document.getElementById("k_count").value;
@@ -342,11 +360,11 @@
             myChart.setOption(
                 (option = {
                     animation: false,
-                    legend: {
-                        bottom: 10,
-                        left: 'center',
-                        data: ['Dow-Jones index', 'MA5', 'MA10', 'MA20', 'MA30']
-                    },
+                    // legend: {
+                    //     bottom: 10,
+                    //     left: 'center',
+                    //     data: ['Dow-Jones index', 'MA5', 'MA10', 'MA20', 'MA30']
+                    // },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {
@@ -413,18 +431,18 @@
                         {
                             left: '10%',
                             right: '8%',
-                            height: '50%'
+                            height: '40%'
                         },
                         {
                             left: '10%',
                             right: '8%',
-                            top: '63%',
-                            height: '16%'
+                            top: '50%',
+                            height: '20%'
                         }, {
                             left: '10%',
                             right: '8%',
-                            top: '80%', //MACD 指标
-                            height: '14%'
+                            top: '70%', //MACD 指标
+                            height: '25%'
                         }
                     ],
                     xAxis: [
