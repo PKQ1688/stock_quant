@@ -1,7 +1,10 @@
+import os
 import time
 import socket
 
-from pyecharts.components import Table
+import pandas as pd
+# from pyecharts.components import Table
+from finta import TA
 import baostock as bs
 from fastapi import FastAPI, Body, Response
 import uvicorn
@@ -17,7 +20,6 @@ db = MongoClient(mongo_config["host"], mongo_config["port"])["stock_db"]
 def get_stock_data(
         code=Body(None), start_date=Body(None), end_date=Body(None), frequency=Body(None)
 ):
-    bs.login()
     if start_date is None:
         start_date = "2022-12-19"
     if end_date is None:
@@ -27,26 +29,74 @@ def get_stock_data(
     print(
         f"code:{code} start_date:{start_date} end_date:{end_date} frequency:{frequency}"
     )
-    rs = bs.query_history_k_data_plus(
-        code,
-        "date,open,close,high,low,volume,amount",
-        start_date=start_date,
-        end_date=end_date,
-        frequency=frequency,
-        adjustflag="1",
+    if os.path.exists("Data/Baostock/day/{}.csv".format(code)):
+        data_df = pd.read_csv("Data/Baostock/day/{}.csv".format(code))
+
+        data_df = data_df[data_df["date"] >= start_date]
+        data_df = data_df[data_df["date"] <= end_date]
+
+    else:
+        bs.login()
+        rs = bs.query_history_k_data_plus(
+            code,
+            "date,code,open,high,low,close,volume,amount",
+            start_date=start_date,
+            end_date=end_date,
+            frequency=frequency,
+            adjustflag="3",
+        )
+        # 打印结果集
+        data_list = []
+        while (rs.error_code == "0") & rs.next():
+            # 获取一条记录，将记录合并在一起
+            data_list.append(rs.get_row_data())
+        data_df = pd.DataFrame(data_list, columns=rs.fields)
+
+        data_df["MA5"] = TA.SMA(data_df, period=5)
+        data_df["MA10"] = TA.SMA(data_df, period=10)
+        data_df["MA20"] = TA.SMA(data_df, period=20)
+        data_df["MA30"] = TA.SMA(data_df, period=30)
+        data_df["MA60"] = TA.SMA(data_df, period=60)
+
+        macd_df = TA.MACD(data_df)
+        macd_df["HISTOGRAM"] = macd_df["MACD"] - macd_df["SIGNAL"]
+        data_df = pd.concat([data_df, macd_df], axis=1)
+
+        bs.logout()
+
+    base_data_list = [
+        list(oclh) for oclh in zip(
+            data_df["date"].tolist(),
+            data_df["code"].tolist(),
+            data_df["open"].tolist(),
+            data_df["high"].tolist(),
+            data_df["low"].tolist(),
+            data_df["close"].tolist(),
+            data_df["volume"].tolist(),
+            data_df["amount"].tolist(),
+        )
+    ]
+    macd_list = [
+        list(macd) for macd in zip(
+            data_df["MACD"].tolist(),
+            data_df["SIGNAL"].tolist(),
+            data_df["HISTOGRAM"].to_list(),
+        )
+    ]
+    ma5_list = data_df["MA5"].tolist()
+    ma10_list = data_df["MA10"].tolist()
+    ma20_list = data_df["MA20"].tolist()
+    ma30_list = data_df["MA30"].tolist()
+    ma60_list = data_df["MA60"].tolist()
+    return dict(
+        base_data=base_data_list,
+        macd=macd_list,
+        ma5=ma5_list,
+        ma10=ma10_list,
+        ma20=ma20_list,
+        ma30=ma30_list,
+        ma60=ma60_list,
     )
-    # 打印结果集
-    data_list = []
-    while (rs.error_code == "0") & rs.next():
-        # 获取一条记录，将记录合并在一起
-        data = rs.get_row_data()
-        for i in range(1, 6):
-            data[i] = round(float(data[i]), 3)
-        data_list.append(data)
-    # result = pd.DataFrame(data_list, columns=rs.fields)
-    print(f"result:{data_list}")
-    # 将data_list的第1列的全部数据保留3位小数
-    return data_list
 
 
 @app.post("/get_records")
