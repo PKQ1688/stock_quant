@@ -57,7 +57,7 @@ def main():
         # "m": "month/",
     }
 
-    last_day = "2025-03-10"
+    last_day = "2023-04-20"
 
     stock_df = bs.query_all_stock(last_day).get_data()
     # print(stock_df)
