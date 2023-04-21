@@ -65,7 +65,7 @@ def get_stock_data(
     base_data_list = [
         list(oclh) for oclh in zip(
             data_df["date"].tolist(),
-            data_df["code"].tolist(),
+            # data_df["code"].tolist(),
             data_df["open"].tolist(),
             data_df["close"].tolist(),
             data_df["high"].tolist(),
