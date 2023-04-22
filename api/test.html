@@ -40,17 +40,17 @@
         <span class="input-group-text">id</span>
         <input type="text" class="form-control" value="rose" aria-label="user_id" id="user_id">
         <span class="input-group-text">code</span>
-        <input type="text" class="form-control" value="sh.600570" aria-label="code" id="code">
+        <input type="text" class="form-control" value="sz.399006" aria-label="code" id="code">
         <span class="input-group-text">start</span>
-        <input type="text" class="form-control" value="23-01-01" aria-label="start_date" id="start_date">
+        <input type="text" class="form-control" value="22-01-01" aria-label="start_date" id="start_date">
         <span class="input-group-text">end</span>
         <input type="text" class="form-control" value="25-06-20" aria-label="end_date" id="end_date">
         <span class="input-group-text">at</span>
-        <input type="text" class="form-control" value=30 aria-label="k_count" id="k_count">
+        <input type="text" class="form-control" value=60 aria-label="k_count" id="k_count">
     </div>
     <div class="input-group input-group-lg" style="width:100%">
 
-        <div style="width:30%">
+        <div style="width:50%">
             <span>CurP:</span>
             <span id="cur_profit_rate" class="my_span">0.0</span>
             <span>TotolP:</span>
@@ -59,7 +59,7 @@
             <span id="stock_profit_rate" class="my_span">0.0</span>
         </div>
 
-        <div class="align-right" style="width:70%">
+        <div class="align-right" style="width:50%">
             <button type="button" class="btn btn-success " onclick="get_data()">GO</button>
             <button type="button" class="btn btn-success  " onclick="push_records()" id="push">SAVE</button>
             <button type="button" class="btn btn-success  " onclick="get_records()" id="history">RECORDS</button>
@@ -128,13 +128,13 @@
                 "date": myChart.getOption().xAxis[0].data[myChart.getOption().xAxis[0].data.length - 1],
             };
             total_records.push(record);
+            if (opt == "buy") {
+                document.getElementById("opt").innerHTML = "sell";
+            } else {
+                document.getElementById("opt").innerHTML = "buy";
+            };
             if (show_next()) {
                 add_point(record);
-                if (opt == "buy") {
-                    document.getElementById("opt").innerHTML = "sell";
-                } else {
-                    document.getElementById("opt").innerHTML = "buy";
-                };
             }
         }
 
