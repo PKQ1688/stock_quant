@@ -1,9 +1,9 @@
 """
  Author       : adolf
  Date         : 2023-02-05 18:37:24
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2023-02-06 23:16:08
- FilePath     : /stock_quant/StrategyLib/AutomaticInvestmentPlan/stable_dog.py
+@LastEditors  : error: git config user.name & please set dead value or install git
+@LastEditTime : 2023-06-06 23:22:09
+@FilePath     : /stock_quant/StrategyLib/AutomaticInvestmentPlan/stable_dog.py
 """
 
 # "稳狗策略" 在股票下跌后进行买入，股票上涨后进行卖出
@@ -13,6 +13,8 @@ from dataclasses import dataclass, asdict
 # import pandas_ta as ta
 
 from finta import TA
+
+from GetBaseData.use_baostock.stock_k_data_dask import get_base_k_data
 
 
 @dataclass
@@ -29,8 +31,12 @@ class Account:
 
 def get_AI_plan_result(
         code="sh.600000", gap_days=3, first_buy_day="2019-01-05", want_rate=1.1, if_intelli=True,threshold=500000,
-):
-    data = pd.read_csv(f"Data/RealData/Baostock/day/{code}.csv")
+):  
+    try:
+        data = pd.read_csv(f"Data/RealData/Baostock/day/{code}.csv")
+    except Exception as e:
+        print(e)
+        data = get_base_k_data(code=code, start_date="1990-12-19", end_date="2023-06-01", frequency="d")
     # data = data[data["tradestatus"] == 1]
     data = data[["date", "code", "open", "high", "low", "close", "volume"]]
 

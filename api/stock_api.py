@@ -12,7 +12,7 @@ from pymongo import MongoClient
 from loguru import logger
 
 app = FastAPI()
-mongo_config = {"host": "localhost", "port": 27017}
+mongo_config = {"host": "192.168.1.107", "port": 27017}
 db = MongoClient(mongo_config["host"], mongo_config["port"])["stock_db"]
 
 
