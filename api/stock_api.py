@@ -15,6 +15,8 @@ app = FastAPI()
 mongo_config = {"host": "192.168.1.107", "port": 27017}
 db = MongoClient(mongo_config["host"], mongo_config["port"])["stock_db"]
 
+# 打印db的信息
+logger.info(db)
 
 @app.post("/stock_data")
 def get_stock_data(
@@ -60,6 +62,8 @@ def get_stock_data(
         data_df = pd.concat([data_df, macd_df], axis=1)
 
         bs.logout()
+
+    data_df = data_df.fillna('')
 
     base_data_list = [
         list(oclh) for oclh in zip(
