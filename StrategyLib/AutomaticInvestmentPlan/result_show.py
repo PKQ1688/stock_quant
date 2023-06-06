@@ -37,7 +37,7 @@ def auto_investment_plan():
         st.dataframe(res, width=900)
         natual_day = getDays(res.loc[0, 'date'], res.loc[len(res) - 1, 'date'])
         st.text(
-            f"达成目标自然日天数:{natual_day}，投入次数/总金额:{len(res[res['put'] != 0])}/{int(res.loc[len(res) - 1, 'put_in'])}，总收益:{int(res.loc[len(res) - 1, 'account'] - res.loc[len(res) - 1, 'put_in'])}，收益率:{round(res.loc[len(res) - 1, 'rate'], 3)},标的涨跌幅:{stock_data.loc[len(stock_data) - 1, 'close'] / stock_data.loc[0, 'open']}")
+            f"达成目标自然日天数:{natual_day}，投入次数/总金额:{len(res[res['put'] != 0])}/{int(res.loc[len(res) - 1, 'put_in'])}，总收益:{int(res.loc[len(res) - 1, 'account'] - res.loc[len(res) - 1, 'put_in'])}，收益率:{round(res.loc[len(res) - 1, 'rate'], 3)},标的涨跌幅:{round(stock_data.loc[len(stock_data) - 1, 'close'] / stock_data.loc[0, 'open'])}")
         chart_data = res[["rate"]].apply(lambda x: (x - 1) * 100)
         st.text("定投收益率：")
         st.line_chart(chart_data, y="rate")

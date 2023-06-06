@@ -12,7 +12,7 @@ from pymongo import MongoClient
 from loguru import logger
 
 app = FastAPI()
-mongo_config = {"host": "192.168.1.107", "port": 27017}
+mongo_config = {"host": "172.22.67.15", "port": 27017}
 db = MongoClient(mongo_config["host"], mongo_config["port"])["stock_db"]
 
 # 打印db的信息
@@ -93,8 +93,6 @@ def get_stock_data(
     ma20_list = data_df["MA20"].tolist()
     ma30_list = data_df["MA30"].tolist()
     ma60_list = data_df["MA60"].tolist()
-
-    logger.info("get data success!!!")
     return {
         "base_data": base_data_list,
         "macd": macd_list,
@@ -106,16 +104,6 @@ def get_stock_data(
         "ma30": ma30_list,
         "ma60": ma60_list
     }
-    # return dict(
-    #     base_data=base_data_list,
-    #     macd=macd_list,
-    #     ma5=ma5_list,
-    #     ma10=ma10_list,
-    #     ma20=ma20_list,
-    #     ma30=ma30_list,
-    #     ma60=ma60_list,
-    # )
-
 
 @app.post("/get_records")
 def get_records(
@@ -204,4 +192,4 @@ if __name__ == '__main__':
     # 获取本机ip
     ip = socket.gethostbyname(socket.gethostname())
     print(f"ip : {ip}")
-    uvicorn.run(app, host=ip, port=8501)
+    uvicorn.run(app, host=ip, port=8502)
