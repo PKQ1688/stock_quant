@@ -1,20 +1,20 @@
 """
  Author       : adolf
  Date         : 2023-02-05 18:37:24
-@LastEditors  : error: git config user.name & please set dead value or install git
-@LastEditTime : 2023-06-06 23:22:09
+@LastEditors  : adolf
+@LastEditTime : 2023-06-06 23:54:58
 @FilePath     : /stock_quant/StrategyLib/AutomaticInvestmentPlan/stable_dog.py
 """
 
 # "稳狗策略" 在股票下跌后进行买入，股票上涨后进行卖出
 import pandas as pd
 from dataclasses import dataclass, asdict
+import baostock as bs
 
 # import pandas_ta as ta
 
 from finta import TA
 
-from GetBaseData.use_baostock.stock_k_data_dask import get_base_k_data
 
 
 @dataclass
@@ -36,7 +36,24 @@ def get_AI_plan_result(
         data = pd.read_csv(f"Data/RealData/Baostock/day/{code}.csv")
     except Exception as e:
         print(e)
-        data = get_base_k_data(code=code, start_date="1990-12-19", end_date="2023-06-01", frequency="d")
+        bs.login()
+        rs = bs.query_history_k_data_plus(
+            code,
+            "date,code,open,high,low,close,volume,amount",
+            start_date=first_buy_day,
+            end_date="2023-06-06",
+            frequency="d",
+            adjustflag="3",
+        )
+        # 打印结果集
+        data_list = []
+        while (rs.error_code == "0") & rs.next():
+            # 获取一条记录，将记录合并在一起
+            data_list.append(rs.get_row_data())
+        data = pd.DataFrame(data_list, columns=rs.fields)
+        bs.logout()
+        
+    data = data.fillna('')
     # data = data[data["tradestatus"] == 1]
     data = data[["date", "code", "open", "high", "low", "close", "volume"]]
 

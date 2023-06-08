@@ -7,11 +7,12 @@
 """
 import streamlit as st
 import streamlit.components.v1 as components
+from streamlit_echarts import st_echarts
 
 from MachineLearning.annotation_platform.buy_and_sell_signals import (
     annotation_platform_main,
 )
-from StrategyLib.AutomaticInvestmentPlan.result_show import auto_investment_plan
+# from StrategyLib.AutomaticInvestmentPlan.result_show import auto_investment_plan
 from StrategyLib.ChanStrategy.automatic_drawing import chan_show_main
 
 st.set_page_config(page_title="量化炒股系统", layout="wide")
@@ -35,21 +36,25 @@ class MultiApp:
 
 
 def welcome():
-    st.title("欢迎来到法域通测试页面！")
-    st.markdown("#### 合同智审")
-    st.markdown("* [测试接口文档](http://101.69.229.138:8131/docs)")
+    # st.title("欢迎来到法域通测试页面！")
+    # st.markdown("#### 合同智审")
+    # st.markdown("* [测试接口文档](http://101.69.229.138:8131/docs)")
 
-    st.markdown("#### 检索")
-    st.markdown("* [测试接口文档](http://101.69.229.138:8132/docs)")
+    st.title("量化策略回测系统")
+    st.markdown("#### 今日大盘走势")
 
-    st.markdown("#### 诉讼预判")
-    st.markdown("* [测试接口文档](http://101.69.229.138:8133/docs)")
+    options = {
+    "xAxis": {
+        "type": "",
+        "data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    },
+    "yAxis": {"type": "价格"},
+    "series": [
+        {"data": [820, 932, 901, 934, 1290, 1330, 1320], "type": "line"}
+    ],
+    }
+    st_echarts(options=options)
 
-    st.markdown("#### 智能咨询")
-    st.markdown("* [测试接口文档](http://101.69.229.138:8134/docs)")
-
-    st.markdown("#### 普法常识")
-    st.markdown("* [测试接口文档](http://101.69.229.138:8148/docs)")
 
 
 def MACD_main():
@@ -73,15 +78,20 @@ def SMA_main():
 
 
 def Kline_challenge():
-    st.markdown("#### 欢迎来到K线挑战！")
-    st.markdown("* [K线挑战入口](http://127.0.0.1:8501/index)")
+    # st.markdown("#### 欢迎来到K线挑战！")
+    # st.markdown("* [K线挑战入口](http://127.0.0.1:8501/index)")
+
+    # st.components.v1.iframe(src="demo.html", width=700, height=500)
+    with open("api/test.html") as fp:
+        text = fp.read()
+    components.html(html=text, width=None, height=1200, scrolling=False)
 
 
 app = MultiApp()
 app.add_app("首页", welcome)
 app.add_app("MACD策略", MACD_main)
 # app.add_app("均线策略", SMA_main)
-app.add_app("定投策略", auto_investment_plan)
+# app.add_app("定投策略", auto_investment_plan)
 app.add_app("K线游戏", annotation_platform_main)
 app.add_app("K线挑战", Kline_challenge)
 app.add_app("缠论", chan_show_main)
