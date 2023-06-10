@@ -1,9 +1,9 @@
 """
  Author       : adolf
  Date         : 2023-02-05 15:45:49
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2023-02-05 18:24:17
- FilePath     : /stock_quant/GetBaseData/use_baostock/stock_k_mulit_cycle.py
+@LastEditors  : adolf
+@LastEditTime : 2023-06-10 16:18:11
+@FilePath     : /stock_quant/GetBaseData/use_baostock/stock_k_mulit_cycle.py
 """
 import os
 import pandas as pd
@@ -57,7 +57,7 @@ def main():
         # "m": "month/",
     }
 
-    last_day = "2023-04-20"
+    last_day = "2023-06-10"
 
     stock_df = bs.query_all_stock(last_day).get_data()
     # print(stock_df)
@@ -83,6 +83,7 @@ def main():
             code_list.append(row.code)
     # print(code_list)
     # print(len(code_list))
+    code_list = ["sh.000001", "sz.399001", "sz.399006"]
 
     for code_name in tqdm(code_list, total=len(code_list)):
         for frequency in time_cycle.keys():

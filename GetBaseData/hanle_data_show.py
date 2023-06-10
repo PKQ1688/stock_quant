@@ -89,7 +89,11 @@ def show_data_from_df(
     # df_or_dfpath = df_or_dfpath[-60:]
     # macd_df = macd_df[-60:]
 
-    df_or_dfpath = pd.concat([df_or_dfpath, macd_df], axis=1)
+    if "MACD" not in df_or_dfpath.columns:
+        df_or_dfpath = pd.concat([df_or_dfpath, macd_df], axis=1)
+    
+    # df_or_dfpath.rename(columns={"HISTOGRAM_day", "HISTOGRAM"})
+    # import pdb; pdb.set_trace()
     
     if start_date is not None:
         df_or_dfpath = df_or_dfpath[df_or_dfpath["date"] >= start_date]
@@ -113,18 +117,19 @@ def show_data_from_df(
             df_or_dfpath["date"] + "_" + df_or_dfpath["index"].map(str)
         )
 
-    # buy_list = df_or_dfpath["buy"].tolist() if "buy" in df_or_dfpath else []
-    # sell_list = df_or_dfpath["sell"].tolist() if "sell" in df_or_dfpath else []
+    buy_list = df_or_dfpath["buy"].tolist() if "buy" in df_or_dfpath else []
+    sell_list = df_or_dfpath["sell"].tolist() if "sell" in df_or_dfpath else []
+    # import pdb; pdb.set_trace()
 
     return {
         "datas": datas,
         "times": df_or_dfpath["date"].tolist(),
         "vols": df_or_dfpath["volume"].tolist(),
-        "macds": df_or_dfpath["HISTOGRAM"].tolist(),
+        "macds": df_or_dfpath["HISTOGRAM_day"].tolist(),
         "difs": df_or_dfpath["MACD"].tolist(),
         "deas": df_or_dfpath["SIGNAL"].tolist(),
-        # "buy": buy_list,
-        # "sell": sell_list
+        "buy": buy_list,
+        "sell": sell_list
     }
 
 

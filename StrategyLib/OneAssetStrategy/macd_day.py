@@ -1,3 +1,11 @@
+"""
+@Author       : adolf adolf1321794021@gmail.com
+@Date         : 2023-06-06 22:51:19
+@LastEditors  : adolf
+@LastEditTime : 2023-06-10 16:20:57
+@FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/macd_day.py
+@Description  : 
+"""
 import pandas as pd
 import pandas_ta as ta
 from finta import TA
@@ -9,7 +17,8 @@ class MACDdayStrategy(TradeStructure):
     """
 
     def load_dataset(self, data_path, start_stamp=None, end_stamp=None):
-        day_data_path = data_path.replace("Data/RealData/hfq/", "Data/RealData/Baostock/day/")
+        self.logger.info(data_path)
+        day_data_path = data_path.replace("Data/RealData/hfq/", "Data/Baostock/day/")
         self.data = {}
         # self.logger.debug(data_path)
         self.data["day"] = pd.read_csv(day_data_path)

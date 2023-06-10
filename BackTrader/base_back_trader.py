@@ -208,7 +208,7 @@ class TradeStructure(CoreTradeLogic):
         else:
             pl_ration = self.run_one_stock_once(code_name=code_name)
 
-        self.logger.debug("{}的盈亏比是{}".format(code_name, pl_ration))
+        self.logger.success("{}的盈亏比是{}".format(code_name, pl_ration))
         self.show_one_stock(self.data)
 
         return pl_ration

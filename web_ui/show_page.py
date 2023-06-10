@@ -8,6 +8,8 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from streamlit_echarts import st_echarts
+from StrategyLib.OneAssetStrategy.macd_day import MACDdayStrategy
+from web_ui.time_sharing import three_inidexs
 
 from MachineLearning.annotation_platform.buy_and_sell_signals import (
     annotation_platform_main,
@@ -34,6 +36,7 @@ class MultiApp:
         )
         self.app_dict[title]()
 
+# st.set_page_config(layout="wide")  # 设置屏幕展开方式，宽屏模式布局更好
 
 def welcome():
     # st.title("欢迎来到法域通测试页面！")
@@ -67,8 +70,23 @@ def MACD_main():
     options2 = st.multiselect("周期选择", ["5min", "30min", "60min", "日线", "周线", "月线"])
     st.title("MACD")
 
+    config = {
+        "RANDOM_SEED": 42,
+        "LOG_LEVEL": "INFO",
+        "CODE_NAME": code,
+        # "CODE_NAME": "ALL_MARKET_10",
+        # "CODE_NAME": ["sh.600238",],
+        # "CODE_NAME": ["sh.603806", "sh.603697", "sh.603700", "sh.600570", "sh.603809","sh.600238","sh.603069","sh.600764","sz.002044"],
+        "START_STAMP": start_date,
+        "END_STAMP": end_date,
+        # "SHOW_DATA_PATH": "",
+        # "STRATEGY_PARAMS": {}
+    }
+    strategy = MACDdayStrategy(config)
+    strategy.run()
+
     # st.components.v1.iframe(src="demo.html", width=700, height=500)
-    with open("demo.html") as fp:  # 如果遇到decode错误，就加上合适的encoding
+    with open("ShowHtml/demo.html") as fp:  # 如果遇到decode错误，就加上合适的encoding
         text = fp.read()
     components.html(html=text, width=None, height=1200, scrolling=False)
 
@@ -88,7 +106,7 @@ def Kline_challenge():
 
 
 app = MultiApp()
-app.add_app("首页", welcome)
+app.add_app("首页", three_inidexs)
 app.add_app("MACD策略", MACD_main)
 # app.add_app("均线策略", SMA_main)
 # app.add_app("定投策略", auto_investment_plan)
