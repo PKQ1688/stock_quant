@@ -14,7 +14,7 @@ from web_ui.time_sharing import three_inidexs
 # from MachineLearning.annotation_platform.buy_and_sell_signals import (
 #     annotation_platform_main,
 # )
-from StrategyLib.AutomaticInvestmentPlan.result_show import auto_investment_plan
+# from StrategyLib.AutomaticInvestmentPlan.result_show import auto_investment_plan
 from StrategyLib.ChanStrategy.automatic_drawing import chan_show_main
 
 st.set_page_config(page_title="量化炒股系统", layout="wide")
@@ -84,11 +84,19 @@ def MACD_main():
     }
     strategy = MACDdayStrategy(config)
     strategy.run()
+    stock_result = strategy.stock_result.astype(str)
+    pl = strategy.pl_result.astype(str)
 
+    # print('-----------------------------------')
+    # print(pl)
+    # print('-----------------------------------')
     # st.components.v1.iframe(src="demo.html", width=700, height=500)
     with open("ShowHtml/demo.html") as fp:  # 如果遇到decode错误，就加上合适的encoding
         text = fp.read()
-    components.html(html=text, width=None, height=1200, scrolling=False)
+    components.html(html=text, width=None, height=800, scrolling=False)
+
+    st.table(stock_result)
+    st.table(pl)
 
 
 def SMA_main():
@@ -109,7 +117,7 @@ app = MultiApp()
 app.add_app("首页", three_inidexs)
 app.add_app("MACD策略", MACD_main)
 # app.add_app("均线策略", SMA_main)
-app.add_app("定投策略", auto_investment_plan)
+# app.add_app("定投策略", auto_investment_plan)
 # app.add_app("K线游戏", annotation_platform_main)
 app.add_app("K线游戏", Kline_challenge)
 app.add_app("缠论", chan_show_main)

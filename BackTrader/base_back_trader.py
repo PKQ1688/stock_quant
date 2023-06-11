@@ -56,6 +56,9 @@ class TradeStructure(CoreTradeLogic):
         self.data = None
         self.transaction_analysis = BaseTransactionAnalysis(logger=self.logger)
         
+        self.stock_result = None
+        self.pl_result = None
+        
         # 设置随机种子，保证实验结果的可复现性
         random.seed(self.config.RANDOM_SEED)
 
@@ -117,6 +120,7 @@ class TradeStructure(CoreTradeLogic):
             os.mkdir("ShowHtml")
         show_data_path = self.config.SHOW_DATA_PATH if self.config.SHOW_DATA_PATH else "ShowHtml/demo.html"
         show_data = show_data_from_df(df_or_dfpath=show_data)
+        # import pdb;pdb.set_trace()
         draw_chart(input_data=show_data, show_html_path=show_data_path)
 
     # 使用一套参数对一只股票进行回测
@@ -149,6 +153,7 @@ class TradeStructure(CoreTradeLogic):
 
         if asset_analysis is not None:
             self.logger.success("对标的进行分析:\n{}".format(asset_analysis))
+            self.stock_result = asset_analysis
 
         if len(transaction_record_df) > 0:
             strategy_analysis = self.transaction_analysis.cal_trader_analysis(
@@ -161,6 +166,8 @@ class TradeStructure(CoreTradeLogic):
         # self.logger.debug("策略使用的参数:\n{}".format(indicators_config))
         # self.logger.debug("对策略结果进行分析:\n{}".format(strategy_analysis))
 
+        self.pl_result = strategy_analysis
+        
         pl_ration = strategy_analysis.loc["策略的盈亏比", "result"]
         # self.logger.info(pl_ration)
 
@@ -217,8 +224,8 @@ class TradeStructure(CoreTradeLogic):
         code_name = self.config.CODE_NAME
         self.logger.debug(code_name)
 
+        pl_ration_list = []
         if isinstance(code_name, list):
-            pl_ration_list = []
             for code in code_name:
                 one_pl_ration = self.run_one_stock(code_name=code)
                 pl_ration_list.append(one_pl_ration)
@@ -238,7 +245,6 @@ class TradeStructure(CoreTradeLogic):
 
             self.logger.debug(market_code_list)
 
-            pl_ration_list = []
             for code in market_code_list:
                 self.logger.info(code)
                 try:
@@ -260,6 +266,10 @@ class TradeStructure(CoreTradeLogic):
         if pl_ration is not None:
             self.logger.success("策略交易一次的收益的数学期望为：{:.2f}%".format(pl_ration * 100))
 
+        # if len(pl_ration_list) > 0:
+            # return pl_ration_list[0]
+        # else:
+            # return None
         # self.run_one_stock()
 
 

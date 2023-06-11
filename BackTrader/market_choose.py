@@ -136,3 +136,5 @@ class MarketChoose(CoreTradeLogic):
         transaction_record_df = self.base_trade(choose_data)
 
         pl = self.transaction_analysis.cal_trader_analysis(transaction_record_df)
+
+        return pl
