@@ -117,6 +117,7 @@ def show_data_from_df(
             df_or_dfpath["date"] + "_" + df_or_dfpath["index"].map(str)
         )
 
+    # import pdb;pdb.set_trace()
     buy_list = df_or_dfpath["buy"].tolist() if "buy" in df_or_dfpath else []
     sell_list = df_or_dfpath["sell"].tolist() if "sell" in df_or_dfpath else []
     # import pdb; pdb.set_trace()

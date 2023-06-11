@@ -39,9 +39,12 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
             if val == 1:
                 coord = [input_data["times"][i], input_data["datas"][i][1]]
                 point = opts.MarkPointItem(coord=coord, name=lable,itemstyle_opts={"color":colors_div[lable]})
-    points.append(point)
-    points.extend([opts.MarkPointItem(type_="max", name="最大值"),
-                   opts.MarkPointItem(type_="min", name="最小值")])
+                points.append(point)
+
+    # points.extend([opts.MarkPointItem(type_="max", name="最大值"),
+    #                opts.MarkPointItem(type_="min", name="最小值")])
+    
+    # import pdb;pdb.set_trace()
     kline.add_xaxis(xaxis_data=input_data["times"])
     kline.add_yaxis(
         series_name="",
