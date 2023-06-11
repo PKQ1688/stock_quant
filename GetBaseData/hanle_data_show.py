@@ -101,7 +101,7 @@ def show_data_from_df(
     if end_date is not None:
         df_or_dfpath = df_or_dfpath[df_or_dfpath["date"] <= end_date]
 
-    df_or_dfpath = df_or_dfpath[-60:]
+    # df_or_dfpath = df_or_dfpath[-60:]
     # df_or_dfpath = df_or_dfpath[:30]
     datas = [
         list(oclh)

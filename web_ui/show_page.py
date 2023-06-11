@@ -11,10 +11,10 @@ from streamlit_echarts import st_echarts
 from StrategyLib.OneAssetStrategy.macd_day import MACDdayStrategy
 from web_ui.time_sharing import three_inidexs
 
-from MachineLearning.annotation_platform.buy_and_sell_signals import (
-    annotation_platform_main,
-)
-# from StrategyLib.AutomaticInvestmentPlan.result_show import auto_investment_plan
+# from MachineLearning.annotation_platform.buy_and_sell_signals import (
+#     annotation_platform_main,
+# )
+from StrategyLib.AutomaticInvestmentPlan.result_show import auto_investment_plan
 from StrategyLib.ChanStrategy.automatic_drawing import chan_show_main
 
 st.set_page_config(page_title="量化炒股系统", layout="wide")
@@ -96,21 +96,21 @@ def SMA_main():
 
 
 def Kline_challenge():
-    # st.markdown("#### 欢迎来到K线挑战！")
-    # st.markdown("* [K线挑战入口](http://127.0.0.1:8501/index)")
+    st.markdown("#### 欢迎来到K线挑战！")
+    st.markdown("* [K线挑战入口](http://127.0.0.1:8501/index)")
 
     # st.components.v1.iframe(src="demo.html", width=700, height=500)
-    with open("api/test.html") as fp:
-        text = fp.read()
-    components.html(html=text, width=None, height=1200, scrolling=False)
+    # with open("api/test.html") as fp:
+    #     text = fp.read()
+    # components.html(html=text, width=None, height=1200, scrolling=False)
 
 
 app = MultiApp()
 app.add_app("首页", three_inidexs)
 app.add_app("MACD策略", MACD_main)
 # app.add_app("均线策略", SMA_main)
-# app.add_app("定投策略", auto_investment_plan)
-app.add_app("K线游戏", annotation_platform_main)
-app.add_app("K线挑战", Kline_challenge)
+app.add_app("定投策略", auto_investment_plan)
+# app.add_app("K线游戏", annotation_platform_main)
+app.add_app("K线游戏", Kline_challenge)
 app.add_app("缠论", chan_show_main)
 app.run()
