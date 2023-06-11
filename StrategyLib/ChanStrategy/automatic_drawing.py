@@ -19,7 +19,7 @@ def chan_show_base():
         '000001')
     period = st.sidebar.selectbox('time period',
                                   ('daily', 'weekly', 'monthly', '1min', '5min', '15min', '30min', '60min'))
-    adjust = st.sidebar.selectbox('time period', ('qfq', 'hfq', 'origin'))
+    adjust = st.sidebar.selectbox('adjust', ('qfq', 'hfq', 'origin'))
 
     start_date = None
     end_date = None
