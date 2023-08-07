@@ -146,3 +146,7 @@ model/
 
 dask-worker-space/
 nohup.out
+
+.ipynb_checkpoints/
+.vscode/
+.idea/
