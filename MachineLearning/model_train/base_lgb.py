@@ -5,7 +5,6 @@
  LastEditTime : 2023-01-11 23:00:24
  FilePath     : /stock_quant/MachineLearning/model_train/base_lgb.py
 """
-import json
 import lightgbm as lgb
 import pandas as pd
 from sklearn.metrics import mean_squared_error

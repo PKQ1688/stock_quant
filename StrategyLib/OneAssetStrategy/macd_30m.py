@@ -1,10 +1,7 @@
-import pdb
 import pandas as pd
-import pandas_ta as ta
 from finta import TA
 from BackTrader.base_back_trader import TradeStructure
 from StrategyLib.OneAssetStrategy.macd_30m_dayMacd import MACD30DayMacdStrategy
-from StrategyLib.OneAssetStrategy.macd_day import MACDdayStrategy
 
 
 class MACD30CurMacdStrategy(TradeStructure):

@@ -6,8 +6,6 @@
 # @File    : hanle_data_show.py
 import pandas as pd
 from finta import TA
-from loguru import logger
-from datetime import datetime
 
 # import pandas_ta as ta
 

@@ -9,7 +9,6 @@ import pandas as pd
 
 from StrategyLib.AutomaticInvestmentPlan.stable_dog import get_AI_plan_result
 import streamlit as st
-import matplotlib.pyplot as plt
 from datetime import datetime
 
 

@@ -7,7 +7,6 @@ LastEditors: adolf
 '''
 import os
 import json
-from pprint import pprint
 import pandas as pd
 from finta import TA
 from loguru import logger

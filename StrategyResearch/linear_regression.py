@@ -12,7 +12,7 @@ import pandas as pd
 from loguru import logger
 from tqdm.auto import tqdm
 
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.linear_model import LinearRegression
 
 # from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, median_absolute_error
 

@@ -92,8 +92,8 @@ def get_handle_data(data_name):
         # res_data = res_data.drop(columns=['code'])
 
         # print(res_data)
-        if not os.path.exists(f"Data/HandleData/base_ohlcv_data"):
-            os.mkdir(f"Data/HandleData/base_ohlcv_data")
+        if not os.path.exists("Data/HandleData/base_ohlcv_data"):
+            os.mkdir("Data/HandleData/base_ohlcv_data")
 
         res_data.to_csv(f"Data/HandleData/base_ohlcv_data/{data_name}", index=False)
         return res_data

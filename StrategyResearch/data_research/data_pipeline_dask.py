@@ -30,6 +30,5 @@ def base_data_pipeline(code):
 
 
 if __name__ == "__main__":
-    import time
 
     base_data_pipeline("000001")

@@ -11,7 +11,7 @@ import os
 import random
 import statistics
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 # from functools import reduce
 import pandas as pd
@@ -19,7 +19,7 @@ import pandas_ta as ta
 
 from BackTrader.core_trade_logic import CoreTradeLogic
 from BackTrader.position_analysis import BaseTransactionAnalysis
-from GetBaseData.hanle_data_show import show_data_from_df
+from GetBaseData.handle_data_show import show_data_from_df
 from Utils.ShowKline.base_kline import draw_chart
 
 # from tqdm.auto import tqdm
@@ -29,7 +29,7 @@ pd.set_option("display.max_rows", None)
 
 
 @dataclass
-class TradeStructureCongfig:
+class TradeStructureConfig:
     LOG_LEVEL: str = field(
         default="INFO",
         metadata={
@@ -48,7 +48,7 @@ class TradeStructureCongfig:
 
 class TradeStructure(CoreTradeLogic):
     def __init__(self, config):
-        self.config = TradeStructureCongfig(**config)
+        self.config = TradeStructureConfig(**config)
         super().__init__()
 
         self.logger.info("Trade is begging ......")

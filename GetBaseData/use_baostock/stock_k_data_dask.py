@@ -8,8 +8,6 @@
 import baostock as bs
 import pandas as pd
 
-from pathlib import Path
-import shutil
 
 # 对文件夹进行清空处理
 # dir_path = Path("Data/RealData/hfq/")

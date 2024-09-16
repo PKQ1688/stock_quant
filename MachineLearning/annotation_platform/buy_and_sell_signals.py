@@ -16,7 +16,7 @@ import streamlit as st
 from loguru import logger
 
 from streamlit_echarts import st_pyecharts
-from GetBaseData.hanle_data_show import show_data_from_df
+from GetBaseData.handle_data_show import show_data_from_df
 
 from Utils.ShowKline.base_kline import draw_chart
 

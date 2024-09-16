@@ -4,8 +4,7 @@
 # @Date    : 2022/1/6 16:55
 # @Author  : Adolf
 # @File    : base_kline.py
-from tkinter.messagebox import NO
-from typing import List, Sequence, Union
+from typing import List, Union
 
 from pyecharts import options as opts
 from pyecharts.commons.utils import JsCode
@@ -322,7 +321,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
 
 
 if __name__ == "__main__":
-    from GetBaseData.hanle_data_show import show_data_from_df
+    from GetBaseData.handle_data_show import show_data_from_df
 
     show_data = show_data_from_df("Data/RealData/hfq/600570.csv")
     draw_chart(show_data, show_html_path="ShowHtml/CandleChartv2.html")

@@ -5,7 +5,6 @@
 # @Author  : Adolf
 # @File    : basic_tools.py
 # @Function:
-import os
 import webbrowser
 
 from StrategyLib.ChanStrategy.BasicChan.basic_structure import RawBar, NewBar, FX, BI, ZS

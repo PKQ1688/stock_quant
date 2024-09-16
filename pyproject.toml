@@ -26,6 +26,7 @@ matplotlib = "^3.9.2"
 fastapi = "^0.114.2"
 uvicorn = "^0.30.6"
 pymongo = "^4.8.0"
+ruff = "^0.6.5"
 
 
 [build-system]
