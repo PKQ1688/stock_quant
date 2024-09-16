@@ -5,17 +5,20 @@ Date: 2022-07-23 16:04:07
 LastEditTime: 2022-08-18 23:25:46
 LastEditors: adolf
 """
-import os
 import json
-from tqdm.auto import tqdm
+import os
+
 from loguru import logger
+from tqdm.auto import tqdm
+
+from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
 
 # import akshare as ak
 # from pprint import pprint
 from GetBaseData.thirdpart.stock_board_industry_em import (
+    stock_board_industry_hist_em,
     stock_board_industry_name_em,
-    stock_board_industry_hist_em)
-from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
+)
 
 logger.info("开始获取股票板块数据")
 

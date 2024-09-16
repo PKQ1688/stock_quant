@@ -5,10 +5,10 @@
  LastEditTime : 2023-01-14 19:32:41
  FilePath     : /stock_quant/MachineLearning/data_process/indicators_cal.py
 """
+import warnings
+
 import pandas as pd
 import pandas_ta as ta
-
-import warnings
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 pd.set_option('display.max_columns', None)
@@ -67,8 +67,8 @@ def cal_indicators(filename):
 if __name__ == '__main__':
     # import dask
     import pathlib
-    from dask.distributed import progress
-    from dask.distributed import Client, LocalCluster
+
+    from dask.distributed import Client, LocalCluster, progress
 
     client = Client(LocalCluster(n_workers=4, threads_per_worker=1, memory_limit='2GB'))
 

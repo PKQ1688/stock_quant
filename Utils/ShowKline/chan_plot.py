@@ -9,12 +9,14 @@
 使用 pyecharts 定制绘图模块
 """
 
-from pyecharts import options as opts
-from pyecharts.charts import HeatMap, Kline, Line, Bar, Scatter, Grid, Boxplot
-from pyecharts.commons.utils import JsCode
 from typing import List
+
 import numpy as np
-from Utils.TechnicalIndicators.basic_indicators import SMA, MACD
+from pyecharts import options as opts
+from pyecharts.charts import Bar, Boxplot, Grid, HeatMap, Kline, Line, Scatter
+from pyecharts.commons.utils import JsCode
+
+from Utils.TechnicalIndicators.basic_indicators import MACD, SMA
 
 
 def heat_map(data: List[dict],

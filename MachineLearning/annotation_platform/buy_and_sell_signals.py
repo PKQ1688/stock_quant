@@ -7,19 +7,18 @@
 @Description  : 
 """
 import os
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
+
+import akshare as ak
 import numpy as np
 import pandas as pd
-import akshare as ak
 import streamlit as st
 from loguru import logger
-
 from streamlit_echarts import st_pyecharts
+
 from GetBaseData.handle_data_show import show_data_from_df
-
 from Utils.ShowKline.base_kline import draw_chart
-
 
 # st.set_page_config(page_title="股票买卖标注平台", layout="wide")
 

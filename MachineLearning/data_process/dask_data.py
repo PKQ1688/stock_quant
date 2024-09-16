@@ -6,17 +6,13 @@
  FilePath     : /stock_quant/MachineLearning/data_process/dask_data.py
 """
 import time
-
-
 import traceback
+
+import numpy as np
 
 # import dask.array as da
 import pandas as pd
-
-from dask.distributed import progress
-from dask.distributed import Client
-
-import numpy as np
+from dask.distributed import Client, progress
 
 # from MachineLearning.data_process.base_data import get_handle_data
 

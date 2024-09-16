@@ -7,8 +7,8 @@
 # @Desc: 东方财富-沪深板块-行业板块
 # http://quote.eastmoney.com/center/boardlist.html#industry_board
 
-import requests
 import pandas as pd
+import requests
 
 
 def stock_board_industry_name_em() -> pd.DataFrame:

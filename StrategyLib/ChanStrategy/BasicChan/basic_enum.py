@@ -8,7 +8,6 @@
 
 from enum import Enum
 
-
 # class Operate(Enum):
 #     # 持有状态
 #     HL = "持多"  # Hold Long

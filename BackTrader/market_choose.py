@@ -6,14 +6,15 @@ LastEditTime: 2022-08-09 22:38:37
 LastEditors: adolf
 """
 import os
+from dataclasses import dataclass, field
+from functools import reduce
+
+import pandas as pd
 
 # import ray
 import pathos
-import pandas as pd
 from tqdm.auto import tqdm
-from dataclasses import dataclass, field
 
-from functools import reduce
 from BackTrader.core_trade_logic import CoreTradeLogic
 
 

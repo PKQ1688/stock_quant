@@ -5,12 +5,13 @@
 # @Author  : Adolf
 # @File    : BaseInfoStockMonitor.py
 # @Function:
-import akshare as ak
-import json
 import datetime
+import json
+
+import akshare as ak
+from PrivacyConfig.dingtalk import code_name_list, dingtalk_config
 
 from Utils.info_push import post_msg_to_dingtalk
-from PrivacyConfig.dingtalk import dingtalk_config, code_name_list
 
 
 # 判断是否是交易时间

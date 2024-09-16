@@ -8,14 +8,14 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from streamlit_echarts import st_echarts
-from StrategyLib.OneAssetStrategy.macd_day import MACDdayStrategy
-from web_ui.time_sharing import three_inidexs
 
 # from MachineLearning.annotation_platform.buy_and_sell_signals import (
 #     annotation_platform_main,
 # )
 from StrategyLib.AutomaticInvestmentPlan.result_show import auto_investment_plan
 from StrategyLib.ChanStrategy.automatic_drawing import chan_show_main
+from StrategyLib.OneAssetStrategy.macd_day import MACDdayStrategy
+from web_ui.time_sharing import three_inidexs
 
 st.set_page_config(page_title="量化炒股系统", layout="wide")
 

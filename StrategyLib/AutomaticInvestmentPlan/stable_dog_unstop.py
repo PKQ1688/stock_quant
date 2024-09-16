@@ -5,11 +5,12 @@
  LastEditTime : 2023-02-06 23:54:00
  FilePath     : /stock_quant/StrategyLib/AutomaticInvestmentPlan/result_show.py
 """
+from datetime import datetime
+
 import pandas as pd
+import streamlit as st
 
 from StrategyLib.AutomaticInvestmentPlan.stable_dog import get_AI_plan_result
-import streamlit as st
-from datetime import datetime
 
 
 def getDays(day1, day2):

@@ -5,18 +5,17 @@ Date: 2022-08-17 21:37:01
 LastEditTime: 2022-08-17 21:37:01
 LastEditors: adolf
 """
+import json
 import os
+from datetime import date
+
+# from pprint import pprint
+import akshare as ak
 import numpy as np
 import pandas as pd
-
-import json
-# from pprint import pprint
-
-import akshare as ak
 from sklearn.linear_model import LinearRegression
-from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
 
-from datetime import date
+from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
 
 # from itertools import reduce
 

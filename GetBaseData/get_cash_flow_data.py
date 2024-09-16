@@ -5,19 +5,21 @@ Date: 2022-07-10 15:46:40
 LastEditTime: 2022-09-23 00:01:35
 LastEditors: adolf
 '''
-import akshare as ak
-# from pprint import pprint
-import pandas as pd
 import json
 import os
+
+import akshare as ak
+
+# from pprint import pprint
+import pandas as pd
 from loguru import logger
 
 logger.info("开始获取股票现金流数据")
 
-from tqdm.auto import tqdm
-
 import time
+
 import ray
+from tqdm.auto import tqdm
 
 ray.init()
 

@@ -6,6 +6,7 @@
  FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/EMA_Ma_Crossover.py
 """
 import pandas_ta as ta
+
 from BackTrader.base_back_trader import TradeStructure
 
 

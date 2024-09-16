@@ -5,11 +5,13 @@ Date: 2022-07-24 14:09:47
 LastEditTime: 2022-08-01 20:51:31
 LastEditors: adolf
 '''
-import os
 import json
+import os
+
 import pandas as pd
 from finta import TA
 from loguru import logger
+
 # from Utils.base_utils import logger
 os.environ["LOGURU_LEVEL"] = "INFO"
 

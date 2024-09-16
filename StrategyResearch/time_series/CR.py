@@ -5,10 +5,11 @@
  LastEditTime : 2023-01-09 22:12:50
  FilePath     : /stock_quant/StrategyResearch/time_series/CR.py
 """
-import pandas_ta as ta
-from BackTrader.base_back_trader import TradeStructure
-
 import warnings
+
+import pandas_ta as ta
+
+from BackTrader.base_back_trader import TradeStructure
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 

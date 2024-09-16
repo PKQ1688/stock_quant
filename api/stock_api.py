@@ -1,15 +1,16 @@
 import os
-import time
 import socket
+import time
 
+import baostock as bs
 import pandas as pd
+import uvicorn
+from fastapi import Body, FastAPI, Response
+
 # from pyecharts.components import Table
 from finta import TA
-import baostock as bs
-from fastapi import FastAPI, Body, Response
-import uvicorn
-from pymongo import MongoClient
 from loguru import logger
+from pymongo import MongoClient
 
 app = FastAPI()
 mongo_config = {"host": "172.22.67.15", "port": 27017}

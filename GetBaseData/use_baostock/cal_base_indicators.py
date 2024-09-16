@@ -5,9 +5,10 @@
 @Author  ：adolf
 @Date    ：2023/4/21 22:00 
 """
+import os
+
 import pandas as pd
 from finta import TA
-import os
 
 pd.set_option('display.max_columns', None)
 

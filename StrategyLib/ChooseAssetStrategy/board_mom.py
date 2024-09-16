@@ -7,8 +7,9 @@ LastEditors: adolf
 """
 import numpy as np
 import pandas as pd
-from BackTrader.market_choose import MarketChoose
 from sklearn.linear_model import LinearRegression  # , Ridge, Lasso
+
+from BackTrader.market_choose import MarketChoose
 
 
 class BoardMoMStrategy(MarketChoose):

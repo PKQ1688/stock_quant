@@ -7,10 +7,11 @@ LastEditors: adolf
 """
 import os
 import traceback
+
 import numpy as np
 import pandas as pd
-from tqdm.auto import tqdm
 import ray
+from tqdm.auto import tqdm
 
 # pd.set_option('display.max_columns', None)
 

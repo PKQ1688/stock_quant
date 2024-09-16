@@ -5,10 +5,12 @@
  LastEditTime : 2023-02-06 00:22:54
  FilePath     : /stock_quant/BackTrader/core_trade_logic.py
 """
-import pandas as pd
-from typing import List
-from Utils.base_utils import get_logger
 from dataclasses import dataclass, field
+from typing import List
+
+import pandas as pd
+
+from Utils.base_utils import get_logger
 
 from .position_analysis import BaseTransactionAnalysis
 

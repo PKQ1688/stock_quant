@@ -7,10 +7,10 @@
 # @Function:
 from dataclasses import dataclass
 from datetime import datetime
-from StrategyLib.ChanStrategy.BasicChan.basic_enum import Freq, Mark, Direction
-from Utils.TechnicalIndicators.basic_indicators import RSQ
-
 from typing import List
+
+from StrategyLib.ChanStrategy.BasicChan.basic_enum import Direction, Freq, Mark
+from Utils.TechnicalIndicators.basic_indicators import RSQ
 
 
 @dataclass

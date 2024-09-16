@@ -27,8 +27,12 @@ fastapi = "^0.114.2"
 uvicorn = "^0.30.6"
 pymongo = "^4.8.0"
 ruff = "^0.6.5"
+ray = "^2.35.0"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff.lint]
+select = ["I"]

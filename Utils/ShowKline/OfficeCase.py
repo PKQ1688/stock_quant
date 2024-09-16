@@ -8,8 +8,8 @@ https://gallery.echartsjs.com/editor.html?c=xByOFPcjBe
 from typing import List, Sequence, Union
 
 from pyecharts import options as opts
+from pyecharts.charts import Bar, Grid, Kline, Line
 from pyecharts.commons.utils import JsCode
-from pyecharts.charts import Kline, Line, Bar, Grid
 
 # 数据
 echarts_data = [

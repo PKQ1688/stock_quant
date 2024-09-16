@@ -5,11 +5,11 @@
 # @Author  : Adolf
 # @File    : automatic_drawing.py
 # @Function:
-import streamlit as st
 import akshare as ak
-from StrategyLib.ChanStrategy.BasicChan.basic_tools import CZSC, RawBar
+import streamlit as st
 from streamlit_echarts import st_pyecharts
 
+from StrategyLib.ChanStrategy.BasicChan.basic_tools import CZSC, RawBar
 
 # st.set_page_config(layout="wide")
 

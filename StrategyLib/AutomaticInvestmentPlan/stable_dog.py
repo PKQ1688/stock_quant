@@ -7,14 +7,13 @@
 """
 
 # "稳狗策略" 在股票下跌后进行买入，股票上涨后进行卖出
-import pandas as pd
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
+
 import baostock as bs
+import pandas as pd
 
 # import pandas_ta as ta
-
 from finta import TA
-
 
 
 @dataclass

@@ -6,11 +6,13 @@
 # @File    : test_plot.py
 # @Function:
 import os
-import pandas as pd
 import random
+
+import pandas as pd
+
 import Utils.ShowKline.chan_plot as chan_plot
-from StrategyLib.ChanStrategy.BasicChan.basic_tools import CZSC, RawBar, get_zs_seq
 from StrategyLib.ChanStrategy.BasicChan.basic_enum import Freq
+from StrategyLib.ChanStrategy.BasicChan.basic_tools import CZSC, RawBar, get_zs_seq
 
 
 def test_heat_map():

@@ -6,11 +6,17 @@
 # @File    : basic_tools.py
 # @Function:
 import webbrowser
-
-from StrategyLib.ChanStrategy.BasicChan.basic_structure import RawBar, NewBar, FX, BI, ZS
-from StrategyLib.ChanStrategy.BasicChan.basic_enum import Direction, Mark
-from Utils.ShowKline.chan_plot import kline_pro
 from typing import List
+
+from StrategyLib.ChanStrategy.BasicChan.basic_enum import Direction, Mark
+from StrategyLib.ChanStrategy.BasicChan.basic_structure import (
+    BI,
+    FX,
+    ZS,
+    NewBar,
+    RawBar,
+)
+from Utils.ShowKline.chan_plot import kline_pro
 
 
 def remove_include(k1: NewBar, k2: NewBar, k3: RawBar):

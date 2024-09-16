@@ -7,6 +7,7 @@
 """
 import pandas as pd
 import pandas_ta as ta
+
 from BackTrader.base_back_trader import TradeStructure
 
 

@@ -5,24 +5,22 @@ Date: 2022-08-01 21:05:06
 LastEditTime: 2022-08-08 23:57:07
 LastEditors: adolf
 """
-import sys
 import json
+import sys
+from functools import reduce
+
 import numpy as np
 import pandas as pd
-from loguru import logger
-from tqdm.auto import tqdm
-
-from sklearn.linear_model import LinearRegression
+import psutil
 
 # from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, median_absolute_error
-
 # from GetBaseData.hanle_data_show import show_data_from_df
 # from Utils.ShowKline.base_kline import draw_chart
-
 # import matplotlib.pyplot as plt
 import ray
-import psutil
-from functools import reduce
+from loguru import logger
+from sklearn.linear_model import LinearRegression
+from tqdm.auto import tqdm
 
 pd.set_option("display.max_columns", None)
 

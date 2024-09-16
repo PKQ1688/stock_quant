@@ -6,7 +6,9 @@
  FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/Ma5Ma10.py
 """
 from pprint import pformat
+
 import pandas_ta as ta
+
 from BackTrader.base_back_trader import TradeStructure
 
 

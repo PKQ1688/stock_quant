@@ -7,8 +7,9 @@
 # @Function:
 # import requests
 import time
-import pandas as pd
+
 import baostock as bs
+import pandas as pd
 from tqdm import tqdm
 
 # import akshare as ak

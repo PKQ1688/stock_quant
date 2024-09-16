@@ -7,8 +7,8 @@
 from typing import List, Union
 
 from pyecharts import options as opts
+from pyecharts.charts import Bar, Grid, Kline, Line
 from pyecharts.commons.utils import JsCode
-from pyecharts.charts import Kline, Line, Bar, Grid
 
 # from snapshot_pyppeteer import snapshot
 # from pyecharts.render import make_snapshot

@@ -1,5 +1,6 @@
 import requests
 
+
 def test_push_records():
     url = 'http://localhost:9999/push_records'
     json_param = [{"opt":"buy","date":"2021-09-09","price":1200},{"opt":"buy","date":"2021-09-09","price":2000}]

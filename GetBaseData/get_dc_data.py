@@ -8,19 +8,22 @@
 
 import os.path
 import time
+
 from loguru import logger
 
 logger.info("开始获取股票日线数据")
 
-import ray
+import json
+import shutil
+
+import akshare as ak
+
 # import socket
 import pandas as pd
-import akshare as ak
-from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
-import shutil
+import ray
 from tqdm.auto import tqdm
 
-import json
+from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
 
 pd.set_option("expand_frame_repr", False)
 # socket.gethostbyname("")
@@ -29,9 +32,15 @@ stock_zh_a_spot_em_df = ak.stock_zh_a_spot_em()
 stock_zh_a_spot_em_df.rename(columns=ch_eng_mapping_dict, inplace=True)
 code_list = stock_zh_a_spot_em_df.code.to_list()
 
-code_name_mapping = stock_zh_a_spot_em_df.set_index(['code'])['name'].to_dict()
+code_name_mapping = stock_zh_a_spot_em_df.set_index(["code"])["name"].to_dict()
+if not os.path.exists("DATA"):
+    os.mkdir("DATA")
+
+if not os.path.exists("Data/RealData"):
+    os.mkdir("Data/RealData")
+
 with open("Data/RealData/ALL_MARKET_CODE.json", "w") as all_market_code:
-    json.dump(code_name_mapping, all_market_code,ensure_ascii=False)
+    json.dump(code_name_mapping, all_market_code, ensure_ascii=False)
 # exit()
 
 ray.init()
@@ -113,7 +122,11 @@ def to_iterator(obj_ids):
 for x in tqdm(to_iterator(futures), total=len(code_list)):
     pass
 
-print('本次获取了{}只股票的数据，共用时间为{:.2f}'.format(len(code_list), time.time() - start_time))
+print(
+    "本次获取了{}只股票的数据，共用时间为{:.2f}".format(
+        len(code_list), time.time() - start_time
+    )
+)
 # pbar.close()
 print("date", time.strftime("%Y-%m-%d"))
 print("=" * 20)

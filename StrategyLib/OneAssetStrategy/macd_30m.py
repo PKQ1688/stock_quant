@@ -1,5 +1,6 @@
 import pandas as pd
 from finta import TA
+
 from BackTrader.base_back_trader import TradeStructure
 from StrategyLib.OneAssetStrategy.macd_30m_dayMacd import MACD30DayMacdStrategy
 

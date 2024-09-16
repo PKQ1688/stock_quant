@@ -3,7 +3,7 @@
 # @Project : stock_quant
 # @Date    : 2022/1/6 17:09
 # @Author  : Adolf
-# @File    : hanle_data_show.py
+# @File    : handle_data_show.py
 import pandas as pd
 from finta import TA
 
@@ -67,7 +67,7 @@ def show_data_from_df(
         try:
             macd_df = df_or_dfpath[["MACD", "SIGNAL", "HISTOGRAM"]]
         # print(macd_df)
-        except:
+        except KeyError:
             macd_df = TA.MACD(df_or_dfpath)
             macd_df["HISTOGRAM"] = macd_df["MACD"] - macd_df["SIGNAL"]
 

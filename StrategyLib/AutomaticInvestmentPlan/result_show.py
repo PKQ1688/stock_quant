@@ -5,9 +5,12 @@
 @LastEditTime : 2023-06-06 23:36:34
 @FilePath     : /stock_quant/StrategyLib/AutomaticInvestmentPlan/result_show.py
 """
-from StrategyLib.AutomaticInvestmentPlan.stable_dog import get_AI_plan_result
-import streamlit as st
 from datetime import datetime
+
+import streamlit as st
+
+from StrategyLib.AutomaticInvestmentPlan.stable_dog import get_AI_plan_result
+
 
 def getDays(day1, day2):
     # 获取需要计算的时间戳

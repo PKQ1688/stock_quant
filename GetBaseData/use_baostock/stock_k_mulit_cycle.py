@@ -6,8 +6,9 @@
 @FilePath     : /stock_quant/GetBaseData/use_baostock/stock_k_mulit_cycle.py
 """
 import os
-import pandas as pd
+
 import baostock as bs
+import pandas as pd
 from tqdm import tqdm
 
 # import akshare as ak

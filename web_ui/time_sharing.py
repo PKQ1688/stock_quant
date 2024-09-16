@@ -6,11 +6,10 @@
 @FilePath     : /stock_quant/web_ui/time_sharing.py
 @Description  : 
 """
+import baostock as bs
+import pandas as pd
 import streamlit as st
 from streamlit_echarts import st_echarts
-import pandas as pd
-import baostock as bs
-
 
 
 def get_index_data(code="sh.000001"):

@@ -5,9 +5,10 @@ Date: 2022-07-26 23:45:09
 LastEditTime: 2022-08-01 20:36:30
 LastEditors: adolf
 '''
+from datetime import date
+
 import akshare as ak
 import pandas as pd
-from datetime import date
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', 200)

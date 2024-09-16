@@ -5,9 +5,10 @@ Date: 2022-07-26 22:52:23
 LastEditTime: 2022-07-26 23:11:39
 LastEditors: adolf
 '''
-import pandas as pd
 import akshare as ak
+import pandas as pd
 from loguru import logger
+
 from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
 
 pd.set_option('display.max_columns', None)

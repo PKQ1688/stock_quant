@@ -8,7 +8,6 @@
 import baostock as bs
 import pandas as pd
 
-
 # 对文件夹进行清空处理
 # dir_path = Path("Data/RealData/hfq/")
 # if dir_path.exists() and dir_path.is_dir():

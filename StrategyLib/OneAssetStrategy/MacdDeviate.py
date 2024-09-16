@@ -12,12 +12,12 @@ Date: 2022-07-03 17:29:10
 LastEditTime: 2022-08-14 13:21:20
 LastEditors: adolf
 '''
+import numpy as np
 from finta import TA
+from scipy.signal import argrelextrema
+
 from BackTrader.base_back_trader import TradeStructure
 from StrategyLib.OneAssetStrategy import macd_deviate_config
-
-import numpy as np
-from scipy.signal import argrelextrema
 
 
 class MACDDeviate(TradeStructure):

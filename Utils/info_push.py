@@ -6,8 +6,9 @@
 # @File    : info_push.py
 # @Function:
 import json
-import requests
 import logging
+
+import requests
 
 
 def post_msg_to_dingtalk(title="", msg="", token="", at=None, type="text"):
