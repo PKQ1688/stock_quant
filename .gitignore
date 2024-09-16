@@ -150,3 +150,5 @@ nohup.out
 .ipynb_checkpoints/
 .vscode/
 .idea/
+
+peotry.lock

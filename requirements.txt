@@ -1,13 +1,10 @@
 akshare
 baostock
 pandas
-# ray
 pandas_ta
 finta
 tqdm
-# mplfinance
 pyecharts
-# lightgbm
 schedule
 streamlit
 streamlit-echarts
@@ -16,7 +13,6 @@ loguru
 pathos
 dask[complete]
 scikit-learn
-torch
 matplotlib
 fastapi
 uvicorn
