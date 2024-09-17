@@ -5,6 +5,7 @@ Date: 2022-07-23 16:04:07
 LastEditTime: 2022-08-18 23:25:46
 LastEditors: adolf
 """
+
 import json
 import os
 
@@ -35,8 +36,9 @@ logger.info("开始获取股票板块数据")
 stock_board_industry_name_em_df = stock_board_industry_name_em()
 # print(stock_board_industry_name_em_df)
 
-industry_board_name_mapping = stock_board_industry_name_em_df.set_index(
-    ['板块名称'])['板块代码'].to_dict()
+industry_board_name_mapping = stock_board_industry_name_em_df.set_index(["板块名称"])[
+    "板块代码"
+].to_dict()
 # pprint(industry_board_name_mapping)
 
 with open("Data/BoardData/ALL_INDUSTRY_BOARD.json", "w") as all_market_code:
@@ -52,14 +54,17 @@ for key, value in tqdm(industry_board_name_mapping.items()):
         # stock_board_industry_hist_em_df = ak.stock_board_industry_hist_em(
         #     symbol=key, start_date="19900101", end_date="20991231", adjust="")
         stock_board_industry_hist_em_df = stock_board_industry_hist_em(
-            symbol=key, start_date="19900101", end_date="20991231", adjust="")
+            symbol=key, start_date="19900101", end_date="20991231", adjust=""
+        )
 
-        stock_board_industry_hist_em_df.rename(columns=ch_eng_mapping_dict,
-                                               inplace=True)
+        stock_board_industry_hist_em_df.rename(
+            columns=ch_eng_mapping_dict, inplace=True
+        )
         # print(stock_board_industry_hist_em_df)
 
-        stock_board_industry_hist_em_df.to_csv(save_path + "{}.csv".format(key),
-                                               index=False)
+        stock_board_industry_hist_em_df.to_csv(
+            save_path + "{}.csv".format(key), index=False
+        )
 
     except Exception as e:
         logger.error(e)

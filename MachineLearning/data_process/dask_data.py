@@ -1,10 +1,11 @@
 """
- Author       : adolf
- Date         : 2022-11-19 21:06:39
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-11-23 21:41:43
- FilePath     : /stock_quant/MachineLearning/data_process/dask_data.py
+Author       : adolf
+Date         : 2022-11-19 21:06:39
+LastEditors  : adolf adolf1321794021@gmail.com
+LastEditTime : 2022-11-23 21:41:43
+FilePath     : /stock_quant/MachineLearning/data_process/dask_data.py
 """
+
 import time
 import traceback
 
@@ -80,7 +81,7 @@ def get_handle_data(data_name):
             # new_data_dict["pct"].append(data_t.loc[index + 1, "pctChg"])
             next_pct = data_t.loc[index + 1, "pctChg"]
             if next_pct > 7:
-                # 超强                
+                # 超强
                 new_data_dict["label"].append(0)
             elif next_pct > 3:
                 # 中强

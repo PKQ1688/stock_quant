@@ -16,6 +16,7 @@ from Utils.TechnicalIndicators.basic_indicators import RSQ
 @dataclass
 class RawBar:
     """原始K线元素"""
+
     symbol: str
     id: int  # id 必须是升序
     dt: datetime
@@ -31,6 +32,7 @@ class RawBar:
 @dataclass
 class NewBar:
     """去除包含关系后的K线元素"""
+
     symbol: str
     id: int  # id 必须是升序
     dt: datetime
@@ -76,6 +78,7 @@ class FX:
 @dataclass
 class FakeBI:
     """虚拟笔：主要为笔的内部分析提供便利"""
+
     symbol: str
     sdt: datetime
     edt: datetime
@@ -99,11 +102,25 @@ def create_fake_bis(fxs: List[FX]) -> List[FakeBI]:
         fx2 = fxs[i]
         assert fx1.mark != fx2.mark
         if fx1.mark == Mark.D:
-            fake_bi = FakeBI(symbol=fx1.symbol, sdt=fx1.dt, edt=fx2.dt, direction=Direction.Up,
-                             high=fx2.high, low=fx1.low, power=round(fx2.high - fx1.low, 2))
+            fake_bi = FakeBI(
+                symbol=fx1.symbol,
+                sdt=fx1.dt,
+                edt=fx2.dt,
+                direction=Direction.Up,
+                high=fx2.high,
+                low=fx1.low,
+                power=round(fx2.high - fx1.low, 2),
+            )
         elif fx1.mark == Mark.G:
-            fake_bi = FakeBI(symbol=fx1.symbol, sdt=fx1.dt, edt=fx2.dt, direction=Direction.Down,
-                             high=fx1.high, low=fx2.low, power=round(fx1.high - fx2.low, 2))
+            fake_bi = FakeBI(
+                symbol=fx1.symbol,
+                sdt=fx1.dt,
+                edt=fx2.dt,
+                direction=Direction.Down,
+                high=fx1.high,
+                low=fx2.low,
+                power=round(fx1.high - fx2.low, 2),
+            )
         else:
             raise ValueError
         fake_bis.append(fake_bi)
@@ -124,8 +141,10 @@ class BI:
         self.edt = self.fx_b.dt
 
     def __repr__(self):
-        return f"BI(symbol={self.symbol}, sdt={self.sdt}, edt={self.edt}," \
-               f"direction={self.direction}, high={self.high}, low={self.low})"
+        return (
+            f"BI(symbol={self.symbol}, sdt={self.sdt}, edt={self.edt},"
+            f"direction={self.direction}, high={self.high}, low={self.low})"
+        )
 
     # 定义一些附加属性，用的时候才会计算，提高效率
     # ======================================================================
@@ -229,6 +248,8 @@ class ZS:
         return max([x.low for x in self.bis[:3]])
 
     def __repr__(self):
-        return f"ZS(sdt={self.sdt}, sdir={self.sdir}, edt={self.edt}, edir={self.edir}, " \
-               f"len_bis={len(self.bis)}, zg={self.zg}, zd={self.zd}, " \
-               f"gg={self.gg}, dd={self.dd}, zz={self.zz})"
+        return (
+            f"ZS(sdt={self.sdt}, sdir={self.sdir}, edt={self.edt}, edir={self.edir}, "
+            f"len_bis={len(self.bis)}, zg={self.zg}, zd={self.zd}, "
+            f"gg={self.gg}, dd={self.dd}, zz={self.zz})"
+        )

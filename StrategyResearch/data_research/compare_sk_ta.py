@@ -1,10 +1,11 @@
 """
- Author       : adolf
- Date         : 2022-12-18 14:19:37
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-12-18 17:27:09
- FilePath     : /stock_quant/StrategyResearch/data_research/compare_sk_ta.py
+Author       : adolf
+Date         : 2022-12-18 14:19:37
+LastEditors  : adolf adolf1321794021@gmail.com
+LastEditTime : 2022-12-18 17:27:09
+FilePath     : /stock_quant/StrategyResearch/data_research/compare_sk_ta.py
 """
+
 import numpy as np
 import pandas as pd
 import pandas_ta as ta

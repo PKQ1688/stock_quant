@@ -1,10 +1,11 @@
 """
-Description: 
+Description:
 Author: adolf
 Date: 2022-07-03 23:11:00
 LastEditTime: 2022-08-09 22:38:37
 LastEditors: adolf
 """
+
 import os
 from dataclasses import dataclass, field
 from functools import reduce

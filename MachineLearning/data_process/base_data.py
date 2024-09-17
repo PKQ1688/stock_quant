@@ -1,10 +1,11 @@
 """
-Description: 
+Description:
 Author: adolf
 Date: 2022-08-21 15:26:58
 LastEditTime: 2022-08-21 15:27:02
 LastEditors: adolf
 """
+
 import os
 import traceback
 
@@ -33,7 +34,7 @@ def init_dict():
 
 def get_handle_data(data_name):
     try:
-    # if True:
+        # if True:
         data_t = pd.read_csv(f"Data/RealData/hfq/{data_name}", dtype={"code": str})
         data_t = data_t[
             ["date", "open", "high", "low", "close", "volume", "turn", "code", "pctChg"]
@@ -50,8 +51,10 @@ def get_handle_data(data_name):
             tmp_data = data_t[index - 60 : index].copy()
 
             for feature in ["open", "high", "low", "close", "volume"]:
-                tmp_data[feature] = tmp_data[[feature]].apply(lambda x: (x - np.min(x)) / (np.max(x) - np.min(x)))
-            
+                tmp_data[feature] = tmp_data[[feature]].apply(
+                    lambda x: (x - np.min(x)) / (np.max(x) - np.min(x))
+                )
+
             # tmp_data["turn"] = tmp_data["turn"].apply(lambda x: x / 100)
 
             # print(tmp_data)
@@ -99,7 +102,7 @@ def get_handle_data(data_name):
         res_data.to_csv(f"Data/HandleData/base_ohlcv_data/{data_name}", index=False)
         return res_data
     except:
-    # else:
+        # else:
         print(traceback.format_exc())
         print(data_name)
         return None
@@ -107,9 +110,11 @@ def get_handle_data(data_name):
 
 # get_handle_data("000001.csv")
 
+
 @ray.remote
 def ray_get_handle_data(data_name):
     return get_handle_data(data_name)
+
 
 if __name__ == "__main__":
     import os
@@ -124,7 +129,9 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
-    futures = [ray_get_handle_data.remote(code) for code in os.listdir("Data/RealData/hfq")]
+    futures = [
+        ray_get_handle_data.remote(code) for code in os.listdir("Data/RealData/hfq")
+    ]
 
     def to_iterator(obj_ids):
         while obj_ids:

@@ -1,15 +1,17 @@
 """
- Author       : adolf
- Date         : 2022-12-03 17:59:38
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-12-10 18:02:26
- FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/Ma5Ma10.py
+Author       : adolf
+Date         : 2022-12-03 17:59:38
+LastEditors  : adolf adolf1321794021@gmail.com
+LastEditTime : 2022-12-10 18:02:26
+FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/Ma5Ma10.py
 """
+
 from pprint import pformat
 
-import pandas_ta as ta
-
 from BackTrader.base_back_trader import TradeStructure
+
+# from pyti.simple_moving_average import simple_moving_average as sma
+from Utils.TechnicalIndicators.basic_indicators import SMA
 
 
 class Ma5Ma10Strategy(TradeStructure):
@@ -20,8 +22,10 @@ class Ma5Ma10Strategy(TradeStructure):
     def cal_technical_indicators(self, indicators_config):
         self.logger.debug(indicators_config)
 
-        self.data["sma5"] = ta.sma(self.data["close"], length=5)
-        self.data["sma10"] = ta.sma(self.data["close"], length=10)
+        # self.data["sma5"] = ta.sma(self.data["close"], length=5)
+        # self.data["sma10"] = ta.sma(self.data["close"], length=10)
+        self.data["sma5"] = SMA(self.data["close"], timeperiod=5)
+        self.data["sma10"] = SMA(self.data["close"], timeperiod=10)
 
     # def buy_logic(self, trading_step, one_transaction_record, history_trading_step):
     def buy_logic(self):

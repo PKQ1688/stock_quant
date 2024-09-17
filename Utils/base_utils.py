@@ -1,10 +1,3 @@
-"""
- Author       : adolf
- Date         : 2022-12-02 00:15:09
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-12-02 00:27:43
- FilePath     : /stock_quant/Utils/base_utils.py
-"""
 # ！/usr/bin/env python
 # -*- coding:utf-8 -*-
 # @Project : stock_quant

@@ -29,8 +29,13 @@ class Account:
 
 
 def get_AI_plan_result(
-        code="sh.600000", gap_days=3, first_buy_day="2019-01-05", want_rate=1.1, if_intelli=True,threshold=500000,
-):  
+    code="sh.600000",
+    gap_days=3,
+    first_buy_day="2019-01-05",
+    want_rate=1.1,
+    if_intelli=True,
+    threshold=500000,
+):
     try:
         data = pd.read_csv(f"Data/RealData/Baostock/day/{code}.csv")
     except Exception as e:
@@ -51,14 +56,14 @@ def get_AI_plan_result(
             data_list.append(rs.get_row_data())
         data = pd.DataFrame(data_list, columns=rs.fields)
         bs.logout()
-        
-    data = data.fillna('')
+
+    data = data.fillna("")
     # data = data[data["tradestatus"] == 1]
     data = data[["date", "code", "open", "high", "low", "close", "volume"]]
 
     macd_df = TA.MACD(data)
     data["MACD"], data["SIGNAL"] = [macd_df["MACD"], macd_df["SIGNAL"]]
-    data["HISTOGRAM"] = data['MACD'] - data['SIGNAL']
+    data["HISTOGRAM"] = data["MACD"] - data["SIGNAL"]
 
     data = pd.concat([data, macd_df])
     data = data[data["date"] >= first_buy_day]
@@ -78,7 +83,9 @@ def get_AI_plan_result(
                 buy_flag = False
             if my_account.put_in != 0:
                 if my_account.rate > want_rate * 0.95:
-                    print(f"{row.date} + 目前收益率已到达高水位线{want_rate * 0.95}，不再买入")
+                    print(
+                        f"{row.date} + 目前收益率已到达高水位线{want_rate * 0.95}，不再买入"
+                    )
                     buy_flag = False
                 if my_account.rate < 0.9:
                     times = min(int(my_account.put_in / 1000 / 6), 5)
@@ -89,13 +96,13 @@ def get_AI_plan_result(
         if my_account.put_in > threshold:
             print(f"{row.date} + 目前投入已达到{threshold}，需要卖出一半股票以降低仓位")
             buy_flag = False
-            sell_amount = my_account.put_in/2
+            sell_amount = my_account.put_in / 2
             my_account.put = -sell_amount
             my_account.put_in -= sell_amount
-            my_account.assert_num = my_account.assert_num - sell_amount/row.close
+            my_account.assert_num = my_account.assert_num - sell_amount / row.close
 
-        if index==0 or  (index - my_account.buy_index >= gap_days and buy_flag):
-            print("index:%s"%index)
+        if index == 0 or (index - my_account.buy_index >= gap_days and buy_flag):
+            print("index:%s" % index)
             money = 1000 * times
             my_account.buy_index = index
             my_account.buy_date = row.date
@@ -116,17 +123,21 @@ def get_AI_plan_result(
     # print(rate_list)
     rate_df = pd.DataFrame(rate_list)
     # print(rate_df)
-    data = data[data['date'] <= my_account.date]
+    data = data[data["date"] <= my_account.date]
     return rate_df, data
+
 
 code = "sz.002044"
 gap_days = 1
 first_buy_day = "2021-02-22"
 want_rate = 1.1
 
-res, stock = get_AI_plan_result(code=code,
-                                gap_days=int(gap_days),
-                                first_buy_day=first_buy_day,
-                                want_rate=float(want_rate),threshold=500000)
+res, stock = get_AI_plan_result(
+    code=code,
+    gap_days=int(gap_days),
+    first_buy_day=first_buy_day,
+    want_rate=float(want_rate),
+    threshold=500000,
+)
 
 print(res)

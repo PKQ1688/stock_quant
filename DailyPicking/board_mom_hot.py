@@ -1,10 +1,11 @@
 """
-Description: 
+Description:
 Author: adolf
 Date: 2022-08-17 21:37:01
 LastEditTime: 2022-08-17 21:37:01
 LastEditors: adolf
 """
+
 import json
 import os
 from datetime import date
@@ -118,5 +119,5 @@ res_df = pd.concat(res_df_list)
 res_df.sort_values(by="hot_rank", inplace=True)
 res_df.reset_index(drop=True, inplace=True)
 
-res_df = res_df[:len(res_df) // 2]
+res_df = res_df[: len(res_df) // 2]
 print(res_df)

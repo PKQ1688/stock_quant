@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2022/12/17 15:09
 # @Author  : Adolf
-# @Site    : 
+# @Site    :
 # @File    : stock_board_industry_em.py
 # @Desc: 东方财富-沪深板块-行业板块
 # http://quote.eastmoney.com/center/boardlist.html#industry_board
@@ -104,7 +104,9 @@ def stock_board_industry_name_em() -> pd.DataFrame:
     temp_df["换手率"] = pd.to_numeric(temp_df["换手率"], errors="coerce")
     temp_df["上涨家数"] = pd.to_numeric(temp_df["上涨家数"], errors="coerce")
     temp_df["下跌家数"] = pd.to_numeric(temp_df["下跌家数"], errors="coerce")
-    temp_df["领涨股票-涨跌幅"] = pd.to_numeric(temp_df["领涨股票-涨跌幅"], errors="coerce")
+    temp_df["领涨股票-涨跌幅"] = pd.to_numeric(
+        temp_df["领涨股票-涨跌幅"], errors="coerce"
+    )
     return temp_df
 
 
@@ -132,9 +134,9 @@ def stock_board_industry_hist_em(
     :rtype: pandas.DataFrame
     """
     period_map = {
-        "日k": '101',
-        "周k": '102',
-        "月k": '103',
+        "日k": "101",
+        "周k": "102",
+        "月k": "103",
     }
     stock_board_concept_em_map = stock_board_industry_name_em()
     stock_board_code = stock_board_concept_em_map[
@@ -157,9 +159,7 @@ def stock_board_industry_hist_em(
     }
     r = requests.get(url, params=params)
     data_json = r.json()
-    temp_df = pd.DataFrame(
-        [item.split(",") for item in data_json["data"]["klines"]]
-    )
+    temp_df = pd.DataFrame([item.split(",") for item in data_json["data"]["klines"]])
     temp_df.columns = [
         "日期",
         "开盘",
@@ -234,9 +234,7 @@ def stock_board_industry_hist_min_em(
     }
     r = requests.get(url, params=params)
     data_json = r.json()
-    temp_df = pd.DataFrame(
-        [item.split(",") for item in data_json["data"]["klines"]]
-    )
+    temp_df = pd.DataFrame([item.split(",") for item in data_json["data"]["klines"]])
     temp_df.columns = [
         "日期时间",
         "开盘",
@@ -386,7 +384,11 @@ if __name__ == "__main__":
     print(stock_board_industry_name_em_df)
 
     stock_board_industry_hist_em_df = stock_board_industry_hist_em(
-        symbol="小金属", start_date="20211201", end_date="20221110", period="月k", adjust=""
+        symbol="小金属",
+        start_date="20211201",
+        end_date="20221110",
+        period="月k",
+        adjust="",
     )
     print(stock_board_industry_hist_em_df)
 
@@ -395,7 +397,5 @@ if __name__ == "__main__":
     )
     print(stock_board_industry_hist_min_em_df)
 
-    stock_board_industry_cons_em_df = stock_board_industry_cons_em(
-        symbol="小金属"
-    )
+    stock_board_industry_cons_em_df = stock_board_industry_cons_em(symbol="小金属")
     print(stock_board_industry_cons_em_df)

@@ -1,10 +1,11 @@
 """
- Author       : adolf
- Date         : 2022-12-03 17:59:38
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-12-10 18:02:26
- FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/Ma5Ma10.py
+Author       : adolf
+Date         : 2022-12-03 17:59:38
+LastEditors  : adolf adolf1321794021@gmail.com
+LastEditTime : 2022-12-10 18:02:26
+FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/Ma5Ma10.py
 """
+
 from pprint import pformat
 
 import pandas_ta as ta

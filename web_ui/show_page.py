@@ -1,10 +1,11 @@
 # -*- coding: UTF-8 -*-
 """
-@Project :stock_quant 
+@Project :stock_quant
 @File    :show_page.py
 @Author  :adolf
-@Date    :2023/3/25 16:24 
+@Date    :2023/3/25 16:24
 """
+
 import streamlit as st
 import streamlit.components.v1 as components
 from streamlit_echarts import st_echarts
@@ -36,7 +37,9 @@ class MultiApp:
         )
         self.app_dict[title]()
 
+
 # st.set_page_config(layout="wide")  # 设置屏幕展开方式，宽屏模式布局更好
+
 
 def welcome():
     # st.title("欢迎来到法域通测试页面！")
@@ -47,17 +50,14 @@ def welcome():
     st.markdown("#### 今日大盘走势")
 
     options = {
-    "xAxis": {
-        "type": "",
-        "data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    },
-    "yAxis": {"type": "价格"},
-    "series": [
-        {"data": [820, 932, 901, 934, 1290, 1330, 1320], "type": "line"}
-    ],
+        "xAxis": {
+            "type": "",
+            "data": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        },
+        "yAxis": {"type": "价格"},
+        "series": [{"data": [820, 932, 901, 934, 1290, 1330, 1320], "type": "line"}],
     }
     st_echarts(options=options)
-
 
 
 def MACD_main():
@@ -66,8 +66,12 @@ def MACD_main():
     start_date = st.sidebar.text_input("请输入开始日期", value="2019-01-01")
     end_date = st.sidebar.text_input("请输入结束日期", value="2021-01-01")
     # st.sidebar.selectbox("请选择策略", ["金买死卖", "60日上方"])
-    options1 = st.multiselect("选择macd策略", ["金买死卖", "60日上方操作", "250日上方操作"])
-    options2 = st.multiselect("周期选择", ["5min", "30min", "60min", "日线", "周线", "月线"])
+    options1 = st.multiselect(
+        "选择macd策略", ["金买死卖", "60日上方操作", "250日上方操作"]
+    )
+    options2 = st.multiselect(
+        "周期选择", ["5min", "30min", "60min", "日线", "周线", "月线"]
+    )
     st.title("MACD")
 
     config = {

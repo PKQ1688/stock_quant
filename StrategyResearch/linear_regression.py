@@ -1,10 +1,11 @@
 """
-Description: 
+Description:
 Author: adolf
 Date: 2022-08-01 21:05:06
 LastEditTime: 2022-08-08 23:57:07
 LastEditors: adolf
 """
+
 import json
 import sys
 from functools import reduce
@@ -27,7 +28,9 @@ pd.set_option("display.max_columns", None)
 ray.init(num_cpus=psutil.cpu_count(logical=False))
 
 logger.remove()  # 删去import logger之后自动产生的handler，不删除的话会出现重复输出的现象
-handler_id = logger.add(sys.stderr, level="debug".upper())  # 添加一个可以修改控制的handler
+handler_id = logger.add(
+    sys.stderr, level="debug".upper()
+)  # 添加一个可以修改控制的handler
 
 board_data_path = "Data/BoardData/"
 

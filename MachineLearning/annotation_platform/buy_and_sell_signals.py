@@ -4,8 +4,9 @@
 @LastEditors  : adolf
 @LastEditTime : 2023-03-12 21:29:22
 @FilePath     : /stock_quant/MachineLearning/annotation_platform/buy_and_sell_signals.py
-@Description  : 
+@Description  :
 """
+
 import os
 import random
 from datetime import datetime, timedelta
@@ -22,6 +23,7 @@ from Utils.ShowKline.base_kline import draw_chart
 
 # st.set_page_config(page_title="股票买卖标注平台", layout="wide")
 
+
 def _init_session_state():
     # 缓存内存
     if "code_name" not in st.session_state:
@@ -34,9 +36,9 @@ def _init_session_state():
         st.session_state["end_time"] = None
 
     if "trade_calendar" not in st.session_state:
-        st.session_state[
-            "trade_calendar"
-        ] = ak.tool_trade_date_hist_sina().trade_date.tolist()
+        st.session_state["trade_calendar"] = (
+            ak.tool_trade_date_hist_sina().trade_date.tolist()
+        )
 
     if "account_status" not in st.session_state:
         st.session_state["account_status"] = "cash"
@@ -52,7 +54,9 @@ def base_show_fun(code_name, start_time, end_time):
     end_time = datetime.strftime(end_time, "%Y-%m-%d")
 
     _show_data = show_data_from_df(
-        f"Data/RealData/Baostock/day/{code_name}.csv", start_date=start_time, end_date=end_time
+        f"Data/RealData/Baostock/day/{code_name}.csv",
+        start_date=start_time,
+        end_date=end_time,
     )
     chart = draw_chart(_show_data)
     st_pyecharts(chart, height="600%", width="100%")
@@ -85,11 +89,12 @@ def annotation_platform_main():
         if random_code:
             st.session_state["code_name"] = random.choice(code_list).replace(".csv", "")
 
-        st.session_state["code_name"] = st.text_input("股票代码，上证带上sh，深圳带上sz",
-                                                      value=st.session_state["code_name"])
+        st.session_state["code_name"] = st.text_input(
+            "股票代码，上证带上sh，深圳带上sz", value=st.session_state["code_name"]
+        )
 
         logger.info(st.session_state["code_name"])
-        st.markdown('### 股票代码 === {}'.format(st.session_state["code_name"]))
+        st.markdown("### 股票代码 === {}".format(st.session_state["code_name"]))
 
         if st.session_state["start_time"] is None:
             st.session_state["start_time"] = st.date_input(
@@ -102,10 +107,13 @@ def annotation_platform_main():
             st.session_state["end_time"] = st.date_input(
                 "结束时间",
                 value=pd.to_datetime("2020-01-01"),
-                max_value=pd.to_datetime("2023-03-01"), )
+                max_value=pd.to_datetime("2023-03-01"),
+            )
 
         while st.session_state["end_time"] not in st.session_state["trade_calendar"]:
-            st.session_state["end_time"] = st.session_state["end_time"] + timedelta(days=1)
+            st.session_state["end_time"] = st.session_state["end_time"] + timedelta(
+                days=1
+            )
 
         trade_result, show_data = base_show_fun(
             code_name=st.session_state["code_name"],
@@ -125,8 +133,12 @@ def annotation_platform_main():
                 line = "\t".join(save_data)
                 f.write(f"{line}\n")
 
-            st.session_state["end_time"] = st.session_state["end_time"] + timedelta(days=1)
-            while st.session_state["end_time"] not in st.session_state["trade_calendar"]:
+            st.session_state["end_time"] = st.session_state["end_time"] + timedelta(
+                days=1
+            )
+            while (
+                st.session_state["end_time"] not in st.session_state["trade_calendar"]
+            ):
                 st.session_state["end_time"] = st.session_state["end_time"] + timedelta(
                     days=1
                 )
@@ -145,7 +157,9 @@ def annotation_platform_main():
         # 判断一个文件是否存在
         if os.path.exists(f"Data/LabelData/{st.session_state['code_name']}.tsv"):
             with open(
-                    f"Data/LabelData/{st.session_state['code_name']}.tsv", "r", encoding="utf8"
+                f"Data/LabelData/{st.session_state['code_name']}.tsv",
+                "r",
+                encoding="utf8",
             ) as f:
                 for i, line in enumerate(f.readlines()):
                     texts = line.strip().split("\t")
@@ -155,10 +169,12 @@ def annotation_platform_main():
         else:
             df = pd.DataFrame(
                 np.array(rank_texts_list),
-                columns=(["code", "start_time", "end_time", "trade_result", "account_status"]),
+                columns=(
+                    ["code", "start_time", "end_time", "trade_result", "account_status"]
+                ),
             )
             st.dataframe(df, use_container_width=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     annotation_platform_main()

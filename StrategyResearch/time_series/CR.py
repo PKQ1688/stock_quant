@@ -1,10 +1,11 @@
 """
- Author       : adolf
- Date         : 2022-12-18 22:55:21
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2023-01-09 22:12:50
- FilePath     : /stock_quant/StrategyResearch/time_series/CR.py
+Author       : adolf
+Date         : 2022-12-18 22:55:21
+LastEditors  : adolf adolf1321794021@gmail.com
+LastEditTime : 2023-01-09 22:12:50
+FilePath     : /stock_quant/StrategyResearch/time_series/CR.py
 """
+
 import warnings
 
 import pandas_ta as ta

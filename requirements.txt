@@ -1,8 +1,6 @@
 akshare
 baostock
 pandas
-pandas_ta
-finta
 tqdm
 pyecharts
 schedule
@@ -17,3 +15,5 @@ matplotlib
 fastapi
 uvicorn
 pymongo
+ruff
+ray

@@ -1,16 +1,17 @@
 # -*- coding: UTF-8 -*-
 """
-@Project ：stock_quant 
+@Project ：stock_quant
 @File    ：cal_base_indicators.py
 @Author  ：adolf
-@Date    ：2023/4/21 22:00 
+@Date    ：2023/4/21 22:00
 """
+
 import os
 
 import pandas as pd
 from finta import TA
 
-pd.set_option('display.max_columns', None)
+pd.set_option("display.max_columns", None)
 
 
 def cal_base_indicators(code_path):

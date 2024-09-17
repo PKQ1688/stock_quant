@@ -18,27 +18,37 @@
 - [x] 优化回测代码交易核心代码部分
 - [ ] 构建多机器分布式机器学习框架
 
+## 项目的安装
+
+### 1.1 安装项目的依赖
+
+```bash
+brew install ta-lib
+pip install poetry
+poetry install
+```
+
 ## 项目的基础设定
 
-### 1.1 用于控制台使用代理
+### 2.1 用于控制台使用代理
 
 ```bash
 export http_proxy="http://127.0.0.1:7890"
 export https_proxy="http://127.0.0.1:7890"
 ```
 
-### 1.2 设置python运行路径
+### 2.2 设置python运行路径
 
 ```bash
 export PYTHONPATH=$(pwd):$PYTHONPATH
 ```
 
-### 1.3 设置python不生成pyc(__pycache__)
+### 2.3 设置python不生成pyc(__pycache__)
 
 ```export PYTHONDONTWRITEBYTECODE=1
 ```
 
-### 1.4 国内配置github的真实ip
+### 2.4 国内配置github的真实ip
 
 - 通过网址```https://ipaddress.com/website/github.com```获取到github的真实ip
 - 通过修改```sudo vi /etc/hosts```文件，向其中添加```140.82.112.4 github.com```
@@ -48,7 +58,7 @@ export PYTHONPATH=$(pwd):$PYTHONPATH
 
 ## 获取需要使用到的基本数据
 
-### 2.1 获取基础股票数据
+### 3.1 获取基础股票数据
 
 &nbsp; 从东方财富官网获取个股的历史数据，包含前复权，后复权，未复权。
 
@@ -56,7 +66,7 @@ export PYTHONPATH=$(pwd):$PYTHONPATH
 python GetBaseData/get_dc_data.py
 ```
 
-### 2.2 获取基础的个股资金流量数据
+### 3.2 获取基础的个股资金流量数据
 
 &nbsp; 从东方财富官网获取不同股票的近100日的超大、大、中、小单数据变化。
 
@@ -64,7 +74,7 @@ python GetBaseData/get_dc_data.py
 python GetBaseData/get_cash_flow_data.py
 ```
 
-### 2.3 获取不同板块的历史数据
+### 3.3 获取不同板块的历史数据
 
 &nbsp; 从东方财富官网获取板块的历史数据。
 目前仅支持行业板块，暂不支持概念板块的数据
@@ -79,7 +89,7 @@ python GetBaseData/get_board_data.py
 streamlit run StrategyLib/ChanStrategy/automatic_drawing.py
 ```
 
-## Contributing
+### 4.0 Contributing
 
 1. Fork it (<https://github.com/PKQ1688/stock_quant/fork>)
 2. Study how it's implemented.

@@ -1,10 +1,11 @@
 """
- Author       : adolf
- Date         : 2022-12-01 23:29:44
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2023-02-06 00:22:54
- FilePath     : /stock_quant/BackTrader/core_trade_logic.py
+Author       : adolf
+Date         : 2022-12-01 23:29:44
+LastEditors  : adolf adolf1321794021@gmail.com
+LastEditTime : 2023-02-06 00:22:54
+FilePath     : /stock_quant/BackTrader/core_trade_logic.py
 """
+
 from dataclasses import dataclass, field
 from typing import List
 
@@ -16,7 +17,7 @@ from .position_analysis import BaseTransactionAnalysis
 
 
 @dataclass
-class   OneTransactionRecord:
+class OneTransactionRecord:
     pos_asset: str = field(default=None, metadata={"help": "持仓资产"})
     buy_date: str = field(default=None, metadata={"help": "买入时间"})
     buy_price: float = field(default=0.0, metadata={"help": "买入价格"})
@@ -29,7 +30,9 @@ class   OneTransactionRecord:
 
 @dataclass
 class TradeStructure:
-    trading_step: pd.Series = field(default=None, metadata={"help": "当前交易标的物的状态"})
+    trading_step: pd.Series = field(
+        default=None, metadata={"help": "当前交易标的物的状态"}
+    )
     one_transaction_record: OneTransactionRecord = field(
         default=None, metadata={"help": "当前交易记录"}
     )
@@ -40,6 +43,7 @@ class TradeStructure:
     # def __post_init__(self):
     #     self.one_transaction_record = OneTransactionRecord()
     #     self.history_trading_step = []
+
 
 class CoreTradeLogic:
     def __init__(self) -> None:
@@ -89,7 +93,6 @@ class CoreTradeLogic:
         # self.logger.debug(one_transaction_record)
 
         for index, trading_step in data.iterrows():
-
             if len(self.trade_state.history_trading_step) == 0:
                 self.trade_state.history_trading_step.append(trading_step)
                 continue
@@ -99,18 +102,18 @@ class CoreTradeLogic:
                 self.trade_state.one_transaction_record.buy_date is None
                 and self.buy_logic()
             ):
-                data.loc[index,"buy"]=1
+                data.loc[index, "buy"] = 1
                 one_transaction_record = self.buy(
                     index, trading_step, self.trade_state.one_transaction_record
                 )
                 continue
 
             if (
-                 self.trade_state.one_transaction_record.buy_date!=trading_step.date
+                self.trade_state.one_transaction_record.buy_date != trading_step.date
                 and self.trade_state.one_transaction_record.buy_date is not None
-                and                 self.sell_logic()
+                and self.sell_logic()
             ):
-                data.loc[index,"sell"]=1
+                data.loc[index, "sell"] = 1
                 one_transaction_record = self.sell(
                     index, trading_step, self.trade_state.one_transaction_record
                 )
@@ -134,9 +137,17 @@ class CoreTradeLogic:
         if len(transaction_record_df) == 0:
             return transaction_record_df
 
-        transaction_record_df["pct"] = round((
-            transaction_record_df["sell_price"] / transaction_record_df["buy_price"]
-        ) * (1 - self.trade_rate),4) - 1
+        transaction_record_df["pct"] = (
+            round(
+                (
+                    transaction_record_df["sell_price"]
+                    / transaction_record_df["buy_price"]
+                )
+                * (1 - self.trade_rate),
+                4,
+            )
+            - 1
+        )
 
         self.logger.info(transaction_record_df)
 

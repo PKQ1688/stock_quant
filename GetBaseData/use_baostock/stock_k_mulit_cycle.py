@@ -5,6 +5,7 @@
 @LastEditTime : 2023-06-10 16:18:11
 @FilePath     : /stock_quant/GetBaseData/use_baostock/stock_k_mulit_cycle.py
 """
+
 import os
 
 import baostock as bs

@@ -1,10 +1,11 @@
 """
- Author       : adolf
- Date         : 2022-12-11 16:42:58
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-12-13 23:58:01
- FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/Demark9.py
+Author       : adolf
+Date         : 2022-12-11 16:42:58
+LastEditors  : adolf adolf1321794021@gmail.com
+LastEditTime : 2022-12-13 23:58:01
+FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/Demark9.py
 """
+
 import pandas as pd
 import pandas_ta as ta
 
@@ -19,11 +20,13 @@ class Demark9Strategy(TradeStructure):
     def cal_technical_indicators(self, indicators_config):
         self.logger.debug(indicators_config)
 
-        return_demark = ta.td_seq(self.data.close,asint=True,show_all=False)
-        self.data = pd.concat([self.data, return_demark], axis=1)  
+        return_demark = ta.td_seq(self.data.close, asint=True, show_all=False)
+        self.data = pd.concat([self.data, return_demark], axis=1)
 
         self.logger.debug(self.data.head(30))
-        show_data = self.data[(self.data["TD_SEQ_UP"]==9) | (self.data["TD_SEQ_DN"]==9)]
+        show_data = self.data[
+            (self.data["TD_SEQ_UP"] == 9) | (self.data["TD_SEQ_DN"] == 9)
+        ]
         self.logger.info(show_data)
         exit()
         # self.logger.debug(len(self.data))
@@ -41,9 +44,10 @@ class Demark9Strategy(TradeStructure):
         else:
             return False
 
+
 if __name__ == "__main__":
     config = {
-        "RANDOM_SEED": 42,  
+        "RANDOM_SEED": 42,
         "LOG_LEVEL": "INFO",
         "CODE_NAME": "600570",
         # "CODE_NAME": "ALL_MARKET_100",

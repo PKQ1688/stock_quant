@@ -1,10 +1,11 @@
 """
-Description: 
+Description:
 Author: adolf
 Date: 2022-08-09 23:11:43
 LastEditTime: 2022-08-09 23:35:59
 LastEditors: adolf
 """
+
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression  # , Ridge, Lasso

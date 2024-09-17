@@ -6,23 +6,28 @@ from StrategyLib.OneAssetStrategy.macd_30m_dayMacd import MACD30DayMacdStrategy
 
 
 class MACD30CurMacdStrategy(TradeStructure):
-    """
-    """
+    """ """
 
     def load_dataset(self, data_path, start_stamp=None, end_stamp=None):
-        min30_data_path = data_path.replace("Data/RealData/hfq/", "Data/RealData/Baostock/30min/")
-        day_data_path = data_path.replace("Data/RealData/hfq/", "Data/RealData/Baostock/day/")
+        min30_data_path = data_path.replace(
+            "Data/RealData/hfq/", "Data/RealData/Baostock/30min/"
+        )
+        day_data_path = data_path.replace(
+            "Data/RealData/hfq/", "Data/RealData/Baostock/day/"
+        )
         self.data = pd.read_csv(min30_data_path)
-        self.data =self.data[(self.data["date"]>=start_stamp) & (self.data["date"]<=end_stamp)]
+        self.data = self.data[
+            (self.data["date"] >= start_stamp) & (self.data["date"] <= end_stamp)
+        ]
         self.data["buy"] = 0
         self.data["sell"] = 0
-        self.hist_ratio=0.005
+        self.hist_ratio = 0.005
         self.day_data = pd.read_csv(day_data_path)
-        self.day_data =self.day_data[(self.day_data["date"]>=start_stamp) & (self.day_data["date"]<=end_stamp)]
+        self.day_data = self.day_data[
+            (self.day_data["date"] >= start_stamp)
+            & (self.day_data["date"] <= end_stamp)
+        ]
         self.day_data["index"] = list(range(len(self.day_data)))
-
-
-
 
         # self.logger.debug((self.data.head()))
 
@@ -43,78 +48,146 @@ class MACD30CurMacdStrategy(TradeStructure):
 
         macd_df = TA.MACD(self.data)
         self.data["MACD"], self.data["SIGNAL"] = [macd_df["MACD"], macd_df["SIGNAL"]]
-        self.data["HISTOGRAM"] = self.data['MACD'] - self.data['SIGNAL']
+        self.data["HISTOGRAM"] = self.data["MACD"] - self.data["SIGNAL"]
         self.data["index"] = list(range(len(self.data)))
         self.data["buy"] = 0
         self.data["sell"] = 0
 
-
     def buy_logic(self):
-        #用30分钟的close价格作为日线价格重新计算macd
-        self.day_data.loc[self.day_data["date"] == self.trade_state.trading_step.date, 'close'] = self.trade_state.trading_step.close
+        # 用30分钟的close价格作为日线价格重新计算macd
+        self.day_data.loc[
+            self.day_data["date"] == self.trade_state.trading_step.date, "close"
+        ] = self.trade_state.trading_step.close
         macd_day = TA.MACD(self.day_data)
-        self.day_data["MACD_day"], self.day_data["SIGNAL_day"] = [macd_day["MACD"], macd_day["SIGNAL"]]
-        self.day_data["HISTOGRAM_day"] = self.day_data['MACD_day'] - self.day_data['SIGNAL_day']
-        self.day_data["HISTOGRAM_ratio"] = self.day_data['MACD_day'] / self.day_data['SIGNAL_day']
-        allow_diff = self.trade_state.trading_step.close*self.hist_ratio
-        cur_index=self.day_data.loc[self.day_data["date"] == self.trade_state.trading_step.date, 'index'].item()
-        new_data=self.day_data[['date','HISTOGRAM_day','MACD_day','SIGNAL_day']]
+        self.day_data["MACD_day"], self.day_data["SIGNAL_day"] = [
+            macd_day["MACD"],
+            macd_day["SIGNAL"],
+        ]
+        self.day_data["HISTOGRAM_day"] = (
+            self.day_data["MACD_day"] - self.day_data["SIGNAL_day"]
+        )
+        self.day_data["HISTOGRAM_ratio"] = (
+            self.day_data["MACD_day"] / self.day_data["SIGNAL_day"]
+        )
+        allow_diff = self.trade_state.trading_step.close * self.hist_ratio
+        cur_index = self.day_data.loc[
+            self.day_data["date"] == self.trade_state.trading_step.date, "index"
+        ].item()
+        new_data = self.day_data[["date", "HISTOGRAM_day", "MACD_day", "SIGNAL_day"]]
 
         # self.data=pd.merge(self.data,new_data,on="date")
 
-        increase_three_days=False
-        if cur_index>=2:
-            increase_three_days=self.day_data.loc[self.day_data["index"]==cur_index,'HISTOGRAM_day'].item()>self.day_data.loc[self.day_data["index"]==cur_index-1,'HISTOGRAM_day'].item()>self.day_data.loc[self.day_data["index"]==cur_index-2,'HISTOGRAM_day'].item()
-        if cur_index>4:
-            last_five_list=self.day_data.iloc[cur_index-4:cur_index]
+        increase_three_days = False
+        if cur_index >= 2:
+            increase_three_days = (
+                self.day_data.loc[
+                    self.day_data["index"] == cur_index, "HISTOGRAM_day"
+                ].item()
+                > self.day_data.loc[
+                    self.day_data["index"] == cur_index - 1, "HISTOGRAM_day"
+                ].item()
+                > self.day_data.loc[
+                    self.day_data["index"] == cur_index - 2, "HISTOGRAM_day"
+                ].item()
+            )
+        if cur_index > 4:
+            last_five_list = self.day_data.iloc[cur_index - 4 : cur_index]
         else:
-            last_five_list=self.day_data.iloc[:cur_index]
-        last_five_avg_val=last_five_list['HISTOGRAM_day'].mean()
-        HISTOGRAM_bigger_than = self.day_data.loc[self.day_data["date"]==self.trade_state.trading_step.date,'HISTOGRAM_day'].item()>last_five_avg_val
+            last_five_list = self.day_data.iloc[:cur_index]
+        last_five_avg_val = last_five_list["HISTOGRAM_day"].mean()
+        HISTOGRAM_bigger_than = (
+            self.day_data.loc[
+                self.day_data["date"] == self.trade_state.trading_step.date,
+                "HISTOGRAM_day",
+            ].item()
+            > last_five_avg_val
+        )
 
         # if HISTOGRAM_bigger_than  and increase_three_days \
         #         and self.trade_state.trading_step.HISTOGRAM>=-0:
         # if self.trade_state.trading_step.HISTOGRAM_day >= -0.1 :
         # if self.trade_state.trading_step._5_10 >= 0 and self.trade_state.trading_step.HISTOGRAM>0:
-        if  self.trade_state.trading_step.HISTOGRAM > 0 and HISTOGRAM_bigger_than and self.day_data.loc[self.day_data["index"] == cur_index, 'MACD_day'].item()>-30:
-        #     pdb.set_trace()
+        if (
+            self.trade_state.trading_step.HISTOGRAM > 0
+            and HISTOGRAM_bigger_than
+            and self.day_data.loc[
+                self.day_data["index"] == cur_index, "MACD_day"
+            ].item()
+            > -30
+        ):
+            #     pdb.set_trace()
             return True
         else:
             return False
 
     def sell_logic(self):
-        self.day_data.loc[self.day_data["date"]==self.trade_state.trading_step.date,'close']=self.trade_state.trading_step.close
+        self.day_data.loc[
+            self.day_data["date"] == self.trade_state.trading_step.date, "close"
+        ] = self.trade_state.trading_step.close
         macd_day = TA.MACD(self.day_data)
-        self.day_data["MACD_day"], self.day_data["SIGNAL_day"] = [macd_day["MACD"], macd_day["SIGNAL"]]
-        self.day_data["HISTOGRAM_day"] = self.day_data['MACD_day'] - self.day_data['SIGNAL_day']
-        self.day_data["HISTOGRAM_ratio"] = self.day_data['MACD_day'] / self.day_data['SIGNAL_day']
-        new_day_data=self.day_data[['date','HISTOGRAM_day','MACD_day','SIGNAL_day']]
+        self.day_data["MACD_day"], self.day_data["SIGNAL_day"] = [
+            macd_day["MACD"],
+            macd_day["SIGNAL"],
+        ]
+        self.day_data["HISTOGRAM_day"] = (
+            self.day_data["MACD_day"] - self.day_data["SIGNAL_day"]
+        )
+        self.day_data["HISTOGRAM_ratio"] = (
+            self.day_data["MACD_day"] / self.day_data["SIGNAL_day"]
+        )
+        new_day_data = self.day_data[
+            ["date", "HISTOGRAM_day", "MACD_day", "SIGNAL_day"]
+        ]
 
         # self.data=pd.merge(self.data,new_day_data,on="date")
 
         allow_diff = 0.1
-        cur_index=self.day_data.loc[self.day_data["date"] == self.trade_state.trading_step.date, 'index'].item()
-        if cur_index>3:
-            last_five_list=self.day_data.iloc[cur_index-3:cur_index]
+        cur_index = self.day_data.loc[
+            self.day_data["date"] == self.trade_state.trading_step.date, "index"
+        ].item()
+        if cur_index > 3:
+            last_five_list = self.day_data.iloc[cur_index - 3 : cur_index]
         else:
-            last_five_list=self.day_data.iloc[:cur_index]
-        last_five_avg_val=last_five_list['HISTOGRAM_day'].mean()
-        HISTOGRAM_smaller_than = self.day_data.loc[self.day_data["date"]==self.trade_state.trading_step.date,'HISTOGRAM_day'].item()<last_five_avg_val
-        cur_index = self.day_data.loc[self.day_data["date"] == self.trade_state.trading_step.date, 'index'].item()
-        decrease_three_days=False
+            last_five_list = self.day_data.iloc[:cur_index]
+        last_five_avg_val = last_five_list["HISTOGRAM_day"].mean()
+        HISTOGRAM_smaller_than = (
+            self.day_data.loc[
+                self.day_data["date"] == self.trade_state.trading_step.date,
+                "HISTOGRAM_day",
+            ].item()
+            < last_five_avg_val
+        )
+        cur_index = self.day_data.loc[
+            self.day_data["date"] == self.trade_state.trading_step.date, "index"
+        ].item()
+        decrease_three_days = False
         if cur_index >= 2:
-            decrease_three_days = self.day_data.loc[self.day_data["index"] == cur_index, 'HISTOGRAM_day'].item() < \
-                                  self.day_data.loc[self.day_data["index"] == cur_index - 1, 'HISTOGRAM_day'].item() < \
-                                  self.day_data.loc[self.day_data["index"] == cur_index - 2, 'HISTOGRAM_day'].item()
+            decrease_three_days = (
+                self.day_data.loc[
+                    self.day_data["index"] == cur_index, "HISTOGRAM_day"
+                ].item()
+                < self.day_data.loc[
+                    self.day_data["index"] == cur_index - 1, "HISTOGRAM_day"
+                ].item()
+                < self.day_data.loc[
+                    self.day_data["index"] == cur_index - 2, "HISTOGRAM_day"
+                ].item()
+            )
 
         # if  self.trade_state.trading_step.HISTOGRAM <= 0  and HISTOGRAM_smaller_than and decrease_three_days:
         # if self.trade_state.trading_step.HISTOGRAM_day <= 0.1:
 
         # if self.trade_state.trading_step._5_10 <= 0 and self.trade_state.trading_step.HISTOGRAM < 0:
-        HISTOGRAM_smaller_than=True
-        if  self.trade_state.trading_step.HISTOGRAM < 0 and self.day_data.loc[self.day_data["index"] == cur_index, 'MACD_day'].item()<20:
-        #     if self.trade_state.one_transaction_record.buy_date is not None:
-        #         self.data.loc[self.data["index"] == self.trade_state.trading_step["index"], "sell"] = 1
+        HISTOGRAM_smaller_than = True
+        if (
+            self.trade_state.trading_step.HISTOGRAM < 0
+            and self.day_data.loc[
+                self.day_data["index"] == cur_index, "MACD_day"
+            ].item()
+            < 20
+        ):
+            #     if self.trade_state.one_transaction_record.buy_date is not None:
+            #         self.data.loc[self.data["index"] == self.trade_state.trading_step["index"], "sell"] = 1
             return True
         else:
             return False
@@ -133,15 +206,22 @@ if __name__ == "__main__":
         # "SHOW_DATA_PATH": "",
         # "STRATEGY_PARAMS": {}
     }
-    print("======================macd + day 分割线=====================================分割线===============")
-    print("======================macd + day 分割线=====================================分割线===============")
+    print(
+        "======================macd + day 分割线=====================================分割线==============="
+    )
+    print(
+        "======================macd + day 分割线=====================================分割线==============="
+    )
 
     strategy = MACD30DayMacdStrategy(config)
     strategy.run()
 
-    print("======================30min macd+cur macd分割线=====================================分割线===============")
-    print("======================30min macd+cur macd分割线=====================================分割线===============")
+    print(
+        "======================30min macd+cur macd分割线=====================================分割线==============="
+    )
+    print(
+        "======================30min macd+cur macd分割线=====================================分割线==============="
+    )
 
     strategy = MACD30CurMacdStrategy(config)
     strategy.run()
-

@@ -5,10 +5,9 @@
 # @Author  : Adolf
 # @File    : handle_data_show.py
 import pandas as pd
-from finta import TA
+from loguru import logger
 
-# import pandas_ta as ta
-
+from Utils.TechnicalIndicators.basic_indicators import MACD
 
 # def get_show_data(_df):
 
@@ -62,37 +61,25 @@ def show_data_from_df(
     start_date: str = None,
     end_date: str = None,
 ):
-
     if isinstance(df_or_dfpath, pd.DataFrame):
-        try:
-            macd_df = df_or_dfpath[["MACD", "SIGNAL", "HISTOGRAM"]]
-        # print(macd_df)
-        except KeyError:
-            macd_df = TA.MACD(df_or_dfpath)
-            macd_df["HISTOGRAM"] = macd_df["MACD"] - macd_df["SIGNAL"]
+        pass
 
     elif isinstance(df_or_dfpath, str):
         df_or_dfpath = pd.read_csv(df_or_dfpath)
 
-        macd_df = TA.MACD(df_or_dfpath)
-        macd_df["HISTOGRAM"] = macd_df["MACD"] - macd_df["SIGNAL"]
-
-        if not use_all_data:
-            df_or_dfpath = df_or_dfpath[-300:]
-            macd_df = macd_df[-300:]
-
     else:
         raise ValueError("df_or_dfpath must be str or pd.DataFrame")
 
-    # df_or_dfpath = df_or_dfpath[-60:]
-    # macd_df = macd_df[-60:]
-
     if "MACD" not in df_or_dfpath.columns:
-        df_or_dfpath = pd.concat([df_or_dfpath, macd_df], axis=1)
-    
-    # df_or_dfpath.rename(columns={"HISTOGRAM_day", "HISTOGRAM"})
-    # import pdb; pdb.set_trace()
-    
+        # print(macd_df)
+        # breakpoint()
+        df_or_dfpath["DIFF"], df_or_dfpath["DEA"], df_or_dfpath["MACD"] = MACD(
+            df_or_dfpath["close"]
+        )
+
+    if not use_all_data:
+        df_or_dfpath = df_or_dfpath[-300:]
+
     if start_date is not None:
         df_or_dfpath = df_or_dfpath[df_or_dfpath["date"] >= start_date]
 
@@ -124,11 +111,11 @@ def show_data_from_df(
         "datas": datas,
         "times": df_or_dfpath["date"].tolist(),
         "vols": df_or_dfpath["volume"].tolist(),
-        "macds": df_or_dfpath["HISTOGRAM_day"].tolist(),
-        "difs": df_or_dfpath["MACD"].tolist(),
-        "deas": df_or_dfpath["SIGNAL"].tolist(),
+        "macds": df_or_dfpath["MACD"].tolist(),
+        "difs": df_or_dfpath["DIFF"].tolist(),
+        "deas": df_or_dfpath["DEA"].tolist(),
         "buy": buy_list,
-        "sell": sell_list
+        "sell": sell_list,
     }
 
 

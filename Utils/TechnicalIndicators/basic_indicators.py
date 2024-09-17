@@ -8,6 +8,7 @@
 """
 常用技术分析指标：MA, MACD
 """
+
 import numpy as np
 
 
@@ -23,9 +24,9 @@ def SMA(close: np.array, timeperiod=5):
     res = []
     for i in range(len(close)):
         if i < timeperiod:
-            seq = close[0: i + 1]
+            seq = close[0 : i + 1]
         else:
-            seq = close[i - timeperiod + 1: i + 1]
+            seq = close[i - timeperiod + 1 : i + 1]
         res.append(seq.mean())
     return np.array(res, dtype=np.double).round(4)
 
@@ -83,11 +84,11 @@ def KDJ(close: np.array, high: np.array, low: np.array):
     lv = []
     for i in range(len(close)):
         if i < n:
-            h_ = high[0: i + 1]
-            l_ = low[0: i + 1]
+            h_ = high[0 : i + 1]
+            l_ = low[0 : i + 1]
         else:
-            h_ = high[i - n + 1: i + 1]
-            l_ = low[i - n + 1: i + 1]
+            h_ = high[i - n + 1 : i + 1]
+            l_ = low[i - n + 1 : i + 1]
         hv.append(max(h_))
         lv.append(min(l_))
 
@@ -136,7 +137,12 @@ def RSQ(close) -> float:
 
     y_mean = np.mean(y)
     ss_tot = sum([(y1 - y_mean) * (y1 - y_mean) for y1 in y]) + 0.00001
-    ss_err = sum([(y[i] - slope * x[i] - y_intercept) * (y[i] - slope * x[i] - y_intercept) for i in range(len(x))])
+    ss_err = sum(
+        [
+            (y[i] - slope * x[i] - y_intercept) * (y[i] - slope * x[i] - y_intercept)
+            for i in range(len(x))
+        ]
+    )
     rsq = 1 - ss_err / ss_tot
 
     return round(rsq, 4)

@@ -1,10 +1,11 @@
 """
- Author       : adolf
- Date         : 2022-12-01 22:43:45
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-12-10 17:25:18
- FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/EMA_Ma_Crossover.py
+Author       : adolf
+Date         : 2022-12-01 22:43:45
+LastEditors  : adolf adolf1321794021@gmail.com
+LastEditTime : 2022-12-10 17:25:18
+FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/EMA_Ma_Crossover.py
 """
+
 import pandas_ta as ta
 
 from BackTrader.base_back_trader import TradeStructure
@@ -45,11 +46,21 @@ class MaEmaCrossover(TradeStructure):
             self.trade_state.trading_step.ma > self.trade_state.trading_step.ema
             and self.trade_state.trading_step.close > self.trade_state.trading_step.open
         ):
-            if self.trade_state.trading_step.rsi > 50 and self.trade_state.trading_step.rsi < 70:
-                if self.trade_state.trading_step.close > self.trade_state.trading_step.ma > self.trade_state.trading_step.ema:
-                    self.trade_state.one_transaction_record.stop_loss = self.trade_state.trading_step.ma
+            if (
+                self.trade_state.trading_step.rsi > 50
+                and self.trade_state.trading_step.rsi < 70
+            ):
+                if (
+                    self.trade_state.trading_step.close
+                    > self.trade_state.trading_step.ma
+                    > self.trade_state.trading_step.ema
+                ):
+                    self.trade_state.one_transaction_record.stop_loss = (
+                        self.trade_state.trading_step.ma
+                    )
                     self.trade_state.one_transaction_record.take_profit = (
-                        self.trade_state.trading_step.close - self.trade_state.one_transaction_record.stop_loss
+                        self.trade_state.trading_step.close
+                        - self.trade_state.one_transaction_record.stop_loss
                     ) * 1.5 + self.trade_state.trading_step.close
                     return True
         else:
@@ -65,8 +76,10 @@ class MaEmaCrossover(TradeStructure):
             return False
 
         if (
-            self.trade_state.trading_step.close > self.trade_state.one_transaction_record.take_profit
-            or self.trade_state.trading_step.close < self.trade_state.one_transaction_record.stop_loss
+            self.trade_state.trading_step.close
+            > self.trade_state.one_transaction_record.take_profit
+            or self.trade_state.trading_step.close
+            < self.trade_state.one_transaction_record.stop_loss
         ):
             return True
         else:

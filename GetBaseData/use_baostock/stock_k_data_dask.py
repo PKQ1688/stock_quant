@@ -11,7 +11,7 @@ import pandas as pd
 # 对文件夹进行清空处理
 # dir_path = Path("Data/RealData/hfq/")
 # if dir_path.exists() and dir_path.is_dir():
-    # shutil.rmtree(dir_path)
+# shutil.rmtree(dir_path)
 # dir_path.mkdir(parents=True, exist_ok=True)
 
 bs.login()

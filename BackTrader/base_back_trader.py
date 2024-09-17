@@ -15,12 +15,12 @@ from typing import Dict, Optional
 
 # from functools import reduce
 import pandas as pd
-import pandas_ta as ta
 
 from BackTrader.core_trade_logic import CoreTradeLogic
 from BackTrader.position_analysis import BaseTransactionAnalysis
 from GetBaseData.handle_data_show import show_data_from_df
 from Utils.ShowKline.base_kline import draw_chart
+from Utils.TechnicalIndicators.basic_indicators import MACD, SMA
 
 # from tqdm.auto import tqdm
 
@@ -55,10 +55,10 @@ class TradeStructure(CoreTradeLogic):
 
         self.data = None
         self.transaction_analysis = BaseTransactionAnalysis(logger=self.logger)
-        
+
         self.stock_result = None
         self.pl_result = None
-        
+
         # 设置随机种子，保证实验结果的可复现性
         random.seed(self.config.RANDOM_SEED)
 
@@ -77,7 +77,19 @@ class TradeStructure(CoreTradeLogic):
 
         # self.logger.debug(df)
         self.data = df
-        self.data = self.data[["date", "open", "high", "low", "close", "volume","turn", "market_cap","code"]]
+        self.data = self.data[
+            [
+                "date",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "turn",
+                "market_cap",
+                "code",
+            ]
+        ]
 
     # 计算基础的交易指标
     def cal_base_technical_indicators(
@@ -85,15 +97,15 @@ class TradeStructure(CoreTradeLogic):
     ):
         if sma_list is not None:
             for sma_parm in sma_list:
-                self.data["sma" + str(sma_parm)] = ta.sma(
-                    self.data["close"], length=sma_parm
+                self.data["sma" + str(sma_parm)] = SMA(
+                    self.data["close"], timeperiod=sma_parm
                 )
         if macd_parm is not None:
-            macd_df = ta.macd(
+            macd_df = MACD(
                 close=self.data["close"],
-                fast=macd_parm[0],
-                slow=macd_parm[1],
-                signal=macd_parm[2],
+                fastperiod=macd_parm[0],
+                slowperiod=macd_parm[1],
+                signalperiod=macd_parm[2],
             )
 
             self.data["macd"], self.data["histogram"], self.data["signal"] = [
@@ -112,13 +124,16 @@ class TradeStructure(CoreTradeLogic):
     # def trading_algorithm(self):
     #     raise NotImplementedError
 
-
     # 需要保证show_data里面的核心数据没有空值，不然会造成数据无法显示
     # @staticmethod
     def show_one_stock(self, show_data):
         if not os.path.exists("ShowHtml"):
             os.mkdir("ShowHtml")
-        show_data_path = self.config.SHOW_DATA_PATH if self.config.SHOW_DATA_PATH else "ShowHtml/demo.html"
+        show_data_path = (
+            self.config.SHOW_DATA_PATH
+            if self.config.SHOW_DATA_PATH
+            else "ShowHtml/demo.html"
+        )
         show_data = show_data_from_df(df_or_dfpath=show_data)
         # import pdb;pdb.set_trace()
         draw_chart(input_data=show_data, show_html_path=show_data_path)
@@ -137,7 +152,9 @@ class TradeStructure(CoreTradeLogic):
         )
 
         self.cal_technical_indicators(indicators_config)
-        self.data.dropna(axis=0,how='any',inplace=True) #drop all rows that have any NaN values
+        self.data.dropna(
+            axis=0, how="any", inplace=True
+        )  # drop all rows that have any NaN values
         self.data.reset_index(drop=True, inplace=True)
 
         # if not self.cal_technical_indicators(indicators_config):
@@ -167,7 +184,7 @@ class TradeStructure(CoreTradeLogic):
         # self.logger.debug("对策略结果进行分析:\n{}".format(strategy_analysis))
 
         self.pl_result = strategy_analysis
-        
+
         pl_ration = strategy_analysis.loc["策略的盈亏比", "result"]
         # self.logger.info(pl_ration)
 
@@ -264,12 +281,14 @@ class TradeStructure(CoreTradeLogic):
             pl_ration = self.run_one_stock()
 
         if pl_ration is not None:
-            self.logger.success("策略交易一次的收益的数学期望为：{:.2f}%".format(pl_ration * 100))
+            self.logger.success(
+                "策略交易一次的收益的数学期望为：{:.2f}%".format(pl_ration * 100)
+            )
 
         # if len(pl_ration_list) > 0:
-            # return pl_ration_list[0]
+        # return pl_ration_list[0]
         # else:
-            # return None
+        # return None
         # self.run_one_stock()
 
 

@@ -1,10 +1,11 @@
 """
- Author       : adolf
- Date         : 2022-11-23 21:58:43
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2022-11-23 22:16:03
- FilePath     : /stock_quant/StrategyResearch/data_research/data_pipeline_dask.py
+Author       : adolf
+Date         : 2022-11-23 21:58:43
+LastEditors  : adolf adolf1321794021@gmail.com
+LastEditTime : 2022-11-23 22:16:03
+FilePath     : /stock_quant/StrategyResearch/data_research/data_pipeline_dask.py
 """
+
 import akshare as ak
 
 from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
@@ -30,5 +31,4 @@ def base_data_pipeline(code):
 
 
 if __name__ == "__main__":
-
     base_data_pipeline("000001")

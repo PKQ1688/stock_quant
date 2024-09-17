@@ -4,8 +4,9 @@
 @LastEditors  : adolf
 @LastEditTime : 2023-06-10 16:04:20
 @FilePath     : /stock_quant/web_ui/time_sharing.py
-@Description  : 
+@Description  :
 """
+
 import baostock as bs
 import pandas as pd
 import streamlit as st
@@ -28,6 +29,7 @@ def get_index_data(code="sh.000001"):
         data_list.append(rs.get_row_data())
     result_df = pd.DataFrame(data_list, columns=rs.fields)
     return result_df
+
 
 if "df_sh" not in st.session_state:
     bs.login()

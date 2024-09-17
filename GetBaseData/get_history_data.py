@@ -15,7 +15,7 @@ from tqdm import tqdm
 # import akshare as ak
 
 pd.set_option("expand_frame_repr", False)
-pd.set_option('display.max_rows', 1000)
+pd.set_option("display.max_rows", 1000)
 
 # 历史行情数据
 # stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol="000001",
@@ -65,16 +65,20 @@ stock_df = bs.query_all_stock(date).get_data()
 st_time = time.time()
 
 for index, row in tqdm(stock_df.iterrows(), total=stock_df.shape[0]):
-    if row['tradeStatus'] == '0' or "bj" in row["code"]:
+    if row["tradeStatus"] == "0" or "bj" in row["code"]:
         continue
-    code = row['code']
-    rs = bs.query_history_k_data_plus(code,
-                                      "date,code,open,high,low,close,volume,amount,turn,peTTM,pctChg,tradestatus,isST",
-                                      start_date="1990-12-19", end_date=date,
-                                      frequency="d", adjustflag="1")
+    code = row["code"]
+    rs = bs.query_history_k_data_plus(
+        code,
+        "date,code,open,high,low,close,volume,amount,turn,peTTM,pctChg,tradestatus,isST",
+        start_date="1990-12-19",
+        end_date=date,
+        frequency="d",
+        adjustflag="1",
+    )
     # 打印结果集
     data_list = []
-    while (rs.error_code == '0') & rs.next():
+    while (rs.error_code == "0") & rs.next():
         # 获取一条记录，将记录合并在一起
         data_list.append(rs.get_row_data())
     result = pd.DataFrame(data_list, columns=rs.fields)

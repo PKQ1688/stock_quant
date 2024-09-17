@@ -5,6 +5,7 @@ https://gallery.echartsjs.com/editor.html?c=xByOFPcjBe
 @Author: sunhailin-Leo
 @Time: 2019年7月14日
 """
+
 from typing import List, Sequence, Union
 
 from pyecharts import options as opts

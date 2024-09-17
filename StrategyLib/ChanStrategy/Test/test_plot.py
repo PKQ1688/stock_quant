@@ -16,12 +16,15 @@ from StrategyLib.ChanStrategy.BasicChan.basic_tools import CZSC, RawBar, get_zs_
 
 
 def test_heat_map():
-    data = [{"x": "{}hour".format(i), "y": "{}day".format(j), "heat": random.randint(0, 50)}
-            for i in range(24) for j in range(7)]
+    data = [
+        {"x": "{}hour".format(i), "y": "{}day".format(j), "heat": random.randint(0, 50)}
+        for i in range(24)
+        for j in range(7)
+    ]
     x_label = ["{}hour".format(i) for i in range(24)]
     y_label = ["{}day".format(i) for i in range(7)]
     hm = chan_plot.heat_map(data, x_label=x_label, y_label=y_label)
-    file_html = 'ShowHtml/render.html'
+    file_html = "ShowHtml/render.html"
     hm.render(file_html)
     assert os.path.exists(file_html)
     os.remove(file_html)
@@ -32,6 +35,7 @@ test_heat_map()
 
 # cur_path = os.path.split(os.path.realpath(__file__))[0]
 
+
 def read_read_daily():
     file_kline = "Data/RealData/origin/000538.csv"
     kline = pd.read_csv(file_kline, encoding="utf-8")
@@ -39,10 +43,21 @@ def read_read_daily():
     kline.reset_index(drop=True, inplace=True)
     # print(kline)
 
-    bars = [RawBar(symbol=row['name'], id=i, freq=Freq.D, open=row['open'], dt=row['date'],
-                   close=row['close'], high=row['high'], low=row['low'], vol=row['volume'],
-                   amount=row['amount'])
-            for i, row in kline.iterrows()]
+    bars = [
+        RawBar(
+            symbol=row["name"],
+            id=i,
+            freq=Freq.D,
+            open=row["open"],
+            dt=row["date"],
+            close=row["close"],
+            high=row["high"],
+            low=row["low"],
+            vol=row["volume"],
+            amount=row["amount"],
+        )
+        for i, row in kline.iterrows()
+    ]
 
     # print(bars[0])
     return bars
@@ -53,8 +68,8 @@ def test_kline_pro():
     bars = read_read_daily()
     ka = CZSC(bars)
     # ka.open_in_browser()
-    file_html = 'ShowHtml/czsc_render.html'
-    chart = ka.to_echarts(width="1200px", height='600px')
+    file_html = "ShowHtml/czsc_render.html"
+    chart = ka.to_echarts(width="1200px", height="600px")
     chart.render(file_html)
     assert os.path.exists(file_html)
     # os.remove(file_html)

@@ -9,9 +9,6 @@ from typing import List, Union
 from pyecharts import options as opts
 from pyecharts.charts import Bar, Grid, Kline, Line
 from pyecharts.commons.utils import JsCode
-
-# from snapshot_pyppeteer import snapshot
-# from pyecharts.render import make_snapshot
 from pyecharts.options import InitOpts
 
 
@@ -33,16 +30,18 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     kline = Kline()
     points = []
     colors_div = {"buy": "red", "sell": "green"}
-    for lable in ["buy", "sell"]:
-        for i, val in enumerate(input_data[lable]):
+    for label in ["buy", "sell"]:
+        for i, val in enumerate(input_data[label]):
             if val == 1:
                 coord = [input_data["times"][i], input_data["datas"][i][1]]
-                point = opts.MarkPointItem(coord=coord, name=lable,itemstyle_opts={"color":colors_div[lable]})
+                point = opts.MarkPointItem(
+                    coord=coord, name=label, itemstyle_opts={"color": colors_div[label]}
+                )
                 points.append(point)
 
     # points.extend([opts.MarkPointItem(type_="max", name="最大值"),
     #                opts.MarkPointItem(type_="min", name="最小值")])
-    
+
     # import pdb;pdb.set_trace()
     kline.add_xaxis(xaxis_data=input_data["times"])
     kline.add_yaxis(
@@ -131,7 +130,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     # bar_vol = Bar()
     # bar_vol.add_xaxis(xaxis_data=input_data["times"])
     # bar_vol.add_yaxis(
-    #     series_name="Volumn",
+    #     series_name="Volume",
     #     y_axis=input_data["vols"],
     #     xaxis_index=1,
     #     yaxis_index=1,
@@ -151,7 +150,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     #     #     }
     #     #     """)
     #     # )
-    #     # 改进后在 grid 中 add_js_funcs 后变成如下
+    #     # 改进后在 grid 中 add_js_func 后变成如下
     #     itemstyle_opts=opts.ItemStyleOpts(
     #         color=JsCode(
     #             """
@@ -291,7 +290,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
         grid_opts=opts.GridOpts(pos_left="3%", pos_right="1%", height="60%"),
     )
 
-    # # Volumn 柱状图
+    # # Volume 柱状图
     grid_chart.add(
         bar_vol,
         # grid_opts=grid1_opts
@@ -324,4 +323,4 @@ if __name__ == "__main__":
     from GetBaseData.handle_data_show import show_data_from_df
 
     show_data = show_data_from_df("Data/RealData/hfq/600570.csv")
-    draw_chart(show_data, show_html_path="ShowHtml/CandleChartv2.html")
+    draw_chart(show_data, show_html_path="ShowHtml/CandleChartV2.html")

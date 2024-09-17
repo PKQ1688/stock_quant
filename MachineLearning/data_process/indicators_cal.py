@@ -1,18 +1,19 @@
 """
- Author       : adolf
- Date         : 2023-01-09 22:34:00
- LastEditors  : adolf adolf1321794021@gmail.com
- LastEditTime : 2023-01-14 19:32:41
- FilePath     : /stock_quant/MachineLearning/data_process/indicators_cal.py
+Author       : adolf
+Date         : 2023-01-09 22:34:00
+LastEditors  : adolf adolf1321794021@gmail.com
+LastEditTime : 2023-01-14 19:32:41
+FilePath     : /stock_quant/MachineLearning/data_process/indicators_cal.py
 """
+
 import warnings
 
 import pandas as pd
 import pandas_ta as ta
 
 warnings.filterwarnings("ignore", category=FutureWarning)
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', None)
+pd.set_option("display.max_columns", None)
+pd.set_option("display.max_rows", None)
 
 
 def cal_indicators(filename):
@@ -40,9 +41,7 @@ def cal_indicators(filename):
         # )
 
         # 计算atr的值
-        data["atr"] = ta.atr(
-            data.high, data.low, data.close, length=14
-        )
+        data["atr"] = ta.atr(data.high, data.low, data.close, length=14)
 
         data["pct"] = data.pctChg.shift(-1)
         print(data.tail(30))
@@ -64,13 +63,13 @@ def cal_indicators(filename):
         return None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # import dask
     import pathlib
 
     from dask.distributed import Client, LocalCluster, progress
 
-    client = Client(LocalCluster(n_workers=4, threads_per_worker=1, memory_limit='2GB'))
+    client = Client(LocalCluster(n_workers=4, threads_per_worker=1, memory_limit="2GB"))
 
     futures = []
 

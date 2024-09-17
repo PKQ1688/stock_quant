@@ -26,12 +26,24 @@ def remove_include(k1: NewBar, k2: NewBar, k3: RawBar):
     elif k1.high > k2.high:
         direction = Direction.Down
     else:
-        k4 = NewBar(symbol=k3.symbol, id=k3.id, freq=k3.freq, dt=k3.dt, open=k3.open,
-                    close=k3.close, high=k3.high, low=k3.low, vol=k3.vol, elements=[k3])
+        k4 = NewBar(
+            symbol=k3.symbol,
+            id=k3.id,
+            freq=k3.freq,
+            dt=k3.dt,
+            open=k3.open,
+            close=k3.close,
+            high=k3.high,
+            low=k3.low,
+            vol=k3.vol,
+            elements=[k3],
+        )
         return False, k4
 
     # 判断 k2 和 k3 之间是否存在包含关系，有则处理
-    if (k2.high <= k3.high and k2.low >= k3.low) or (k2.high >= k3.high and k2.low <= k3.low):
+    if (k2.high <= k3.high and k2.low >= k3.low) or (
+        k2.high >= k3.high and k2.low <= k3.low
+    ):
         if direction == Direction.Up:
             high = max(k2.high, k3.high)
             low = max(k2.low, k3.low)
@@ -59,13 +71,33 @@ def remove_include(k1: NewBar, k2: NewBar, k3: RawBar):
         # elements = [x for x in k2.elements[-100:] if x.dt != k3.dt] + [k3]
         elements = [x for x in k2.elements if x.dt != k3.dt] + [k3]
 
-        k4 = NewBar(symbol=k3.symbol, id=k2.id, freq=k2.freq, dt=dt, open=_open,
-                    close=_close, high=high, low=low, vol=vol, elements=elements)
+        k4 = NewBar(
+            symbol=k3.symbol,
+            id=k2.id,
+            freq=k2.freq,
+            dt=dt,
+            open=_open,
+            close=_close,
+            high=high,
+            low=low,
+            vol=vol,
+            elements=elements,
+        )
 
         return True, k4
     else:
-        k4 = NewBar(symbol=k3.symbol, id=k3.id, freq=k3.freq, dt=k3.dt, open=k3.open,
-                    close=k3.close, high=k3.high, low=k3.low, vol=k3.vol, elements=[k3])
+        k4 = NewBar(
+            symbol=k3.symbol,
+            id=k3.id,
+            freq=k3.freq,
+            dt=k3.dt,
+            open=k3.open,
+            close=k3.close,
+            high=k3.high,
+            low=k3.low,
+            vol=k3.vol,
+            elements=[k3],
+        )
         return False, k4
 
 
@@ -74,13 +106,29 @@ def check_fx(k1: NewBar, k2: NewBar, k3: NewBar):
     fx = None
     if k1.high < k2.high > k3.high and k1.low < k2.low > k3.low:
         power = "强" if k3.low < k1.low else "弱"
-        fx = FX(symbol=k2.symbol, dt=k2.dt, mark=Mark.G, high=k2.high, low=min(k1.low, k3.low),
-                fx=k2.high, elements=[k1, k2, k3], power=power)
+        fx = FX(
+            symbol=k2.symbol,
+            dt=k2.dt,
+            mark=Mark.G,
+            high=k2.high,
+            low=min(k1.low, k3.low),
+            fx=k2.high,
+            elements=[k1, k2, k3],
+            power=power,
+        )
 
     if k1.low > k2.low < k3.low and k1.high > k2.high < k3.high:
         power = "强" if k3.high > k1.high else "弱"
-        fx = FX(symbol=k2.symbol, dt=k2.dt, mark=Mark.D, low=k2.low, high=max(k1.high, k3.high),
-                fx=k2.low, elements=[k1, k2, k3], power=power)
+        fx = FX(
+            symbol=k2.symbol,
+            dt=k2.dt,
+            mark=Mark.D,
+            low=k2.low,
+            high=max(k1.high, k3.high),
+            fx=k2.low,
+            elements=[k1, k2, k3],
+            power=power,
+        )
 
     return fx
 
@@ -122,7 +170,9 @@ def check_bi(bars: List[NewBar], bi_min_len: int = 7):
     try:
         if fxs[0].mark == Mark.D:
             direction = Direction.Up
-            fxs_b = [x for x in fxs if x.mark == Mark.G and x.dt > fx_a.dt and x.fx > fx_a.fx]
+            fxs_b = [
+                x for x in fxs if x.mark == Mark.G and x.dt > fx_a.dt and x.fx > fx_a.fx
+            ]
             if not fxs_b:
                 return None, bars
 
@@ -133,7 +183,9 @@ def check_bi(bars: List[NewBar], bi_min_len: int = 7):
 
         elif fxs[0].mark == Mark.G:
             direction = Direction.Down
-            fxs_b = [x for x in fxs if x.mark == Mark.D and x.dt > fx_a.dt and x.fx < fx_a.fx]
+            fxs_b = [
+                x for x in fxs if x.mark == Mark.D and x.dt > fx_a.dt and x.fx < fx_a.fx
+            ]
             if not fxs_b:
                 return None, bars
 
@@ -155,11 +207,20 @@ def check_bi(bars: List[NewBar], bi_min_len: int = 7):
     bars_b = [x for x in bars if x.dt >= fx_b.elements[0].dt]
 
     # 判断fx_a和fx_b价格区间是否存在包含关系
-    ab_include = (fx_a.high > fx_b.high and fx_a.low < fx_b.low) or (fx_a.high < fx_b.high and fx_a.low > fx_b.low)
+    ab_include = (fx_a.high > fx_b.high and fx_a.low < fx_b.low) or (
+        fx_a.high < fx_b.high and fx_a.low > fx_b.low
+    )
 
     if len(bars_a) >= bi_min_len and not ab_include:
         fxs_ = [x for x in fxs if fx_a.elements[0].dt <= x.dt <= fx_b.elements[2].dt]
-        bi = BI(symbol=fx_a.symbol, fx_a=fx_a, fx_b=fx_b, fxs=fxs_, direction=direction, bars=bars_a)
+        bi = BI(
+            symbol=fx_a.symbol,
+            fx_a=fx_a,
+            fx_b=fx_b,
+            fxs=fxs_,
+            direction=direction,
+            bars=bars_a,
+        )
         return bi, bars_b
     else:
         return None, bars
@@ -185,8 +246,9 @@ def get_zs_seq(bis: List[BI]) -> List[ZS]:
             zs.bis.append(bi)
             zs_list[-1] = zs
         else:
-            if (bi.direction == Direction.Up and bi.high < zs.zd) \
-                    or (bi.direction == Direction.Down and bi.low > zs.zg):
+            if (bi.direction == Direction.Up and bi.high < zs.zd) or (
+                bi.direction == Direction.Down and bi.low > zs.zg
+            ):
                 zs_list.append(ZS(symbol=bi.symbol, bis=[bi]))
             else:
                 zs.bis.append(bi)
@@ -195,13 +257,15 @@ def get_zs_seq(bis: List[BI]) -> List[ZS]:
 
 
 class CZSC:
-    def __init__(self,
-                 bars: List[RawBar],
-                 # max_bi_count: int = 50,
-                 bi_min_len: int = 5,
-                 # get_signals: Callable = None,
-                 # signals_n: int = 0,
-                 verbose=False):
+    def __init__(
+        self,
+        bars: List[RawBar],
+        # max_bi_count: int = 50,
+        bi_min_len: int = 5,
+        # get_signals: Callable = None,
+        # signals_n: int = 0,
+        verbose=False,
+    ):
         """
         :param bars: K线数据
         # :param get_signals: 自定义的信号计算函数
@@ -247,8 +311,9 @@ class CZSC:
             fx_a = fxs[0]
             fxs_a = [x for x in fxs if x.mark == fx_a.mark]
             for fx in fxs_a:
-                if (fx_a.mark == Mark.D and fx.low <= fx_a.low) \
-                        or (fx_a.mark == Mark.G and fx.high >= fx_a.high):
+                if (fx_a.mark == Mark.D and fx.low <= fx_a.low) or (
+                    fx_a.mark == Mark.G and fx.high >= fx_a.high
+                ):
                     fx_a = fx
             bars_ubi = [x for x in bars_ubi if x.dt >= fx_a.elements[0].dt]
 
@@ -265,18 +330,24 @@ class CZSC:
         max_high_ubi = max([x.high for x in bars_ubi[2:]])
 
         if last_bi.direction == Direction.Up and max_high_ubi > last_bi.high:
-            bars_ubi_a = last_bi.bars + [x for x in bars_ubi if x.dt > last_bi.bars[-1].dt]
+            bars_ubi_a = last_bi.bars + [
+                x for x in bars_ubi if x.dt > last_bi.bars[-1].dt
+            ]
             self.bi_list.pop(-1)
 
         elif last_bi.direction == Direction.Down and min_low_ubi < last_bi.low:
-            bars_ubi_a = last_bi.bars + [x for x in bars_ubi if x.dt > last_bi.bars[-1].dt]
+            bars_ubi_a = last_bi.bars + [
+                x for x in bars_ubi if x.dt > last_bi.bars[-1].dt
+            ]
             self.bi_list.pop(-1)
 
         else:
             bars_ubi_a = bars_ubi
 
         if self.verbose and len(bars_ubi_a) > 300:
-            print(f"{self.symbol} - {self.freq} - {bars_ubi_a[-1].dt} 未完成笔延伸超长，延伸数量: {len(bars_ubi_a)}")
+            print(
+                f"{self.symbol} - {self.freq} - {bars_ubi_a[-1].dt} 未完成笔延伸超长，延伸数量: {len(bars_ubi_a)}"
+            )
 
         bi, bars_ubi_ = check_bi(bars_ubi_a, self.bi_min_len)
         self.bars_ubi = bars_ubi_
@@ -306,9 +377,20 @@ class CZSC:
         bars_ubi = self.bars_ubi  # 未完成笔的无包含K线序列
         for bar in last_bars:
             if len(bars_ubi) < 2:
-                bars_ubi.append(NewBar(symbol=bar.symbol, id=bar.id, freq=bar.freq, dt=bar.dt,
-                                       open=bar.open, close=bar.close,
-                                       high=bar.high, low=bar.low, vol=bar.vol, elements=[bar]))
+                bars_ubi.append(
+                    NewBar(
+                        symbol=bar.symbol,
+                        id=bar.id,
+                        freq=bar.freq,
+                        dt=bar.dt,
+                        open=bar.open,
+                        close=bar.close,
+                        high=bar.high,
+                        low=bar.low,
+                        vol=bar.vol,
+                        elements=[bar],
+                    )
+                )
             else:
                 k1, k2 = bars_ubi[-2:]
                 has_include, k3 = remove_include(k1, k2, bar)
@@ -321,7 +403,7 @@ class CZSC:
         # 更新笔
         self.update_bi()
         if self.max_bi_count is not None:
-            self.bi_list = self.bi_list[-self.max_bi_count:]
+            self.bi_list = self.bi_list[-self.max_bi_count :]
         if self.bi_list:
             sdt = self.bi_list[0].fx_a.elements[0].dt
             s_index = 0
@@ -340,23 +422,30 @@ class CZSC:
         # else:
         #     self.signals = OrderedDict()
 
-    def to_echarts(self, width: str = "1400px", height: str = '580px'):
+    def to_echarts(self, width: str = "1400px", height: str = "580px"):
         kline = [x.__dict__ for x in self.bars_raw]
         if len(self.bi_list) > 0:
-            bi = [{'dt': x.fx_a.dt, "bi": x.fx_a.fx} for x in self.bi_list] + \
-                 [{'dt': self.bi_list[-1].fx_b.dt, "bi": self.bi_list[-1].fx_b.fx}]
+            bi = [{"dt": x.fx_a.dt, "bi": x.fx_a.fx} for x in self.bi_list] + [
+                {"dt": self.bi_list[-1].fx_b.dt, "bi": self.bi_list[-1].fx_b.fx}
+            ]
             fx = []
             for bi_ in self.bi_list:
-                fx.extend([{'dt': x.dt, "fx": x.fx} for x in bi_.fxs[1:]])
+                fx.extend([{"dt": x.dt, "fx": x.fx} for x in bi_.fxs[1:]])
         else:
             bi = None
             fx = None
-        chart = kline_pro(kline, bi=bi, fx=fx, width=width, height=height,
-                          title="{}-{}".format(self.symbol, self.freq),
-                          t_seq=None)
+        chart = kline_pro(
+            kline,
+            bi=bi,
+            fx=fx,
+            width=width,
+            height=height,
+            title="{}-{}".format(self.symbol, self.freq),
+            t_seq=None,
+        )
         return chart
 
-    def open_in_browser(self, width: str = "1400px", height: str = '580px'):
+    def open_in_browser(self, width: str = "1400px", height: str = "580px"):
         """直接在浏览器中打开分析结果
         :param width: 图表宽度
         :param height: 图表高度

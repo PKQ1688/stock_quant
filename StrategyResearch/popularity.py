@@ -1,17 +1,18 @@
-'''
-Description:  
+"""
+Description:
 Author: adolf
 Date: 2022-07-26 23:45:09
 LastEditTime: 2022-08-01 20:36:30
 LastEditors: adolf
-'''
+"""
+
 from datetime import date
 
 import akshare as ak
 import pandas as pd
 
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', 200)
+pd.set_option("display.max_columns", None)
+pd.set_option("display.max_rows", 200)
 
 today = date.today()
 d1 = today.strftime("%Y%m%d")
@@ -33,7 +34,7 @@ print(stock_hot_tgb_df)
 
 # 雪球讨论热度榜
 new_hot = ak.stock_hot_tweet_xq(symbol="本周新增")
-new_hot['new_hot_rank'] = new_hot.index
+new_hot["new_hot_rank"] = new_hot.index
 print(new_hot[:100])
 
 # old_hot = ak.stock_hot_tweet_xq(symbol="最热门")
@@ -45,4 +46,3 @@ print(new_hot[:100])
 # # hot_df.sort_values(by='diff', ascending=False, inplace=True)
 # hot_df = hot_df.loc[hot_df.new_hot_rank < 2000]
 # print(hot_df[:100])
-
