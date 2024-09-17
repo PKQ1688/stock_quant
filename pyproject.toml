@@ -28,6 +28,9 @@ ruff = "^0.6.5"
 ray = "^2.35.0"
 
 
+[tool.poetry.group.dev.dependencies]
+lightgbm = "^4.5.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

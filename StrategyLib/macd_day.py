@@ -57,8 +57,8 @@ if __name__ == "__main__":
         "CODE_NAME": "600570",
         # "CODE_NAME": "ALL_MARKET_100",
         # "CODE_NAME": ["600570", "002610", "300663"],
-        # "START_STAMP": "2020-01-01",
-        # "END_STAMP": "2020-12-31",
+        "START_STAMP": "2020-01-01",
+        "END_STAMP": "2020-12-31",
         # "SHOW_DATA_PATH": "",
         # "STRATEGY_PARAMS": {}
     }
