@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # @Time    : 2022/12/17 15:09
 # @Author  : Adolf
 # @Site    :
@@ -133,11 +132,7 @@ def stock_board_industry_hist_em(
     :return: 历史行情
     :rtype: pandas.DataFrame
     """
-    period_map = {
-        "日k": "101",
-        "周k": "102",
-        "月k": "103",
-    }
+    period_map = {"日k": "101", "周k": "102", "月k": "103"}
     stock_board_concept_em_map = stock_board_industry_name_em()
     stock_board_code = stock_board_concept_em_map[
         stock_board_concept_em_map["板块名称"] == symbol

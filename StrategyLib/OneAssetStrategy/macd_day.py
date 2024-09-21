@@ -57,8 +57,7 @@ class MACDdayStrategy(TradeStructure):
             # if self.trade_state.trading_step._5_10 >= 0 and self.trade_state.trading_step.HISTOGRAM>0:
             # if  self.trade_state.trading_step.HISTOGRAM > 0:
             return True
-        else:
-            return False
+        return False
 
     def sell_logic(self):
         # if self.trade_state.trading_step.HISTOGRAM_day <= 0.1 and self.trade_state.trading_step.HISTOGRAM < 0:
@@ -68,8 +67,7 @@ class MACDdayStrategy(TradeStructure):
             # if  self.trade_state.trading_step.HISTOGRAM < 0:
 
             return True
-        else:
-            return False
+        return False
 
 
 if __name__ == "__main__":

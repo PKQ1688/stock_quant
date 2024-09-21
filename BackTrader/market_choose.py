@@ -24,7 +24,7 @@ class MarketChooseConfig:
     LOG_LEVEL: str = field(
         default="INFO",
         metadata={
-            "help": "日志级别,默认INFO,可选DEBUG、INFO、WARNING、ERROR、CRITICAL",
+            "help": "日志级别,默认INFO,可选DEBUG、INFO、WARNING、ERROR、CRITICAL"
         },
     )
     DATA_PATH: str = field(
@@ -71,8 +71,7 @@ class MarketChoose(CoreTradeLogic):
     def sell_logic(self, trading_step, one_transaction_record, *args, **kwargs):
         if trading_step["choose_assert"] != one_transaction_record.pos_asset:
             return True
-        else:
-            return False
+        return False
 
     def buy(self, index, trading_step, one_transaction_record):
         self.logger.trace(f"buy {index} {trading_step} {one_transaction_record}")

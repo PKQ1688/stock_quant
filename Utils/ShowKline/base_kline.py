@@ -4,7 +4,6 @@
 # @Date    : 2022/1/6 16:55
 # @Author  : Adolf
 # @File    : base_kline.py
-from typing import List, Union
 
 from pyecharts import options as opts
 from pyecharts.charts import Bar, Grid, Kline, Line
@@ -13,7 +12,7 @@ from pyecharts.options import InitOpts
 
 
 def calculate_ma(input_data, day_count: int):
-    result: List[Union[float, str]] = []
+    result: list[float | str] = []
 
     for i in range(len(input_data["times"])):
         if i < day_count:
@@ -112,9 +111,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     )
     kline_line_ma.set_global_opts(
         xaxis_opts=opts.AxisOpts(
-            type_="category",
-            grid_index=1,
-            axislabel_opts=opts.LabelOpts(is_show=False),
+            type_="category", grid_index=1, axislabel_opts=opts.LabelOpts(is_show=False)
         ),
         yaxis_opts=opts.AxisOpts(
             grid_index=1,
@@ -244,9 +241,7 @@ def draw_chart(input_data, show_html_path="ShowHtml/CandleChart.html"):
     )
     bar_macd.set_global_opts(
         xaxis_opts=opts.AxisOpts(
-            type_="category",
-            grid_index=2,
-            axislabel_opts=opts.LabelOpts(is_show=False),
+            type_="category", grid_index=2, axislabel_opts=opts.LabelOpts(is_show=False)
         ),
         yaxis_opts=opts.AxisOpts(
             grid_index=2,

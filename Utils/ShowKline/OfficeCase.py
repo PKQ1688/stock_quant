@@ -6,7 +6,7 @@ https://gallery.echartsjs.com/editor.html?c=xByOFPcjBe
 @Time: 2019年7月14日
 """
 
-from typing import List, Sequence, Union
+from collections.abc import Sequence
 
 from pyecharts import options as opts
 from pyecharts.charts import Bar, Grid, Kline, Line
@@ -403,7 +403,7 @@ def split_data_part() -> Sequence:
 
 
 def calculate_ma(day_count: int):
-    result: List[Union[float, str]] = []
+    result: list[float | str] = []
 
     for i in range(len(data["times"])):
         if i < day_count:

@@ -30,8 +30,8 @@ def get_stock_data(
     print(
         f"code:{code} start_date:{start_date} end_date:{end_date} frequency:{frequency}"
     )
-    if os.path.exists("Data/Baostock/day/{}.csv".format(code)):
-        data_df = pd.read_csv("Data/Baostock/day/{}.csv".format(code))
+    if os.path.exists(f"Data/Baostock/day/{code}.csv"):
+        data_df = pd.read_csv(f"Data/Baostock/day/{code}.csv")
 
         data_df = data_df[data_df["date"] >= start_date]
         data_df = data_df[data_df["date"] <= end_date]
@@ -77,7 +77,7 @@ def get_stock_data(
             data_df["high"].tolist(),
             data_df["low"].tolist(),
             data_df["volume"].tolist(),
-            data_df["amount"].tolist(),
+            data_df["amount"].tolist(), strict=False,
         )
     ]
     # macd_list = [
@@ -202,7 +202,7 @@ def cal_profit_rate(records):
 
 @app.get("/index")
 def func():
-    with open("api/test.html", "r", encoding="utf8") as file:
+    with open("api/test.html", encoding="utf8") as file:
         content = file.read()
     # 4.返回响应数据
     return Response(content=content, media_type="text/html")
@@ -210,7 +210,7 @@ def func():
 
 @app.get("/hist")
 def func():
-    with open("api/hist.html", "r", encoding="utf8") as file:
+    with open("api/hist.html", encoding="utf8") as file:
         content = file.read()
     # 4.返回响应数据
     return Response(content=content, media_type="text/html")

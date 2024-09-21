@@ -44,9 +44,7 @@ class Intertwine(TradeStructure):
         )
 
         self.data.drop(
-            ["signal", "market_cap", "code", "width", "percent"],
-            axis=1,
-            inplace=True,
+            ["signal", "market_cap", "code", "width", "percent"], axis=1, inplace=True
         )
 
         # self.logger.debug(res.tail(30))

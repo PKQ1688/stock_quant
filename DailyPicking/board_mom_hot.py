@@ -55,7 +55,7 @@ def cal_one_board_mom(board_data_path, period=20):
 board_list = os.listdir("Data/BoardData/industry_origin")
 # print(board_list)
 
-with open("Data/BoardData/ALL_INDUSTRY_BOARD.json", "r") as all_market_code:
+with open("Data/BoardData/ALL_INDUSTRY_BOARD.json") as all_market_code:
     industry_board_name_mapping = json.load(all_market_code)
 
 

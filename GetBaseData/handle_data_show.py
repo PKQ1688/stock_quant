@@ -5,7 +5,6 @@
 # @Author  : Adolf
 # @File    : handle_data_show.py
 import pandas as pd
-from loguru import logger
 
 from Utils.TechnicalIndicators.basic_indicators import MACD
 
@@ -94,7 +93,7 @@ def show_data_from_df(
             df_or_dfpath["open"].tolist(),
             df_or_dfpath["close"].tolist(),
             df_or_dfpath["high"].tolist(),
-            df_or_dfpath["low"].tolist(),
+            df_or_dfpath["low"].tolist(), strict=False,
         )
     ]
     if "index" in df_or_dfpath:

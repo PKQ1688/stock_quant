@@ -54,27 +54,12 @@ def three_inidexs():
     options = {
         "title": {"text": "三大指数走势"},
         "legend": {"data": ["上证指数", "深证指数", "创业板指数"]},
-        "xAxis": {
-            "type": "category",
-            "data": x_data_sz,
-        },
+        "xAxis": {"type": "category", "data": x_data_sz},
         "yAxis": {"type": "value"},
         "series": [
-            {
-                "name": "上证指数",
-                "type": "line",
-                "data": y_data_sh,
-            },
-            {
-                "name": "深证指数",
-                "type": "line",
-                "data": y_data_sz,
-            },
-            {
-                "name": "创业板指数",
-                "type": "line",
-                "data": y_data_cr,
-            },
+            {"name": "上证指数", "type": "line", "data": y_data_sh},
+            {"name": "深证指数", "type": "line", "data": y_data_sz},
+            {"name": "创业板指数", "type": "line", "data": y_data_cr},
         ],
     }
 

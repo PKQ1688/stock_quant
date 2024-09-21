@@ -1,5 +1,4 @@
 # ！/usr/bin/env python
-# -*- coding:utf-8 -*-
 # @Project : stock_quant
 # @Date    : 2022/1/18 22:08
 # @Author  : Adolf
@@ -28,17 +27,14 @@ def pd_ztjytime():
     delta2 = (d2 - now_datetime).total_seconds()
     if delta1 > 0 and delta2 > 0:  # 在暂停交易的时间内
         return True  # 不在暂停的交易时间范围内，返回 True
-    else:
-        return False  # 在暂停的交易时间范围内，返回 Fasle
+    return False  # 在暂停的交易时间范围内，返回 Fasle
 
 
 def get_stock_name_mapping():
-    with open(
-        file="Data/RealData/ALL_MARKET_CODE.json", encoding="utf-8", mode="r"
-    ) as f:
+    with open(file="Data/RealData/ALL_MARKET_CODE.json", encoding="utf-8") as f:
         _market_code_dict = json.load(f)
         _market_code_dict = dict(
-            zip(_market_code_dict.values(), _market_code_dict.keys())
+            zip(_market_code_dict.values(), _market_code_dict.keys(), strict=False)
         )
 
     return _market_code_dict
@@ -66,8 +62,7 @@ def monitor_condition(code_res):
 
     if code_res["condition"]:
         return True
-    else:
-        return False
+    return False
 
 
 def monitor_function_603229(code_res):

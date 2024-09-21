@@ -117,8 +117,7 @@ class MACD30CurMacdStrategy(TradeStructure):
         ):
             #     pdb.set_trace()
             return True
-        else:
-            return False
+        return False
 
     def sell_logic(self):
         self.day_data.loc[
@@ -189,8 +188,7 @@ class MACD30CurMacdStrategy(TradeStructure):
             #     if self.trade_state.one_transaction_record.buy_date is not None:
             #         self.data.loc[self.data["index"] == self.trade_state.trading_step["index"], "sell"] = 1
             return True
-        else:
-            return False
+        return False
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ pd.set_option("display.max_rows", 100)
 
 board_data_path = "Data/BoardData/"
 
-with open(board_data_path + "ALL_INDUSTRY_BOARD.json", "r") as f:
+with open(board_data_path + "ALL_INDUSTRY_BOARD.json") as f:
     board_dict = json.load(f)
 
 # pprint(board_dict)
@@ -32,7 +32,7 @@ mom_list = []
 mom_sma_list = []
 for one_board in board_list:
     # print(one_board)
-    df = pd.read_csv(board_data_path + "industry_origin/{}.csv".format(one_board))
+    df = pd.read_csv(board_data_path + f"industry_origin/{one_board}.csv")
 
     df = df[["date", "open", "close", "high", "low", "volume"]]
     # print(df)

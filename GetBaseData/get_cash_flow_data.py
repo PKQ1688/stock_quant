@@ -31,7 +31,7 @@ def get_one_stock_cash_data(code):
         if not os.path.exists("Data/CashFlow/"):
             os.mkdir("Data/CashFlow/")
 
-        csv_path = "Data/CashFlow/{}.csv".format(code)
+        csv_path = f"Data/CashFlow/{code}.csv"
         # print(code[0])
         # exit()
         if code[0] == "6":
@@ -54,7 +54,7 @@ def get_one_stock_cash_data(code):
 # test_df = ak.stock_individual_fund_flow(stock=code,market="sz")
 # exit()
 
-with open("Data/RealData/ALL_MARKET_CODE.json", "r") as all_market_code:
+with open("Data/RealData/ALL_MARKET_CODE.json") as all_market_code:
     market_code_dict = json.load(all_market_code)
 
 code_list = list(market_code_dict.keys())

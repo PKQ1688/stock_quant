@@ -1,13 +1,12 @@
 # ！/usr/bin/env python
-# -*- coding:utf-8 -*-
 # @Project : stock_quant
 # @Date    : 2022/2/2 14:56
 # @Author  : Adolf
 # @File    : basic_structure.py
 # @Function:
+
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List
 
 from StrategyLib.ChanStrategy.BasicChan.basic_enum import Direction, Freq, Mark
 from Utils.TechnicalIndicators.basic_indicators import RSQ
@@ -43,7 +42,7 @@ class NewBar:
     low: float
     vol: float
     amount: float = None
-    elements: List = None  # 存入具有包含关系的原始K线
+    elements: list = None  # 存入具有包含关系的原始K线
 
     @property
     def raw_bars(self):
@@ -59,7 +58,7 @@ class FX:
     low: float
     fx: float
     power: str = None
-    elements: List = None
+    elements: list = None
 
     @property
     def new_bars(self):
@@ -88,7 +87,7 @@ class FakeBI:
     power: float
 
 
-def create_fake_bis(fxs: List[FX]) -> List[FakeBI]:
+def create_fake_bis(fxs: list[FX]) -> list[FakeBI]:
     """创建 fake_bis 列表
     :param fxs: 分型序列，必须顶底分型交替
     :return: fake_bis
@@ -132,9 +131,9 @@ class BI:
     symbol: str
     fx_a: FX = None  # 笔开始的分型
     fx_b: FX = None  # 笔开始的分型
-    fxs: List = None  # 笔内部的分型列表
+    fxs: list = None  # 笔内部的分型列表
     direction: Direction = None
-    bars: List[NewBar] = None
+    bars: list[NewBar] = None
 
     def __post_init__(self):
         self.sdt = self.fx_a.dt
@@ -202,7 +201,7 @@ class BI:
 @dataclass
 class ZS:
     symbol: str
-    bis: List[BI]
+    bis: list[BI]
 
     @property
     def sdt(self):

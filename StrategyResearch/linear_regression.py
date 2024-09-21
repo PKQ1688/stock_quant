@@ -34,7 +34,7 @@ handler_id = logger.add(
 
 board_data_path = "Data/BoardData/"
 
-with open(board_data_path + "ALL_INDUSTRY_BOARD.json", "r") as f:
+with open(board_data_path + "ALL_INDUSTRY_BOARD.json") as f:
     board_dict = json.load(f)
 
 board_list = list(board_dict.keys())
@@ -80,7 +80,7 @@ def cal_one_date_mom(origin_data, period=20):
 # one_board = "汽车零部件"
 @ray.remote
 def cal_linear_regression(board_name):
-    df = pd.read_csv(board_data_path + "industry_origin/{}.csv".format(board_name))
+    df = pd.read_csv(board_data_path + f"industry_origin/{board_name}.csv")
 
     # df = df[-100:]
 
@@ -100,10 +100,7 @@ def cal_linear_regression(board_name):
 
     df = df[["date", "close", "line_w"]]
     df.rename(
-        columns={
-            "close": "{}_close".format(board_name),
-            "line_w": "{}_mom".format(board_name),
-        },
+        columns={"close": f"{board_name}_close", "line_w": f"{board_name}_mom"},
         inplace=True,
     )
 
@@ -142,19 +139,17 @@ def get_all_data():
 
 def choose_what_need(all_df):
     for board_name in board_dict.keys():
-        all_df["{}_pct".format(board_name)] = (
-            all_df["{}_close".format(board_name)]
-            / all_df["{}_close".format(board_name)].shift(1)
-            - 1
+        all_df[f"{board_name}_pct"] = (
+            all_df[f"{board_name}_close"] / all_df[f"{board_name}_close"].shift(1) - 1
         )
 
     for index, row in all_df.iterrows():
         # logger.debug(row)
         tmp_mom = row[
             [
-                "{}_mom".format(board_name)
+                f"{board_name}_mom"
                 for board_name in board_list
-                if not pd.isna(row["{}_mom".format(board_name)])
+                if not pd.isna(row[f"{board_name}_mom"])
             ]
         ]
         tmp_mom = tmp_mom.to_dict()

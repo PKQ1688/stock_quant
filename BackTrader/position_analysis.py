@@ -1,5 +1,4 @@
 # ！/usr/bin/env python
-# -*- coding:utf-8 -*-
 # @Project : stock_quant
 # @Date    : 2022/1/3 15:53
 # @Author  : Adolf

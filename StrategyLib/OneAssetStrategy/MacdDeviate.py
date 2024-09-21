@@ -24,7 +24,7 @@ class MACDDeviate(TradeStructure):
         super(MACDDeviate, self).__init__(config)
 
     def cal_technical_indicators(self, indicators_config):
-        self.logger.debug("macd config:{}".format(indicators_config))
+        self.logger.debug(f"macd config:{indicators_config}")
 
         self.data["30_lowest"] = self.data.low.rolling(30).min()
 
@@ -34,12 +34,10 @@ class MACDDeviate(TradeStructure):
 
         # 获取到MACD金叉点和死叉点
         self.data.loc[
-            (self.data["MACD"] > 0) & (self.data["MACD"].shift(1) < 0),
-            "trade",
+            (self.data["MACD"] > 0) & (self.data["MACD"].shift(1) < 0), "trade"
         ] = "LONG"
         self.data.loc[
-            (self.data["MACD"] < 0) & (self.data["MACD"].shift(1) > 0),
-            "trade",
+            (self.data["MACD"] < 0) & (self.data["MACD"].shift(1) > 0), "trade"
         ] = "SHORT"
 
         self.data["price_state"] = 0

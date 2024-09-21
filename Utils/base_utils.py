@@ -1,5 +1,4 @@
 # ！/usr/bin/env python
-# -*- coding:utf-8 -*-
 # @Project : stock_quant
 # @Date    : 2021/12/23 00:02
 # @Author  : Adolf
@@ -23,12 +22,7 @@ def get_logger(level="INFO", console=True, logger_file=None):
     logger_format = """<green>{time:YYYY-MM-DD HH:mm:ss}</green>| <level>{level}</level> | <cyan>{name}</cyan>=><cyan>{function}</cyan>=><cyan>{line}</cyan>\n<level>{message}</level>"""
 
     if console:
-        logger.add(
-            sys.stderr,
-            format=logger_format,
-            colorize=True,
-            level=level.upper(),
-        )
+        logger.add(sys.stderr, format=logger_format, colorize=True, level=level.upper())
 
     # 添加一个文件输出的内容
     # 目前每天一个日志文件，日志文件最多保存7天

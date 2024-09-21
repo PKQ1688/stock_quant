@@ -1,5 +1,4 @@
 # ！/usr/bin/env python
-# -*- coding:utf-8 -*-
 # @Project : stock_quant
 # @Date    : 2022/2/2 23:13
 # @Author  : Adolf
@@ -10,19 +9,19 @@ import random
 
 import pandas as pd
 
-import Utils.ShowKline.chan_plot as chan_plot
 from StrategyLib.ChanStrategy.BasicChan.basic_enum import Freq
 from StrategyLib.ChanStrategy.BasicChan.basic_tools import CZSC, RawBar, get_zs_seq
+from Utils.ShowKline import chan_plot
 
 
 def test_heat_map():
     data = [
-        {"x": "{}hour".format(i), "y": "{}day".format(j), "heat": random.randint(0, 50)}
+        {"x": f"{i}hour", "y": f"{j}day", "heat": random.randint(0, 50)}
         for i in range(24)
         for j in range(7)
     ]
-    x_label = ["{}hour".format(i) for i in range(24)]
-    y_label = ["{}day".format(i) for i in range(7)]
+    x_label = [f"{i}hour" for i in range(24)]
+    y_label = [f"{i}day" for i in range(7)]
     hm = chan_plot.heat_map(data, x_label=x_label, y_label=y_label)
     file_html = "ShowHtml/render.html"
     hm.render(file_html)

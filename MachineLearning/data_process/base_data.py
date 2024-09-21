@@ -22,12 +22,12 @@ def init_dict():
 
     # new_data_dict["code"] = []
     for i in range(60):
-        new_data_dict["open_{}".format(i)] = []
-        new_data_dict["high_{}".format(i)] = []
-        new_data_dict["low_{}".format(i)] = []
-        new_data_dict["close_{}".format(i)] = []
-        new_data_dict["volume_{}".format(i)] = []
-        new_data_dict["turn_{}".format(i)] = []
+        new_data_dict[f"open_{i}"] = []
+        new_data_dict[f"high_{i}"] = []
+        new_data_dict[f"low_{i}"] = []
+        new_data_dict[f"close_{i}"] = []
+        new_data_dict[f"volume_{i}"] = []
+        new_data_dict[f"turn_{i}"] = []
     new_data_dict["label"] = []
     return new_data_dict
 
@@ -70,12 +70,12 @@ def get_handle_data(data_name):
             # new_data_dict["code"].append(row.code)
 
             for i in range(60):
-                new_data_dict.get("open_{}".format(i)).append(open_list[i])
-                new_data_dict.get("high_{}".format(i)).append(high_list[i])
-                new_data_dict.get("low_{}".format(i)).append(low_list[i])
-                new_data_dict.get("close_{}".format(i)).append(close_list[i])
-                new_data_dict.get("volume_{}".format(i)).append(volume_list[i])
-                new_data_dict.get("turn_{}".format(i)).append(turn_list[i])
+                new_data_dict.get(f"open_{i}").append(open_list[i])
+                new_data_dict.get(f"high_{i}").append(high_list[i])
+                new_data_dict.get(f"low_{i}").append(low_list[i])
+                new_data_dict.get(f"close_{i}").append(close_list[i])
+                new_data_dict.get(f"volume_{i}").append(volume_list[i])
+                new_data_dict.get(f"turn_{i}").append(turn_list[i])
 
             # new_data_dict["pct"].append(data_t.loc[index + 1, "pctChg"])
             next_pct = data_t.loc[index + 1, "pctChg"]

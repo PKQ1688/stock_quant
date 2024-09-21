@@ -1,5 +1,4 @@
-# ！/usr/bin/env python
-# -*- coding:utf-8 -*-
+# /usr/bin/env python
 # @Project : stock_quant
 # @Date    : 2022/2/2 22:28
 # @Author  : Adolf
@@ -9,7 +8,6 @@
 使用 pyecharts 定制绘图模块
 """
 
-from typing import List
 
 import numpy as np
 from pyecharts import options as opts
@@ -20,9 +18,9 @@ from Utils.TechnicalIndicators.basic_indicators import MACD, SMA
 
 
 def heat_map(
-    data: List[dict],
-    x_label: List[str] = None,
-    y_label: List[str] = None,
+    data: list[dict],
+    x_label: list[str] = None,
+    y_label: list[str] = None,
     title: str = "热力图",
     width: str = "900px",
     height: str = "680px",
@@ -41,7 +39,6 @@ def heat_map(
     :param height: 图表高度
     :return: 图表
     """
-
     value = [[s["x"], s["y"], s["heat"]] for s in data]
     heat = [s["heat"] for s in data]
 
@@ -89,13 +86,13 @@ def heat_map(
 
 
 def kline_pro(
-    kline: List[dict],
-    fx: List[dict] = None,
-    bi: List[dict] = None,
-    xd: List[dict] = None,
-    bs: List[dict] = None,
+    kline: list[dict],
+    fx: list[dict] = None,
+    bi: list[dict] = None,
+    xd: list[dict] = None,
+    bs: list[dict] = None,
     title: str = "缠中说禅K线分析",
-    t_seq: List[int] = None,
+    t_seq: list[int] = None,
     width: str = "1400px",
     height: str = "580px",
 ) -> Grid:
@@ -310,9 +307,7 @@ def kline_pro(
             symbol="circle",
             symbol_size=6,
             label_opts=label_not_show_opts,
-            itemstyle_opts=opts.ItemStyleOpts(
-                color="rgba(152, 147, 193, 1.0)",
-            ),
+            itemstyle_opts=opts.ItemStyleOpts(color="rgba(152, 147, 193, 1.0)"),
         )
 
         chart_fx.set_global_opts(
@@ -332,9 +327,7 @@ def kline_pro(
             symbol="diamond",
             symbol_size=10,
             label_opts=label_not_show_opts,
-            itemstyle_opts=opts.ItemStyleOpts(
-                color="rgba(184, 117, 225, 1.0)",
-            ),
+            itemstyle_opts=opts.ItemStyleOpts(color="rgba(184, 117, 225, 1.0)"),
             linestyle_opts=opts.LineStyleOpts(width=2),
         )
 
@@ -354,9 +347,7 @@ def kline_pro(
             is_selected=True,
             symbol="triangle",
             symbol_size=10,
-            itemstyle_opts=opts.ItemStyleOpts(
-                color="rgba(37, 141, 54, 1.0)",
-            ),
+            itemstyle_opts=opts.ItemStyleOpts(color="rgba(37, 141, 54, 1.0)"),
         )
 
         chart_xd.set_global_opts(
@@ -376,9 +367,7 @@ def kline_pro(
                 is_selected=False,
                 symbol="arrow",
                 symbol_size=8,
-                itemstyle_opts=opts.ItemStyleOpts(
-                    color="#f31e1e",
-                ),
+                itemstyle_opts=opts.ItemStyleOpts(color="#f31e1e"),
             )
 
             chart_b.set_global_opts(
@@ -397,9 +386,7 @@ def kline_pro(
                 is_selected=False,
                 symbol="pin",
                 symbol_size=12,
-                itemstyle_opts=opts.ItemStyleOpts(
-                    color="#45b97d",
-                ),
+                itemstyle_opts=opts.ItemStyleOpts(color="#45b97d"),
             )
 
             chart_s.set_global_opts(
@@ -429,9 +416,7 @@ def kline_pro(
     chart_macd.add_yaxis(series_name="MACD", y_axis=macd_bar, bar_width="60%")
     chart_macd.set_global_opts(
         xaxis_opts=opts.AxisOpts(
-            type_="category",
-            grid_index=2,
-            axislabel_opts=opts.LabelOpts(is_show=False),
+            type_="category", grid_index=2, axislabel_opts=opts.LabelOpts(is_show=False)
         ),
         yaxis_opts=opts.AxisOpts(
             grid_index=2,

@@ -1,39 +1,34 @@
-# ！/usr/bin/env python
-# -*- coding:utf-8 -*-
 # @Project : stock_quant
 # @Date    : 2021/11/30 23:07
 # @Author  : Adolf
 # @File    : get_dc_data.py
 # @Function:
 
-import os.path
-import time
-
-from loguru import logger
-
-logger.info("开始获取股票日线数据")
-
 import json
 import shutil
+import time
+from pathlib import Path
 
 import akshare as ak
-
-# import socket
 import pandas as pd
 import ray
+from loguru import logger
 from tqdm.auto import tqdm
 
 from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
 
 pd.set_option("expand_frame_repr", False)
 
+logger.info("开始获取股票日线数据")
+
 only_hfq = True
 all_data = False
-# socket.gethostbyname("")
 # 获取实时行情数据
 stock_zh_a_spot_em_df = ak.stock_zh_a_spot_em()
 stock_zh_a_spot_em_df.rename(columns=ch_eng_mapping_dict, inplace=True)
-stock_zh_a_spot_em_df.sort_values(by="TMC", ascending=False, inplace=True) # 按照市值排序
+stock_zh_a_spot_em_df.sort_values(
+    by="TMC", ascending=False, inplace=True
+)  # 按照市值排序
 
 if not all_data:
     stock_zh_a_spot_em_df = stock_zh_a_spot_em_df.head(500)
@@ -42,39 +37,40 @@ code_list = stock_zh_a_spot_em_df.code.to_list()
 
 code_name_mapping = stock_zh_a_spot_em_df.set_index(["code"])["name"].to_dict()
 # breakpoint()
-if not os.path.exists("DATA"):
-    os.mkdir("DATA")
 
-if not os.path.exists("Data/RealData"):
-    os.mkdir("Data/RealData")
+data_path = Path("Data")
+real_data_path = Path("Data/RealData")
 
-with open("Data/RealData/ALL_MARKET_CODE.json", "w") as all_market_code:
+if not data_path.exists():
+    data_path.mkdir()
+
+if not real_data_path.exists():
+    real_data_path.mkdir()
+
+with real_data_path.joinpath("ALL_MARKET_CODE.json").open("w") as all_market_code:
     json.dump(code_name_mapping, all_market_code, ensure_ascii=False)
-# exit()
 
 ray.init()
 
 error_code_list = []
 
-hfq_path = "Data/RealData/hfq/"
-if os.path.exists(hfq_path):
+hfq_path = Path("Data/RealData/hfq/")
+if hfq_path.exists():
     shutil.rmtree(hfq_path)
-os.mkdir(hfq_path)
+hfq_path.mkdir()
 
 
 if not only_hfq:
-    qfq_path = "Data/RealData/qfq/"
-    if os.path.exists(qfq_path):
+    qfq_path = Path("Data/RealData/qfq/")
+    if qfq_path.exists():
         shutil.rmtree(qfq_path)
 
-    origin_path = "Data/RealData/origin/"
-    if os.path.exists(origin_path):
+    origin_path = Path("Data/RealData/origin/")
+    if origin_path.exists():
         shutil.rmtree(origin_path)
 
-    os.mkdir(qfq_path)
-    os.mkdir(origin_path)
-
-# pbar = tqdm(total=len(code_list))
+    qfq_path.mkdir()
+    origin_path.mkdir()
 
 
 @ray.remote
@@ -88,7 +84,7 @@ def get_one_stock_data(code):
         stock_zh_a_hist_df["code"] = code
         stock_zh_a_hist_df["name"] = code_name_mapping[code]
         # stock_zh_a_hist_df["industry"] = get_stock_board_df(code)
-        stock_zh_a_hist_df.to_csv(os.path.join(hfq_path, code + ".csv"), index=False)
+        stock_zh_a_hist_df.to_csv(hfq_path.joinpath(code + ".csv"), index=False)
 
         if not only_hfq:
             # 获取前复权数据
@@ -98,9 +94,7 @@ def get_one_stock_data(code):
             #     return 0
             stock_zh_a_hist_df["code"] = code
             stock_zh_a_hist_df["name"] = code_name_mapping[code]
-            stock_zh_a_hist_df.to_csv(
-                os.path.join(qfq_path, code + ".csv"), index=False
-            )
+            stock_zh_a_hist_df.to_csv(qfq_path.joinpath(code + ".csv"), index=False)
 
             # 获取原始不复权数据
             stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code)
@@ -110,9 +104,7 @@ def get_one_stock_data(code):
             stock_zh_a_hist_df["code"] = code
             stock_zh_a_hist_df["name"] = code_name_mapping[code]
             # stock_zh_a_hist_df["industry"] = get_stock_board_df(code)
-            stock_zh_a_hist_df.to_csv(
-                os.path.join(origin_path, code + ".csv"), index=False
-            )
+            stock_zh_a_hist_df.to_csv(origin_path.joinpath(code + ".csv"), index=False)
             # pbar.update(1)
 
         return 0
@@ -136,13 +128,11 @@ def to_iterator(obj_ids):
         yield ray.get(done[0])
 
 
-for x in tqdm(to_iterator(futures), total=len(code_list)):
+for _ in tqdm(to_iterator(futures), total=len(code_list)):
     pass
 
 print(
-    "本次获取了{}只股票的数据，共用时间为{:.2f}".format(
-        len(code_list), time.time() - start_time
-    )
+    f"本次获取了{len(code_list)}只股票的数据,共用时间为{time.time() - start_time:.2f}"
 )
 # pbar.close()
 print("date", time.strftime("%Y-%m-%d"))

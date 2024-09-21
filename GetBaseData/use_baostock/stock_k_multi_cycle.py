@@ -19,12 +19,7 @@ from tqdm import tqdm
 # print(tool_trade_date_hist_sina_df)
 
 
-def get_base_k_data(
-    code,
-    last_day,
-    file_name="day",
-    frequency="d",
-):
+def get_base_k_data(code, last_day, file_name="day", frequency="d"):
     rs = bs.query_history_k_data_plus(
         code,
         # "date,code,open,high,low,close,volume,amount,turn,peTTM,tradestatus,isST",
@@ -54,7 +49,7 @@ def main():
         # "15": "15min/",
         # "30": "30min/",
         # "60": "60min/",
-        "d": "day/",
+        "d": "day/"
         # "w": "week/",
         # "m": "month/",
     }
@@ -88,7 +83,7 @@ def main():
     code_list = ["sh.000001", "sz.399001", "sz.399006"]
 
     for code_name in tqdm(code_list, total=len(code_list)):
-        for frequency in time_cycle.keys():
+        for frequency in time_cycle:
             file_name = time_cycle[frequency]
             get_base_k_data(
                 code=code_name,

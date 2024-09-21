@@ -82,8 +82,7 @@ class MaEmaCrossover(TradeStructure):
             < self.trade_state.one_transaction_record.stop_loss
         ):
             return True
-        else:
-            return False
+        return False
 
 
 if __name__ == "__main__":

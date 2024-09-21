@@ -1,17 +1,16 @@
 # ！/usr/bin/env python
-# -*- coding:utf-8 -*-
 # @Project : stock_quant
 # @Date    : 2021/12/22 22:29
 # @Author  : Adolf
 # @File    : base_back_trader.py
 # @Function:
+
 import itertools
 import json
 import os
 import random
 import statistics
 from dataclasses import dataclass, field
-from typing import Dict, Optional
 
 # from functools import reduce
 import pandas as pd
@@ -33,12 +32,12 @@ class TradeStructureConfig:
     LOG_LEVEL: str = field(
         default="INFO",
         metadata={
-            "help": "日志级别,默认INFO,可选DEBUG、INFO、WARNING、ERROR、CRITICAL",
+            "help": "日志级别,默认INFO,可选DEBUG、INFO、WARNING、ERROR、CRITICAL"
         },
     )
-    CODE_NAME: Optional[str] = field(default=None, metadata={"help": "股票代码"})
+    CODE_NAME: str | None = field(default=None, metadata={"help": "股票代码"})
     RANDOM_SEED: int = field(default=42, metadata={"help": "随机种子"})
-    STRATEGY_PARAMS: Dict = field(
+    STRATEGY_PARAMS: dict = field(
         default_factory=lambda: dict(), metadata={"help": "策略参数"}
     )
     START_STAMP: str = field(default=None, metadata={"help": "开始时间"})
@@ -169,7 +168,7 @@ class TradeStructure(CoreTradeLogic):
         asset_analysis = self.transaction_analysis.cal_asset_analysis(self.data)
 
         if asset_analysis is not None:
-            self.logger.success("对标的进行分析:\n{}".format(asset_analysis))
+            self.logger.success(f"对标的进行分析:\n{asset_analysis}")
             self.stock_result = asset_analysis
 
         if len(transaction_record_df) > 0:
@@ -232,7 +231,7 @@ class TradeStructure(CoreTradeLogic):
         else:
             pl_ration = self.run_one_stock_once(code_name=code_name)
 
-        self.logger.success("{}的盈亏比是{}".format(code_name, pl_ration))
+        self.logger.success(f"{code_name}的盈亏比是{pl_ration}")
         self.show_one_stock(self.data)
 
         return pl_ration
@@ -250,7 +249,7 @@ class TradeStructure(CoreTradeLogic):
 
         # elif code_name.upper() == "ALL_MARKET":
         elif "ALL_MARKET" in code_name.upper():
-            with open("Data/RealData/ALL_MARKET_CODE.json", "r") as all_market_code:
+            with open("Data/RealData/ALL_MARKET_CODE.json") as all_market_code:
                 market_code_dict = json.load(all_market_code)
             self.logger.debug(market_code_dict)
 
@@ -269,7 +268,7 @@ class TradeStructure(CoreTradeLogic):
                     # self.logger.info(one_pl_ration)
 
                     # 判断变量是否为nan,如果是nan则不添加进List
-                    if not one_pl_ration != one_pl_ration and one_pl_ration is not None:
+                    if one_pl_ration == one_pl_ration and one_pl_ration is not None:
                         pl_ration_list.append(one_pl_ration)
                     # self.logger.info(pl_ration_list)
                 except Exception as e:
@@ -282,7 +281,7 @@ class TradeStructure(CoreTradeLogic):
 
         if pl_ration is not None:
             self.logger.success(
-                "策略交易一次的收益的数学期望为：{:.2f}%".format(pl_ration * 100)
+                f"策略交易一次的收益的数学期望为：{pl_ration * 100:.2f}%"
             )
 
         # if len(pl_ration_list) > 0:

@@ -62,9 +62,7 @@ for key, value in tqdm(industry_board_name_mapping.items()):
         )
         # print(stock_board_industry_hist_em_df)
 
-        stock_board_industry_hist_em_df.to_csv(
-            save_path + "{}.csv".format(key), index=False
-        )
+        stock_board_industry_hist_em_df.to_csv(save_path + f"{key}.csv", index=False)
 
     except Exception as e:
         logger.error(e)

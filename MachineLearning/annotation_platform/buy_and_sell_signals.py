@@ -157,9 +157,7 @@ def annotation_platform_main():
         # 判断一个文件是否存在
         if os.path.exists(f"Data/LabelData/{st.session_state['code_name']}.tsv"):
             with open(
-                f"Data/LabelData/{st.session_state['code_name']}.tsv",
-                "r",
-                encoding="utf8",
+                f"Data/LabelData/{st.session_state['code_name']}.tsv", encoding="utf8"
             ) as f:
                 for i, line in enumerate(f.readlines()):
                     texts = line.strip().split("\t")

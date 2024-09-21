@@ -6,8 +6,8 @@ LastEditTime : 2023-02-06 00:22:54
 FilePath     : /stock_quant/BackTrader/core_trade_logic.py
 """
 
+
 from dataclasses import dataclass, field
-from typing import List
 
 import pandas as pd
 
@@ -36,7 +36,7 @@ class TradeStructure:
     one_transaction_record: OneTransactionRecord = field(
         default=None, metadata={"help": "当前交易记录"}
     )
-    history_trading_step: List[pd.Series] = field(
+    history_trading_step: list[pd.Series] = field(
         default=None, metadata={"help": "历史交易记录"}
     )
 
@@ -85,7 +85,7 @@ class CoreTradeLogic:
         self.logger.debug(one_transaction_record)
         return one_transaction_record
 
-    def base_trade(self, data) -> List[dict]:
+    def base_trade(self, data) -> list[dict]:
         self.trade_state.one_transaction_record = OneTransactionRecord()
 
         self.trade_state.history_trading_step = []

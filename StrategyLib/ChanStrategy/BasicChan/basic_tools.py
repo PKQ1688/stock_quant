@@ -1,12 +1,11 @@
 # ！/usr/bin/env python
-# -*- coding:utf-8 -*-
 # @Project : stock_quant
 # @Date    : 2022/2/2 14:50
 # @Author  : Adolf
 # @File    : basic_tools.py
 # @Function:
+
 import webbrowser
-from typing import List
 
 from StrategyLib.ChanStrategy.BasicChan.basic_enum import Direction, Mark
 from StrategyLib.ChanStrategy.BasicChan.basic_structure import (
@@ -85,20 +84,19 @@ def remove_include(k1: NewBar, k2: NewBar, k3: RawBar):
         )
 
         return True, k4
-    else:
-        k4 = NewBar(
-            symbol=k3.symbol,
-            id=k3.id,
-            freq=k3.freq,
-            dt=k3.dt,
-            open=k3.open,
-            close=k3.close,
-            high=k3.high,
-            low=k3.low,
-            vol=k3.vol,
-            elements=[k3],
-        )
-        return False, k4
+    k4 = NewBar(
+        symbol=k3.symbol,
+        id=k3.id,
+        freq=k3.freq,
+        dt=k3.dt,
+        open=k3.open,
+        close=k3.close,
+        high=k3.high,
+        low=k3.low,
+        vol=k3.vol,
+        elements=[k3],
+    )
+    return False, k4
 
 
 def check_fx(k1: NewBar, k2: NewBar, k3: NewBar):
@@ -133,7 +131,7 @@ def check_fx(k1: NewBar, k2: NewBar, k3: NewBar):
     return fx
 
 
-def check_fxs(bars: List[NewBar]) -> List[FX]:
+def check_fxs(bars: list[NewBar]) -> list[FX]:
     """输入一串无包含关系K线，查找其中所有分型"""
     fxs = []
     for i in range(1, len(bars) - 1):
@@ -156,7 +154,7 @@ def check_fxs(bars: List[NewBar]) -> List[FX]:
     return fxs
 
 
-def check_bi(bars: List[NewBar], bi_min_len: int = 7):
+def check_bi(bars: list[NewBar], bi_min_len: int = 7):
     """输入一串无包含关系K线，查找其中的一笔
     :param bars: 无包含关系K线列表
     :param bi_min_len: 一笔的最少无包含关系K线数量，7是老笔的要求,5是新笔的要求
@@ -222,12 +220,11 @@ def check_bi(bars: List[NewBar], bi_min_len: int = 7):
             bars=bars_a,
         )
         return bi, bars_b
-    else:
-        return None, bars
+    return None, bars
 
 
 # TODO 寻找中枢的逻辑存在问题
-def get_zs_seq(bis: List[BI]) -> List[ZS]:
+def get_zs_seq(bis: list[BI]) -> list[ZS]:
     """获取连续笔中的中枢序列
     :param bis: 连续笔对象列表
     :return: 中枢序列
@@ -245,21 +242,20 @@ def get_zs_seq(bis: List[BI]) -> List[ZS]:
         if not zs.bis:
             zs.bis.append(bi)
             zs_list[-1] = zs
+        elif (bi.direction == Direction.Up and bi.high < zs.zd) or (
+            bi.direction == Direction.Down and bi.low > zs.zg
+        ):
+            zs_list.append(ZS(symbol=bi.symbol, bis=[bi]))
         else:
-            if (bi.direction == Direction.Up and bi.high < zs.zd) or (
-                bi.direction == Direction.Down and bi.low > zs.zg
-            ):
-                zs_list.append(ZS(symbol=bi.symbol, bis=[bi]))
-            else:
-                zs.bis.append(bi)
-                zs_list[-1] = zs
+            zs.bis.append(bi)
+            zs_list[-1] = zs
     return zs_list
 
 
 class CZSC:
     def __init__(
         self,
-        bars: List[RawBar],
+        bars: list[RawBar],
         # max_bi_count: int = 50,
         bi_min_len: int = 5,
         # get_signals: Callable = None,
@@ -282,7 +278,7 @@ class CZSC:
         # self.signals_n = signals_n
         self.bars_raw = []  # 原始K线序列
         self.bars_ubi = []  # 未完成笔的无包含K线序列
-        self.bi_list: List[BI] = []
+        self.bi_list: list[BI] = []
         self.symbol = bars[0].symbol
         self.freq = bars[0].freq
         # self.get_signals = get_signals
@@ -293,7 +289,7 @@ class CZSC:
             self.update(bar)
 
     def __repr__(self):
-        return "<CZSC~{}~{}>".format(self.symbol, self.freq.value)
+        return f"<CZSC~{self.symbol}~{self.freq.value}>"
 
     # TODO 逻辑二次梳理
     def update_bi(self):
@@ -329,13 +325,12 @@ class CZSC:
         min_low_ubi = min([x.low for x in bars_ubi[2:]])
         max_high_ubi = max([x.high for x in bars_ubi[2:]])
 
-        if last_bi.direction == Direction.Up and max_high_ubi > last_bi.high:
-            bars_ubi_a = last_bi.bars + [
-                x for x in bars_ubi if x.dt > last_bi.bars[-1].dt
-            ]
-            self.bi_list.pop(-1)
-
-        elif last_bi.direction == Direction.Down and min_low_ubi < last_bi.low:
+        if (
+            last_bi.direction == Direction.Up
+            and max_high_ubi > last_bi.high
+            or last_bi.direction == Direction.Down
+            and min_low_ubi < last_bi.low
+        ):
             bars_ubi_a = last_bi.bars + [
                 x for x in bars_ubi if x.dt > last_bi.bars[-1].dt
             ]
@@ -440,7 +435,7 @@ class CZSC:
             fx=fx,
             width=width,
             height=height,
-            title="{}-{}".format(self.symbol, self.freq),
+            title=f"{self.symbol}-{self.freq}",
             t_seq=None,
         )
         return chart

@@ -35,14 +35,12 @@ class Demark9Strategy(TradeStructure):
     def buy_logic(self):
         if self.trade_state.trading_step.TD_SEQ_DN == 9:
             return True
-        else:
-            return False
+        return False
 
     def sell_logic(self):
         if self.trade_state.trading_step.TD_SEQ_UP == 9:
             return True
-        else:
-            return False
+        return False
 
 
 if __name__ == "__main__":

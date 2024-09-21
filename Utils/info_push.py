@@ -1,5 +1,4 @@
 # ！/usr/bin/env python
-# -*- coding:utf-8 -*-
 # @Project : stock_quant
 # @Date    : 2022/1/18 23:29
 # @Author  : Adolf
@@ -36,4 +35,4 @@ def post_msg_to_dingtalk(title="", msg="", token="", at=None, type="text"):
         ).json()
         assert response["errcode"] == 0
     except Exception as e:
-        logging.getLogger().error("发送钉钉提醒失败，请检查；{}".format(e))
+        logging.getLogger().error(f"发送钉钉提醒失败，请检查；{e}")

@@ -36,8 +36,7 @@ class Ma5Ma10Strategy(TradeStructure):
             < self.trade_state.history_trading_step[0].sma10
         ):
             return True
-        else:
-            return False
+        return False
 
     def sell_logic(self):
         if (
@@ -46,8 +45,7 @@ class Ma5Ma10Strategy(TradeStructure):
             > self.trade_state.history_trading_step[0].sma10
         ):
             return True
-        else:
-            return False
+        return False
 
 
 if __name__ == "__main__":
