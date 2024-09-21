@@ -16,7 +16,7 @@ import pandas as pd
 
 bs.login()
 
-date = "2023-06-01"
+date = "2024-09-21"
 # 获取交易日当天的交易股票
 # stock_df = bs.query_all_stock(date).get_data()
 

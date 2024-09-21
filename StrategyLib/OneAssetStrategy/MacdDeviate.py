@@ -6,19 +6,13 @@ LastEditTime : 2022-12-11 14:19:26
 FilePath     : /stock_quant/StrategyLib/OneAssetStrategy/MacdDeviate.py
 """
 
-"""
-Description: 
-Author: adolf
-Date: 2022-07-03 17:29:10
-LastEditTime: 2022-08-14 13:21:20
-LastEditors: adolf
-"""
 import numpy as np
-from finta import TA
 from scipy.signal import argrelextrema
 
 from BackTrader.base_back_trader import TradeStructure
-from StrategyLib.OneAssetStrategy import macd_deviate_config
+
+# from StrategyLib.OneAssetStrategy import macd_deviate_config
+from Utils.TechnicalIndicators.basic_indicators import MACD
 
 
 class MACDDeviate(TradeStructure):
@@ -34,17 +28,17 @@ class MACDDeviate(TradeStructure):
 
         self.data["30_lowest"] = self.data.low.rolling(30).min()
 
-        macd_df = TA.MACD(self.data)
-        self.data["MACD"], self.data["SIGNAL"] = [macd_df["MACD"], macd_df["SIGNAL"]]
-        self.data["HISTOGRAM"] = self.data["MACD"] - self.data["SIGNAL"]
+        self.data["DIFF"], self.data["DEA"], self.data["MACD"] = MACD(self.data.close)
+        # self.data["MACD"], self.data["SIGNAL"] = [macd_df["MACD"], macd_df["SIGNAL"]]
+        # self.data["HISTOGRAM"] = self.data["MACD"] - self.data["SIGNAL"]
 
         # 获取到MACD金叉点和死叉点
         self.data.loc[
-            (self.data["HISTOGRAM"] > 0) & (self.data["HISTOGRAM"].shift(1) < 0),
+            (self.data["MACD"] > 0) & (self.data["MACD"].shift(1) < 0),
             "trade",
         ] = "LONG"
         self.data.loc[
-            (self.data["HISTOGRAM"] < 0) & (self.data["HISTOGRAM"].shift(1) > 0),
+            (self.data["MACD"] < 0) & (self.data["MACD"].shift(1) > 0),
             "trade",
         ] = "SHORT"
 
@@ -72,15 +66,15 @@ class MACDDeviate(TradeStructure):
 
     def trading_algorithm(self):
         price_flag = 0
-        lowwest_30 = 0
+        lowest_30 = 0
         for index, row in self.data.iterrows():
-            if row["low"] < lowwest_30:
+            if row["low"] < lowest_30:
                 price_flag = 0
-                lowwest_30 = row["low"]
+                lowest_30 = row["low"]
 
             if row["price_state"] == 1:
                 price_flag = 1
-                lowwest_30 = row["low"]
+                lowest_30 = row["low"]
 
             if row["trade"] == "LONG" and price_flag == 1:
                 self.data.loc[index, "trade"] = "BUY"
@@ -90,5 +84,17 @@ class MACDDeviate(TradeStructure):
 
 
 if __name__ == "__main__":
-    MACD_strategy = MACDDeviate(config=macd_deviate_config)
+    config = {
+        "RANDOM_SEED": 42,
+        "LOG_LEVEL": "SUCCESS",
+        "CODE_NAME": "600570",
+        # "CODE_NAME": "ALL_MARKET_10",
+        # "CODE_NAME": ["sh.600238",],
+        # "CODE_NAME": ["sh.603806", "sh.603697", "sh.603700", "sh.600570", "sh.603809","sh.600238","sh.603069","sh.600764","sz.002044"],
+        "START_STAMP": "2015-05-01",
+        "END_STAMP": "2022-12-20",
+        # "SHOW_DATA_PATH": "",
+        # "STRATEGY_PARAMS": {}
+    }
+    MACD_strategy = MACDDeviate(config=config)
     MACD_strategy.run()

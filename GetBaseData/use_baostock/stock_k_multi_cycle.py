@@ -3,7 +3,7 @@
  Date         : 2023-02-05 15:45:49
 @LastEditors  : adolf
 @LastEditTime : 2023-06-10 16:18:11
-@FilePath     : /stock_quant/GetBaseData/use_baostock/stock_k_mulit_cycle.py
+@FilePath     : /stock_quant/GetBaseData/use_baostock/stock_k_multi_cycle.py
 """
 
 import os

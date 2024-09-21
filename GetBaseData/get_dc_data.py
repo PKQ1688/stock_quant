@@ -26,13 +26,22 @@ from tqdm.auto import tqdm
 from GetBaseData.ch_eng_mapping import ch_eng_mapping_dict
 
 pd.set_option("expand_frame_repr", False)
+
+only_hfq = True
+all_data = False
 # socket.gethostbyname("")
 # 获取实时行情数据
 stock_zh_a_spot_em_df = ak.stock_zh_a_spot_em()
 stock_zh_a_spot_em_df.rename(columns=ch_eng_mapping_dict, inplace=True)
+stock_zh_a_spot_em_df.sort_values(by="TMC", ascending=False, inplace=True) # 按照市值排序
+
+if not all_data:
+    stock_zh_a_spot_em_df = stock_zh_a_spot_em_df.head(500)
+
 code_list = stock_zh_a_spot_em_df.code.to_list()
 
 code_name_mapping = stock_zh_a_spot_em_df.set_index(["code"])["name"].to_dict()
+# breakpoint()
 if not os.path.exists("DATA"):
     os.mkdir("DATA")
 
@@ -47,20 +56,23 @@ ray.init()
 
 error_code_list = []
 
-qfq_path = "Data/RealData/qfq/"
 hfq_path = "Data/RealData/hfq/"
-origin_path = "Data/RealData/origin/"
-
-if os.path.exists(qfq_path):
-    shutil.rmtree(qfq_path)
 if os.path.exists(hfq_path):
     shutil.rmtree(hfq_path)
-if os.path.exists(origin_path):
-    shutil.rmtree(origin_path)
-
-os.mkdir(qfq_path)
 os.mkdir(hfq_path)
-os.mkdir(origin_path)
+
+
+if not only_hfq:
+    qfq_path = "Data/RealData/qfq/"
+    if os.path.exists(qfq_path):
+        shutil.rmtree(qfq_path)
+
+    origin_path = "Data/RealData/origin/"
+    if os.path.exists(origin_path):
+        shutil.rmtree(origin_path)
+
+    os.mkdir(qfq_path)
+    os.mkdir(origin_path)
 
 # pbar = tqdm(total=len(code_list))
 
@@ -68,15 +80,6 @@ os.mkdir(origin_path)
 @ray.remote
 def get_one_stock_data(code):
     try:
-        # 获取前复权数据
-        stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, adjust="qfq")
-        stock_zh_a_hist_df.rename(columns=ch_eng_mapping_dict, inplace=True)
-        # if len(stock_zh_a_hist_df) < 120:
-        #     return 0
-        stock_zh_a_hist_df["code"] = code
-        stock_zh_a_hist_df["name"] = code_name_mapping[code]
-        stock_zh_a_hist_df.to_csv(os.path.join(qfq_path, code + ".csv"), index=False)
-
         # 获取后复权数据
         stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, adjust="hfq")
         stock_zh_a_hist_df.rename(columns=ch_eng_mapping_dict, inplace=True)
@@ -87,16 +90,30 @@ def get_one_stock_data(code):
         # stock_zh_a_hist_df["industry"] = get_stock_board_df(code)
         stock_zh_a_hist_df.to_csv(os.path.join(hfq_path, code + ".csv"), index=False)
 
-        # 获取原始不复权数据
-        stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code)
-        stock_zh_a_hist_df.rename(columns=ch_eng_mapping_dict, inplace=True)
-        # if len(stock_zh_a_hist_df) < 120:
-        #     return 0
-        stock_zh_a_hist_df["code"] = code
-        stock_zh_a_hist_df["name"] = code_name_mapping[code]
-        # stock_zh_a_hist_df["industry"] = get_stock_board_df(code)
-        stock_zh_a_hist_df.to_csv(os.path.join(origin_path, code + ".csv"), index=False)
-        # pbar.update(1)
+        if not only_hfq:
+            # 获取前复权数据
+            stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, adjust="qfq")
+            stock_zh_a_hist_df.rename(columns=ch_eng_mapping_dict, inplace=True)
+            # if len(stock_zh_a_hist_df) < 120:
+            #     return 0
+            stock_zh_a_hist_df["code"] = code
+            stock_zh_a_hist_df["name"] = code_name_mapping[code]
+            stock_zh_a_hist_df.to_csv(
+                os.path.join(qfq_path, code + ".csv"), index=False
+            )
+
+            # 获取原始不复权数据
+            stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code)
+            stock_zh_a_hist_df.rename(columns=ch_eng_mapping_dict, inplace=True)
+            # if len(stock_zh_a_hist_df) < 120:
+            #     return 0
+            stock_zh_a_hist_df["code"] = code
+            stock_zh_a_hist_df["name"] = code_name_mapping[code]
+            # stock_zh_a_hist_df["industry"] = get_stock_board_df(code)
+            stock_zh_a_hist_df.to_csv(
+                os.path.join(origin_path, code + ".csv"), index=False
+            )
+            # pbar.update(1)
 
         return 0
     except Exception as e:

@@ -35,4 +35,6 @@ ch_eng_mapping_dict = {
     "涨跌": "pctChg",
     "换手": "turn",
     "市盈率": "pe",
+    "总市值": "TMC",
+    "流通市值": "FMC",
 }

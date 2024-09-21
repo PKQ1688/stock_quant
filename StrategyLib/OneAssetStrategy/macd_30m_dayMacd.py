@@ -1,7 +1,7 @@
 import pandas as pd
-import pandas_ta as ta
-from finta import TA
 
+# import pandas_ta as ta
+# from finta import TA
 from BackTrader.base_back_trader import TradeStructure
 
 
@@ -35,7 +35,7 @@ class MACD30DayMacdStrategy(TradeStructure):
 
     def cal_technical_indicators(self, indicators_config):
         self.logger.debug(indicators_config)
-        macd_day = TA.MACD(self.data["day"])
+        macd_day = MACD(self.data["day"])
         self.data["day"]["MACD"], self.data["day"]["SIGNAL"] = [
             macd_day["MACD"],
             macd_day["SIGNAL"],
