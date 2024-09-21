@@ -90,7 +90,7 @@ ban-relative-imports = "all"
 
 [tool.ruff.lint.pycodestyle]
 max-line-length = 88
-max-doc-length = 79
+max-doc-length = 90
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"

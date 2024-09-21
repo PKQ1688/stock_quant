@@ -30,22 +30,18 @@ class Ma5Ma10Strategy(TradeStructure):
     # def buy_logic(self, trading_step, one_transaction_record, history_trading_step):
     def buy_logic(self):
         self.logger.debug(pformat(self.trade_state, indent=4, width=20))
-        if (
+        return bool(
             self.trade_state.trading_step.sma5 > self.trade_state.trading_step.sma10
             and self.trade_state.history_trading_step[0].sma5
             < self.trade_state.history_trading_step[0].sma10
-        ):
-            return True
-        return False
+        )
 
     def sell_logic(self):
-        if (
+        return bool(
             self.trade_state.trading_step.sma5 < self.trade_state.trading_step.sma10
             and self.trade_state.history_trading_step[0].sma5
             > self.trade_state.history_trading_step[0].sma10
-        ):
-            return True
-        return False
+        )
 
 
 if __name__ == "__main__":
