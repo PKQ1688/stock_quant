@@ -45,7 +45,8 @@ export PYTHONPATH=$(pwd):$PYTHONPATH
 
 ### 2.3 设置python不生成pyc(__pycache__)
 
-```export PYTHONDONTWRITEBYTECODE=1
+```bash
+export PYTHONDONTWRITEBYTECODE=1
 ```
 
 ### 2.4 国内配置github的真实ip
